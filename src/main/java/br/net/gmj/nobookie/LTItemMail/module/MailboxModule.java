@@ -62,7 +62,7 @@ public final class MailboxModule {
 				log = log + "was refunded $" + mailboxCost;
 				break;
 			case RECOVERED:
-				log = log + "recovered lost items of Mailbox#" + mailboxID;
+				log = log + "recovered Mailbox#" + mailboxID;
 				break;
 			case DELETED:
 				log = log + "deleted Mailbox#" + mailboxID;
@@ -91,13 +91,13 @@ public final class MailboxModule {
 				log = log + "sent to " + to.getName() + ": Mailbox#" + mailboxID + " / Contents: " + contentString;
 				break;
 			case PLACED:
-				log = log + "placed a mailbox at X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
+				log = log + "placed a mailbox at World: " + mailboxBlock.getWorld().getName() + ", X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
 				break;
 			case BROKE:
-				log = log + "broke a mailbox at X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
+				log = log + "broke a mailbox at World: " + mailboxBlock.getWorld().getName() + ", X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
 				break;
 			case ADMIN_BROKE:
-				log = log + "broke the mailbox of " + to.getName() + " at X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
+				log = log + "broke the mailbox of " + to.getName() + " at World: " + mailboxBlock.getWorld().getName() + ", X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
 				break;
 		}
 		write(log);
