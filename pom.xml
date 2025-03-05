@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.net.gmj.nobookie</groupId>
 	<artifactId>LTItemMail</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<name>LTItemMail</name>
 	<description>Have you ever imagined mailing items to your friends in Minecraft?</description>
 	<distributionManagement>
