@@ -1,33 +1,4 @@
 main:
   enabled: true
   warnings: []
-boards:
-  0:
-    title: "Two permission nodes removed (Build #67 or newer)"
-    datetime: "28/01/2025 03:54 BRT"
-    contents:
-      - "&c&lFor server owners:"
-      - "Due to imcompatibility with Bukkit API, the nodes &cltitemmail.player.all &rand &cltitemmail.admin.all &rwas removed and will not work anymore."
-      - "I am very sorry!"
-      - ""
-      - "&c&lPara donos de servidores:"
-      - "Devido à imcompatibilidade com a API do Bukkit, os nós &cltitemmail.player.all &re &cltitemmail.admin.all &rforam removidos e não funcionarão mais."
-      - "Eu sinto muito!"
-  1:
-    title: "Added HeadDatabase compatibility (Build #73 or newer)"
-    datetime: "26/02/2025 02:25 BRT"
-    contents:
-      - "&c&lFor server owners:"
-      - "Now you can choose to replace mail buttons for custom heads. Try it with HeadDatabase!"
-      - ""
-      - "&c&lPara donos de servidores:"
-      - "Agora você pode escolher substituir botões do corrêio por cabeças customizadas. Experimente com HeadDatabase!"
-  2:
-    title: "!!! IMPORTANT !!! (Build #76 or newer)"
-    datetime: "03/03/2025 03:37 BRT"
-    contents:
-      - "&c&lFor server owners:"
-      - "&cAll '%' arguments from the language file were changed! You &lMUST &cmanually edit the file and replace all '%' with the new format. Reference example: &ahttps://github.com/leothawne/LTItemMail/blob/dev/src/main/resources/portuguese.yml"
-      - ""
-      - "&c&lPara donos de servidores:"
-      - "&cTodos os argumentos '%' do arquivo de idioma mudaram! Você &lDEVE &ceditar manualmente o arquivo e alterar todos os '%' pelo novo formato. Exemplo de referência: &ahttps://github.com/leothawne/LTItemMail/blob/dev/src/main/resources/portuguese.yml"
+boards: []
