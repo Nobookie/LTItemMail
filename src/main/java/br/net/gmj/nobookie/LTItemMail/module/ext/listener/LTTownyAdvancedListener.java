@@ -20,8 +20,8 @@ import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 
-public final class LTTownyListener implements Listener {
-	public LTTownyListener() {
+public final class LTTownyAdvancedListener implements Listener {
+	public LTTownyAdvancedListener() {
 		Bukkit.getServer().getPluginManager().registerEvents(this, LTItemMail.getInstance());
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -13,6 +15,7 @@ import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTBlueMap;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDecentHolograms;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDynmap;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTExtension;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTGriefPrevention;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTHeadDatabase;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTPlaceholderAPI;
@@ -22,9 +25,6 @@ import br.net.gmj.nobookie.LTItemMail.module.ext.LTTownyAdvanced;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTVaultPermission;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTWorldGuard;
-import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTGriefPreventionListener;
-import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTRedProtectListener;
-import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTTownyListener;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import net.milkbowl.vault.permission.Permission;
 
@@ -104,10 +104,13 @@ public final class ExtensionModule {
 		}
 		return isRegistered(function);
 	}
+	private Listener plugMan = null;
 	public final void unload() {
-		if(isRegistered(Function.DYNMAP)) ((LTDynmap) get(Function.DYNMAP)).unload();
-		if(isRegistered(Function.BLUEMAP)) ((LTBlueMap) get(Function.BLUEMAP)).unload();
-		if(isRegistered(Function.PLACEHOLDERAPI)) ((LTPlaceholderAPI) get(Function.PLACEHOLDERAPI)).unload();
+		for(final Function function : reg().keySet()) {
+			final LTExtension extension = (LTExtension) reg().get(function);
+			extension.unload();
+		}
+		if(plugMan != null) HandlerList.unregisterAll(plugMan);
 	}
 	public final boolean isInstalled(final Name name) {
 		Plugin plugin = null;
@@ -137,17 +140,14 @@ public final class ExtensionModule {
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_GRIEFPREVENTION)) if(isInstalled(Name.GRIEFPREVENTION) && !isRegistered(Function.GRIEFPREVENTION)) {
 			warn(null, Name.GRIEFPREVENTION);
 			register(Function.GRIEFPREVENTION);
-			new LTGriefPreventionListener();
 		}
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_REDPROTECT)) if(isInstalled(Name.REDPROTECT) && !isRegistered(Function.REDPROTECT)) {
 			warn(null, Name.REDPROTECT);
 			register(Function.REDPROTECT);
-			new LTRedProtectListener();
 		}
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED)) if(isInstalled(Name.TOWNYADVANCED) && !isRegistered(Function.TOWNYADVANCED)) {
 			warn(null, Name.TOWNYADVANCED);
 			register(Function.TOWNYADVANCED);
-			new LTTownyListener();
 		}
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_WORLDGUARD)) if(isInstalled(Name.WORLDGUARD) && !isRegistered(Function.WORLDGUARD)) {
 			warn(null, Name.WORLDGUARD);
@@ -196,7 +196,7 @@ public final class ExtensionModule {
 		if(detected) {
 			ConsoleModule.info("Extensions loaded.");
 		} else ConsoleModule.info("No extensions detected.");
-		new LTPlugMan();
+		plugMan = new LTPlugMan();
 	}
 	public static final ExtensionModule reload() {
 		if(instance != null) {

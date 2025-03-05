@@ -34,6 +34,7 @@ public final class LTDynmap extends DynmapCommonAPIListener implements LTExtensi
 			for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
 		}
 	}
+	@Override
 	public final void unload() {
 		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
 		DynmapCommonAPIListener.unregister(this);

@@ -28,6 +28,8 @@ public final class LTHeadDatabase implements LTExtension {
 	public final Plugin getBasePlugin() {
 		return plugin;
 	}
+	@Override
+	public final void unload() {}
 	private File file;
 	private final void check() {
 		file = FetchUtil.FileManager.get("headdatabase.yml");

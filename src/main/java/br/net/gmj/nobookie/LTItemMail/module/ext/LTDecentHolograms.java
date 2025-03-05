@@ -37,6 +37,8 @@ public final class LTDecentHolograms implements LTExtension {
 	public final Plugin getBasePlugin() {
 		return plugin;
 	}
+	@Override
+	public final void unload() {}
 	public final void cleanup() {
 		Bukkit.getScheduler().runTaskLater(LTItemMail.getInstance(), new Runnable() {
 			@Override

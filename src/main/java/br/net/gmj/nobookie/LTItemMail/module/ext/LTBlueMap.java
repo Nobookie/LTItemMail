@@ -49,6 +49,7 @@ public final class LTBlueMap implements LTExtension {
 	public final Plugin getBasePlugin() {
 		return plugin;
 	}
+	@Override
 	public final void unload() {
 		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation(), true);
 	}

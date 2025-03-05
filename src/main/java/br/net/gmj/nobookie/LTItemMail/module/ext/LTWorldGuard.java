@@ -22,6 +22,8 @@ public final class LTWorldGuard implements LTExtension {
 	public final Plugin getBasePlugin() {
 		return plugin;
 	}
+	@Override
+	public final void unload() {}
 	public final boolean canBuild(final Player player, final Location location) {
 		final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 		final RegionQuery query = container.createQuery();

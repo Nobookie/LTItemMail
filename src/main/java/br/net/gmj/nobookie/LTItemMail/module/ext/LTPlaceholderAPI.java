@@ -25,6 +25,7 @@ public final class LTPlaceholderAPI extends PlaceholderExpansion implements LTEx
 	public final Plugin getBasePlugin() {
 		return plugin;
 	}
+	@Override
 	public final void unload() {
 		unregister();
 	}

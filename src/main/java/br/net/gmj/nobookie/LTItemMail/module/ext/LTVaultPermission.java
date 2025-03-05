@@ -15,6 +15,8 @@ public final class LTVaultPermission implements LTExtension {
 	public final Plugin getBasePlugin() {
 		return plugin;
 	}
+	@Override
+	public final void unload() {}
 	public final Plugin getPermissionPlugin() {
 		return permissionPlugin;
 	}

@@ -39,6 +39,8 @@ public final class LTUltimateAdvancementAPI implements LTExtension {
 	public final Plugin getBasePlugin() {
 		return plugin;
 	}
+	@Override
+	public final void unload() {}
 	public final void show(final LTPlayer player, final String message) {
 		tab = api.createAdvancementTab(LTItemMail.getInstance().getName().toLowerCase());
 		display = new AdvancementDisplay(shulkers.get(new Random().nextInt(shulkers.size() - 1)), message, AdvancementFrameType.TASK, true, false, 0, 0);
