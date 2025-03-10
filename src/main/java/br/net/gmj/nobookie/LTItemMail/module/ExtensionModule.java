@@ -106,6 +106,12 @@ public final class ExtensionModule {
 	}
 	private Listener plugMan = null;
 	public final void unload() {
+		Boolean detected = false;
+		for(final Name name : plugins.keySet()) if(isInstalled(name)) {
+			detected = true;
+			break;
+		}
+		if(detected) ConsoleModule.info("Unloading extensions...");
 		for(final Function function : reg().keySet()) {
 			final LTExtension extension = (LTExtension) reg().get(function);
 			extension.unload();
@@ -193,9 +199,6 @@ public final class ExtensionModule {
 			warn(null, Name.HEADDATABASE);
 			register(Function.HEADDATABASE);
 		}
-		if(detected) {
-			ConsoleModule.info("Extensions loaded.");
-		} else ConsoleModule.info("No extensions detected.");
 		plugMan = new LTPlugMan();
 	}
 	public static final ExtensionModule reload() {

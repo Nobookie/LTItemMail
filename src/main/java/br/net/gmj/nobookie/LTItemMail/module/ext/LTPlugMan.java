@@ -42,14 +42,14 @@ public final class LTPlugMan implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onServerCommandEvent(final ServerCommandEvent event) {
 		final String[] command = event.getCommand().split(" ");
-		event.setCancelled(prevent(event.getSender(), command));
+		event.setCancelled(process(event.getSender(), command));
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onPlayerCommandEvent(final PlayerCommandPreprocessEvent event) {
-		final String[] command = event.getMessage().replace("/", "").split(" ");
-		event.setCancelled(prevent(event.getPlayer(), command));
+		final String[] command = event.getMessage().replaceAll("/", "").split(" ");
+		event.setCancelled(process(event.getPlayer(), command));
 	}
-	private final boolean prevent(final CommandSender sender, final String[] command) {
+	private final Boolean process(final CommandSender sender, final String[] command) {
 		Boolean plugman = false;
 		for(final String cmd : command) {
 			if(cmd.equalsIgnoreCase("plugman")) plugman = true;

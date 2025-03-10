@@ -15,7 +15,7 @@ if you would like to use LT Item Mail as a dependency of your plugin:
 <repository>
   <id>gmj-repository</id>
   <name>Maven G.M.J</name>
-  <url>https://maven.gmj.net.br/snapshots</url>
+  <url>https://maven.gmj.net.br/releases</url>
 </repository>
 ```
 
@@ -24,6 +24,6 @@ if you would like to use LT Item Mail as a dependency of your plugin:
 <dependency>
   <groupId>br.net.gmj.nobookie</groupId>
   <artifactId>LTItemMail</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```

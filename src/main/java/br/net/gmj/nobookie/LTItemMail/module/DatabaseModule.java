@@ -21,7 +21,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
@@ -66,23 +65,6 @@ public final class DatabaseModule {
 					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 				}
 			}
-			if(!convert) new BukkitRunnable() {
-				@Override
-				public final void run() {
-					try {
-						if(LTItemMail.getInstance().connection == null || (LTItemMail.getInstance().connection != null && !LTItemMail.getInstance().connection.isValid(15))) {
-							if(LTItemMail.getInstance().connection != null) LTItemMail.getInstance().connection.close();
-							LTItemMail.getInstance().connection = DriverManager.getConnection("jdbc:mysql://" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_HOST) + "/" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_NAME), (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_USER), (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_PASSWORD));
-							ConsoleModule.info("Re-opened MySQL connection.");
-						}
-					} catch (final SQLException | NullPointerException e) {
-						ConsoleModule.severe("MySQL connection was closed and could not be opened again.");
-						ConsoleModule.severe("Is the MySQL server set up correctly?");
-						if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-						this.cancel();
-					}
-				}
-			}.runTaskTimerAsynchronously(LTItemMail.getInstance(), 20 * 60, 20 * 60);
 			return connection;
 		}
 	}

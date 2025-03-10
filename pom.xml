@@ -5,10 +5,15 @@
 	<version>1.1.1</version>
 	<name>LTItemMail</name>
 	<description>Have you ever imagined mailing items to your friends in Minecraft?</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 	<distributionManagement>
         <repository>
             <id>gmj-repository</id>
-            <url>https://maven.gmj.net.br/snapshots</url>
+            <url>https://maven.gmj.net.br/releases</url>
         </repository>
     </distributionManagement>
 	<build>
@@ -61,7 +66,7 @@
 				<version>3.8.0</version>
 				<configuration>
 					<doctitle>LT Item Mail API ${project.version} #${v}</doctitle>
-					<windowtitle>LT Item Mail API ${project.version} #${v}</windowtitle>
+					<windowtitle>LT Item Mail API ${project.version}</windowtitle>
 					<links>
 						<link>https://hub.spigotmc.org/javadocs/spigot/</link>
 						<link>https://javadoc.io/doc/org.jetbrains/annotations/latest/</link>
@@ -75,6 +80,31 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>3.1.4</version>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<configuration>
+							<url>${project.distributionManagement.repository.url}</url>
+							<repositoryId>${project.distributionManagement.repository.id}</repositoryId>
+							<file>${basedir}/target/${project.name}.jar</file>
+							<pomFile>${basedir}/pom.xml</pomFile>
+							<javadoc>${basedir}/target/${project.name}-javadoc.jar</javadoc>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<version>${project.version}</version>
+							<packaging>jar</packaging>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

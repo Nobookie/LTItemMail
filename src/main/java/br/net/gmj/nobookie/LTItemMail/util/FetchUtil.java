@@ -188,7 +188,7 @@ public final class FetchUtil {
 	public static final class Stats {
 		private BukkitTask task = null;
 		public final void reg() {
-			if(task == null) task = new BukkitRunnable() {
+			if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) if(task == null) task = new BukkitRunnable() {
 				@Override
 				public final void run() {
 					final String result = URL.get("https://api.my-ip.io/v2/ip.yml");
@@ -204,7 +204,7 @@ public final class FetchUtil {
 						}
 					} catch (final IOException | InvalidConfigurationException e) {}
 				}
-			}.runTaskTimer(LTItemMail.getInstance(), 1, 20 * 60 * 60 * 24);
+			}.runTaskTimer(LTItemMail.getInstance(), 1, 20 * 60 * 30);
 		}
 	}
 }

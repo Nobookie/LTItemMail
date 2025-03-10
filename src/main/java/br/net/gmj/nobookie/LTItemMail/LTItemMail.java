@@ -111,10 +111,11 @@ public final class LTItemMail extends JavaPlugin {
 	@Override
 	public final void onDisable() {
 		Bukkit.getScheduler().cancelTasks(this);
-		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
-		getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
-		getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
+			getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
+			getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
+		}
 	}
 	public final void reload() {
 		PermissionModule.unload();

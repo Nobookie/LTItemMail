@@ -1,7 +1,5 @@
 package br.net.gmj.nobookie.LTItemMail.util;
 
-import com.google.common.collect.Lists;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -14,11 +12,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.google.common.collect.Lists;
+
 /**
  * A class designed to fix the loss of the Reflections API
  */
-public class ReflectionsUtil {
-
+public final class ReflectionsUtil {
     /**
      * Gets a list containing the fully qualified names of the all classes in a package
      *
@@ -27,19 +26,16 @@ public class ReflectionsUtil {
      * @return a list containing the names of all classes in a package
      * @throws IOException if an error occurred whilst getting the package information
      */
-    public static List<String> getClassNamesFromPackage(String packageName, ClassLoader classLoader) throws IOException {
+    public static final List<String> getClassNamesFromPackage(String packageName, final ClassLoader classLoader) throws IOException {
         URL packageURL;
         ArrayList<String> names = new ArrayList<String>();
-
         packageName = packageName.replace(".", "/");
         packageURL = classLoader.getResource(packageName);
-
         if (packageURL.getProtocol().equals("jar")) { // Loop through all things in the jar
             String jarFileName;
             JarFile jf;
             Enumeration<JarEntry> jarEntries;
             String entryName;
-
             jarFileName = URLDecoder.decode(packageURL.getFile(), "UTF-8");
             jarFileName = jarFileName.substring(5, jarFileName.indexOf("!"));
             jf = new JarFile(jarFileName);
@@ -60,10 +56,8 @@ public class ReflectionsUtil {
                 names.add(entryName.replace(".class", "").replace('/', '.'));
             }
         }
-
         return names;
     }
-
     /**
      * Gets all subtypes of a specified class in a package
      *
@@ -74,7 +68,7 @@ public class ReflectionsUtil {
      * @return a list containing all subtypes of the specified class
      * @throws Exception if an error occurred during the lookup of these classes
      */
-    public static <T> List<Class<? extends T>> getSubtypesOf(Class<T> clazz, String packagee, ClassLoader classLoader, Class<?>... ignore) throws Exception {
+    public static final <T> List<Class<? extends T>> getSubtypesOf(final Class<T> clazz, final String packagee, final ClassLoader classLoader, final Class<?>... ignore) throws Exception {
         List<Class<? extends T>> returnMe = Lists.newArrayList();
         List<Class<?>> ignores = Lists.newArrayList(ignore);
         for (String str : getClassNamesFromPackage(packagee, classLoader)) {
@@ -86,7 +80,6 @@ public class ReflectionsUtil {
         }
         return returnMe;
     }
-
     /**
      * Adds a file to a classpath
      *
@@ -94,20 +87,18 @@ public class ReflectionsUtil {
      * @param file the file
      * @throws Exception if an error occurred while adding the class to the classpath
      */
-    public static void addFileToClasspath(ClassLoader classPath, File file) throws Exception {
+    public static final void addFileToClasspath(final ClassLoader classPath, final File file) throws Exception {
         Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
         method.setAccessible(true);
         method.invoke(classPath, new Object[]{file.toURI().toURL()});
     }
-
     /**
      * Adds a file to the system's classpath
      *
      * @param file the file
      * @throws Exception if an error occurred while adding the class to the classpath
      */
-    public static void addFileToClasspath(File file) throws Exception {
+    public static final void addFileToClasspath(final File file) throws Exception {
         addFileToClasspath(ClassLoader.getSystemClassLoader(), file);
     }
-
 }
