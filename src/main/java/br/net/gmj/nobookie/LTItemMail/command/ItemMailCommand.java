@@ -78,7 +78,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 							sender.sendMessage(ChatColor.YELLOW + "LT Item Mail");
 							sender.sendMessage(ChatColor.YELLOW + "Version: " + ChatColor.DARK_GREEN + ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER));
 							sender.sendMessage(ChatColor.YELLOW + "Build number: " + ChatColor.DARK_GREEN + ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
-							sender.sendMessage(ChatColor.YELLOW + "Build date: " + ChatColor.DARK_GREEN + FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER))).replaceAll(System.lineSeparator(), ""));
+							sender.sendMessage(ChatColor.YELLOW + "Build date: " + ChatColor.DARK_GREEN + FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), null).replaceAll(System.lineSeparator(), ""));
 							String authors = "";
 							if(LTItemMail.getInstance().getDescription().getAuthors().size() > 1) {
 								String separator = ", ";

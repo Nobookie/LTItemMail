@@ -19,7 +19,7 @@ public final class ConsoleModule {
 		return Bukkit.getConsoleSender();
 	}
 	public static final void hello() {
-		String buildDate = FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)));
+		String buildDate = FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), null);
 		if(buildDate == null) buildDate = ChatColor.DARK_RED + "Server down!";
 		sender().sendMessage(ChatColor.DARK_AQUA + " _   _______ _____ __  __ ");
 		sender().sendMessage(ChatColor.DARK_AQUA + "| | |__   __|_   _|  \\/  |");

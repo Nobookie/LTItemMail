@@ -72,7 +72,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 						@Override
 						public final void run() {
 							final Integer localBuild = (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER);
-							final String http = FetchUtil.URL.get(DataModule.getUpdateURL()).replaceAll(System.lineSeparator(), "");
+							final String http = FetchUtil.URL.get(DataModule.getUpdateURL(), null).replaceAll(System.lineSeparator(), "");
 							if(http != null) {
 								final Integer remoteBuild = Integer.parseInt(http);
 								if(remoteBuild > localBuild) {
@@ -237,7 +237,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + LTItemMail.getInstance().getDescription().getName() + " version " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER));
 					for(final ExtensionModule.Function function : ExtensionModule.getInstance().reg().keySet()) {
 						final LTExtension extension = (LTExtension) ExtensionModule.getInstance().reg().get(function);
-						sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + extension.getBasePlugin().getDescription().getName() + " version " + ChatColor.GREEN + extension.getBasePlugin().getDescription().getVersion());
+						sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + extension.getBasePlugin().getDescription().getName() + " version " + ChatColor.GREEN + extension.getBasePlugin().getDescription().getVersion());
 					}
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}

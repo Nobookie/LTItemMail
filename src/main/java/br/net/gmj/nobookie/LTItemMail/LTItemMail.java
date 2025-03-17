@@ -36,7 +36,7 @@ import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
 /**
  * 
- * Main class of the plugin. This is typically of no use to developers.
+ * Main class of the plugin. This is typically of no use for developers.
  * 
  * @author Nobookie
  * 
@@ -93,7 +93,7 @@ public final class LTItemMail extends JavaPlugin {
 			RegistrationModule.setupBlocks();
 			new CommandModule();
 			MailboxModule.ready();
-			new FetchUtil.Stats().reg();
+			new FetchUtil.Stats();
 			final Long done = Calendar.getInstance().getTimeInMillis() - startup;
 			String took = done + "ms";
 			if(done >= 1000.0) took = (done / 1000.0) + "s";
@@ -111,6 +111,7 @@ public final class LTItemMail extends JavaPlugin {
 	@Override
 	public final void onDisable() {
 		Bukkit.getScheduler().cancelTasks(this);
+		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
 			getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");

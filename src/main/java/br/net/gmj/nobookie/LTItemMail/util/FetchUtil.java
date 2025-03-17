@@ -7,17 +7,28 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -36,24 +47,25 @@ import javadl.utils.SizeUtil;
 public final class FetchUtil {
 	private FetchUtil() {}
 	public static final class URL {
-		private static final URLConnection connect(final String url) {
-			URLConnection connection = null;
+		public static final CloseableHttpResponse request(final ClassicHttpRequest request, final Map<String, Object> params) {
 			try {
-				connection = URI.create(url).toURL().openConnection();
-				connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
-				connection.setUseCaches(false);
-				connection.setConnectTimeout(5000);
-				connection.setReadTimeout(5000);
-				connection.connect();
-				return connection;
+				final CloseableHttpClient client = HttpClients.createDefault();
+				final List<NameValuePair> parameters = new ArrayList<>();
+				if(params != null) for(final String key : params.keySet()) parameters.add(new BasicNameValuePair(key, params.get(key).toString()));
+				request.setEntity(new UrlEncodedFormEntity(parameters));
+				@SuppressWarnings("deprecation")
+				final CloseableHttpResponse response = client.execute(request);
+				client.close();
+				return response;
 			} catch (final IOException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			return null;
 		}
-		public static final String get(final String url) {
+		private static final String builder(final HttpEntity entity) {
+			String value = null;
 			try {
-				final InputStreamReader input = new InputStreamReader(connect(url).getInputStream(), Charset.forName("UTF-8"));
+				final InputStreamReader input = new InputStreamReader(entity.getContent(), Charset.forName("UTF-8"));
 				final BufferedReader reader = new BufferedReader(input);
 				final StringBuilder builder = new StringBuilder();
 				String string;
@@ -63,11 +75,33 @@ public final class FetchUtil {
 				}
 				reader.close();
 				input.close();
-				return builder.toString();
-			} catch(final IOException | NullPointerException e) {
+				value = builder.toString();
+			} catch(final IOException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
-			return null;
+			return value;
+		}
+		public static final String get(final String url, final Map<String, Object> params) {
+			String value = null;
+			try {
+				final CloseableHttpResponse response = request(new HttpGet(url), params);
+				if(response.getEntity() != null) value = builder(response.getEntity());
+				response.close();
+			} catch (final IOException e) {
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+			}
+			return value;
+		}
+		public static final String post(final String url, final Map<String, Object> params) {
+			String value = null;
+			try {
+				final CloseableHttpResponse response = request(new HttpPost(url), params);
+				if(response.getEntity() != null) value = builder(response.getEntity());
+				response.close();
+			} catch (final IOException e) {
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+			}
+			return value;
 		}
 	}
 	public static final class FileManager {
@@ -186,12 +220,11 @@ public final class FetchUtil {
 		}
 	}
 	public static final class Stats {
-		private BukkitTask task = null;
-		public final void reg() {
-			if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) if(task == null) task = new BukkitRunnable() {
+		public Stats() {
+			new BukkitRunnable() {
 				@Override
 				public final void run() {
-					final String result = URL.get("https://api.my-ip.io/v2/ip.yml");
+					final String result = URL.get("https://api.my-ip.io/v2/ip.yml", null);
 					if(result != null) try {
 						final YamlConfiguration set = new YamlConfiguration();
 						set.loadFromString(result);
@@ -199,12 +232,17 @@ public final class FetchUtil {
 							final Properties properties = new Properties();
 							properties.load(new FileInputStream(new File(Bukkit.getWorldContainer().getAbsolutePath(), "server.properties")));
 							String n = "";
-							if(properties.containsKey("server-name")) n = properties.getProperty("server-name").replaceAll(" ", "%20");
-							URL.get("https://stats.gmj.net.br/LTItemMail/?n=" + n + "&i=" + set.getString("result.ip") + "&p=" + Bukkit.getPort());
+							if(properties.containsKey("server-name")) n = properties.getProperty("server-name");
+							final Map<String, Object> params = new HashMap<>();
+							params.put("n", n);
+							params.put("i", set.getString("result.ip"));
+							params.put("p", Bukkit.getPort());
+							params.put("c", set.getString("result.country.code"));
+							URL.post("https://stats.gmj.net.br/LTItemMail/submit.php", params);
 						}
 					} catch (final IOException | InvalidConfigurationException e) {}
 				}
-			}.runTaskTimer(LTItemMail.getInstance(), 1, 20 * 60 * 30);
+			}.runTaskTimer(LTItemMail.getInstance(), 1, 20 * 60 * 15);
 		}
 	}
 }
