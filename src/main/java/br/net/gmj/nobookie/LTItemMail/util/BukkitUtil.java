@@ -1,16 +1,21 @@
 package br.net.gmj.nobookie.LTItemMail.util;
 
 import java.util.LinkedList;
+import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.item.Item;
+import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
+import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 
 public final class BukkitUtil {
 	private BukkitUtil() {}
@@ -57,6 +62,24 @@ public final class BukkitUtil {
 		}
 		public static final boolean isMailbox(final ItemStack item) {
 			return isMailbox(item.getItemMeta());
+		}
+	}
+	public static final class AutoRun {
+		@SuppressWarnings("unchecked")
+		public static final void execute(final Class<?> clazz, final ConfigurationModule.Type autorun, final Player player) {
+			if(!autorun.toString().startsWith("AUTORUN_")) return;
+			for(final String rawCmd : (List<String>) ConfigurationModule.get(autorun)) {
+				final String executor = rawCmd.split("\\:")[0].toUpperCase();
+				final String cmd = rawCmd.split("\\:")[1].toLowerCase().replaceAll("/", "");
+				switch(executor) {
+					case "CONSOLE":
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+						break;
+					case "PLAYER":
+						if(!player.performCommand(cmd)) ConsoleModule.debug(clazz, "[" + player.getName() + "] Could not perform command: '/" + cmd + "' from '" + autorun.path() + "'");
+						break;
+				}
+			}
 		}
 	}
 }

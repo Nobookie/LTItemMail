@@ -58,9 +58,10 @@ public final class MailboxVirtualListener implements Listener {
 			} else DatabaseModule.Virtual.updateMailbox(mailboxID, new LinkedList<ItemStack>());
 			player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_CLOSED));
 			inventory.clear();
+			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_CLAIMED_ONCLOSE, player);
 		}
 		if(inventoryView.getTitle().contains(MailboxInventory.getName(MailboxInventory.Type.OUT, null, null)) && inventoryView.getTitle().split("@").length == 2) {
-			final LTPlayer sender = LTPlayer.fromUUID(((Player) event.getPlayer()).getUniqueId());
+			final LTPlayer sender = LTPlayer.fromUUID(player.getUniqueId());
 			final LTPlayer receiver = LTPlayer.fromName(inventoryView.getTitle().split("@")[1]);
 			final ItemStack[] contents = inventory.getContents();
 			final boolean isEmpty = BukkitUtil.Inventory.isEmpty(contents);
@@ -111,14 +112,18 @@ public final class MailboxVirtualListener implements Listener {
 					}
 				}
 			} else sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_ABORTED));
+			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_NEW_ONCLOSE, player);
 		}
-		if(inventoryView.getTitle().contains(MailboxInventory.getName(MailboxInventory.Type.IN_PENDING, null, null)) && inventoryView.getTitle().split("!").length == 2) inventory.clear();
+		if(inventoryView.getTitle().contains(MailboxInventory.getName(MailboxInventory.Type.IN_PENDING, null, null)) && inventoryView.getTitle().split("!").length == 2) {
+			inventory.clear();
+			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_PENDING_ONCLOSE, player);
+		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onItemDrop(final PlayerDropItemEvent event) {
 		final LTPlayer player = LTPlayer.fromUUID(event.getPlayer().getUniqueId());
 		final ItemStack ee = event.getItemDrop().getItemStack();
-		if(PermissionModule.hasPermission(player.getBukkitPlayer().getPlayer(), PermissionModule.Type.CMD_ADMIN_BYPASS) && ee.getType().equals(Material.PAPER) && ee.getItemMeta() != null && ee.getItemMeta().getDisplayName().equalsIgnoreCase("give me a mailbox")) {
+		if(PermissionModule.hasPermission(player.getBukkitPlayer().getPlayer(), PermissionModule.Type.CMD_ADMIN_MAIN) && ee.getType().equals(Material.PAPER) && ee.getItemMeta() != null && ee.getItemMeta().getDisplayName().equalsIgnoreCase("give me a mailbox")) {
 			int i = 0;
 			for(i = 0; i < ee.getAmount(); i++) if(!player.giveMailboxBlock()) break;
 			ee.setAmount(ee.getAmount() - i);

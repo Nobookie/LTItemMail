@@ -3,6 +3,7 @@ package br.net.gmj.nobookie.LTItemMail.module;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -135,6 +136,9 @@ public final class ConfigurationModule {
 		MAILBOX_TYPE_COST("mail.cost.per-item", false),
 		MAILBOX_COST("mail.cost.value", 30.0),
 		MAILBOX_NAME("mail.name", "&3&lMailbox&r&4"),
+		AUTORUN_MAIL_NEW_ONCLOSE("autorun.mail.new.on-close", new ArrayList<String>()),
+		AUTORUN_MAIL_PENDING_ONCLOSE("autorun.mail.pending.on-close", Arrays.asList("PLAYER:/itemmail list")),
+		AUTORUN_MAIL_CLAIMED_ONCLOSE("autorun.mail.claimed.on-close", Arrays.asList("PLAYER:/itemmail list")),
 		PLUGIN_UPDATE_CHECK("update.check", true),
 		PLUGIN_UPDATE_PERIODIC_NOTIFICATION("update.periodic-notification", true),
 		PLUGIN_UPDATE_AUTOMATIC("update.automatic", true),

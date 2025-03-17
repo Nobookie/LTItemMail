@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 15
+config-version: 16
 version-number: ${project.version}
 build-number: ${v}
 plugin:
@@ -119,6 +119,16 @@ mail:
   #
   #Nome do inventário de corrêio. Padrão: Mail
   name: '&3&lMailbox&r&4'
+autorun:
+  mail:
+    new:
+      on-close: []
+    pending:
+      on-close:
+        - 'PLAYER:/itemmail list'
+    claimed:
+      on-close:
+        - 'PLAYER:/itemmail list'
 #Should administrators be warned about new updates? Default: true
 #
 #Os administratores devem ser notificados sobre novas atualizações? Padrão: true
