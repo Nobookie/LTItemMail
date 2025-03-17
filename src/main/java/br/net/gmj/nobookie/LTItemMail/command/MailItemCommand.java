@@ -24,7 +24,7 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 	description = "Used to send items.",
 	aliases = "ltitemmail:mailitem,mit,enviaritem",
 	permission = "ltitemmail.player.send",
-	usage = "/<command> <player> <label>"
+	usage = "/<command> <player> [label]"
 )
 public final class MailItemCommand extends LTCommandExecutor {
 	@Override
