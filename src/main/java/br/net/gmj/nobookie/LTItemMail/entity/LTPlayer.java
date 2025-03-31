@@ -19,6 +19,8 @@ import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
  * 
@@ -225,6 +227,59 @@ public final class LTPlayer {
 		} catch(final IllegalArgumentException e) {
 			ConsoleModule.debug(getClass(), "Argument cannot be null.");
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
+	}
+	/**
+	 * 
+	 * Checks if the player is online.
+	 * 
+	 */
+	public final Boolean isOnline() {
+		return getBukkitPlayer().getPlayer() != null;
+	}
+	/**
+	 * 
+	 * Sends a chat message to the LTPlayer.
+	 * 
+	 * @param message The message that will be shown.
+	 * 
+	 */
+	public final Boolean sendMessage(@NotNull final String message) {
+		if(getBukkitPlayer().getPlayer() != null) {
+			getBukkitPlayer().getPlayer().sendMessage(message);
+			return true;
+		}
+		return false;
+	}
+	public final Spigot spigot() {
+		try {
+			Class.forName("org.spigotmc.CustomTimingsHandler.class");
+			return new Spigot(this);
+		} catch (final ClassNotFoundException e) {
+			ConsoleModule.debug(getClass(), "Server is not a Spigot implementation.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
+		return null;
+	}
+	public static class Spigot {
+		private final LTPlayer player;
+		private Spigot(final LTPlayer player) {
+			this.player = player;
+		}
+		/**
+		 * 
+		 * Sends a message to the LTPlayer.
+		 * 
+		 * @param type The screen position.
+		 * @param component The component to send.
+		 * 
+		 */
+		public final Boolean sendMessage(@NotNull final ChatMessageType type, @NotNull final BaseComponent[] component) {
+			if(player.getBukkitPlayer().getPlayer() != null) {
+				player.getBukkitPlayer().getPlayer().spigot().sendMessage(type, component);
+				return true;
+			}
+			return false;
 		}
 	}
 }
