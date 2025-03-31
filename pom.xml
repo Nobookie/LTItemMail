@@ -5,10 +5,9 @@
 	<version>1.1.1</version>
 	<name>LTItemMail</name>
 	<description>Have you ever imagined mailing items to your friends in Minecraft?</description>
+	<url>https://github.com/leothawne/LTItemMail</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<distributionManagement>
         <repository>
@@ -152,7 +151,7 @@
 	<repositories>
 		<repository>
 			<id>SpigotMC</id>
-			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+			<url>https://hub.spigotmc.org/nexus/repository/public/</url>
 		</repository>
 		<repository>
 	    	<id>Nexus</id>
@@ -205,13 +204,13 @@
 			<artifactId>spigot-api</artifactId>
 			<version>1.14-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
-			<exclusions>
-	            <exclusion>
-	                <groupId>*</groupId>
-	                <artifactId>*</artifactId>
-	            </exclusion>
-	        </exclusions>
 		</dependency>
+		<!--<dependency>
+		    <groupId>org.mockbukkit.mockbukkit</groupId>
+		    <artifactId>mockbukkit-v1.21</artifactId>
+		    <version>4.0.0</version>
+		    <scope>test</scope>
+		</dependency>-->
 		<dependency>
     		<groupId>com.googlecode.json-simple</groupId>
     		<artifactId>json-simple</artifactId>
