@@ -246,7 +246,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 				if(sender instanceof Player) {
 					final Player player = (Player) sender;
 					final List<MailboxBlock> mailboxes = new ArrayList<>();
-					for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) if(block.getOwner().equals(LTPlayer.fromUUID(player.getUniqueId()))) mailboxes.add(block);
+					for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) if(block.getOwner().getUniqueId().equals(LTPlayer.fromUUID(player.getUniqueId()).getUniqueId())) mailboxes.add(block);
 					if(mailboxes.size() > 0) {
 						player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.BLOCK_LIST));
 						Integer number = 1;
