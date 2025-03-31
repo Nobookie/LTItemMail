@@ -7,7 +7,7 @@ load: POSTWORLD
 authors:
   - Nobookie
   - leothawne
-website: https://www.spigotmc.org/resources/62294/
+website: ${project.url}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 database: true
 softdepend:
