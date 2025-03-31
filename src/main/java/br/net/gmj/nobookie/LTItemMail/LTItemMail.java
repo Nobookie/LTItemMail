@@ -11,7 +11,9 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import br.net.gmj.nobookie.LTItemMail.listener.MailboxVirtualListener;
@@ -43,6 +45,14 @@ import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
  */
 public final class LTItemMail extends JavaPlugin {
 	private static LTItemMail instance;
+	public LTItemMail() {
+		super();
+		instance = this;
+	}
+	protected LTItemMail(final JavaPluginLoader loader, final PluginDescriptionFile descriptionFile, final File dataFolder, final File file) {
+        super(loader, descriptionFile, dataFolder, file);
+        instance = this;
+    }
 	public FileConfiguration configuration;
 	public FileConfiguration language;
 	public FileConfiguration models;
@@ -56,7 +66,6 @@ public final class LTItemMail extends JavaPlugin {
 	}
 	@Override
 	public final void onEnable() {
-		instance = this;
 		final BStats metrics = new BStats(this, 3647);
 		loadConfig();
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_ENABLE)) {
