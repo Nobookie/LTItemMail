@@ -18,6 +18,7 @@ import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.ModelsModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTHeadDatabase;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTSkulls;
 
 public final class MailboxInventory {
 	private MailboxInventory() {}
@@ -65,12 +66,18 @@ public final class MailboxInventory {
 		ItemStack labelButton = new ItemStack(Material.BOOK, 1);
 		ItemStack denyButton = new ItemStack(Material.BARRIER, 1);
 		ItemStack acceptButton = new ItemStack(Material.ENDER_EYE, 1);
-		if(ExtensionModule.getInstance().isInstalled(ExtensionModule.Name.HEADDATABASE) && ExtensionModule.getInstance().isRegistered(ExtensionModule.Function.HEADDATABASE)) {
-			final LTHeadDatabase headDB = (LTHeadDatabase) ExtensionModule.getInstance().get(ExtensionModule.Function.HEADDATABASE);
+		if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.HEADDATABASE)) {
+			final LTHeadDatabase headDB = (LTHeadDatabase) ExtensionModule.getInstance().get(ExtensionModule.EXT.HEADDATABASE);
 			costButton = headDB.getHead(LTHeadDatabase.Type.MAILBOX_BUTTON_COST);
 			labelButton = headDB.getHead(LTHeadDatabase.Type.MAILBOX_BUTTON_LABEL);
 			denyButton = headDB.getHead(LTHeadDatabase.Type.MAILBOX_BUTTON_DENY);
 			acceptButton = headDB.getHead(LTHeadDatabase.Type.MAILBOX_BUTTON_ACCEPT);
+		} else if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.SKULLS)) {
+			final LTSkulls skulls = (LTSkulls) ExtensionModule.getInstance().get(ExtensionModule.EXT.SKULLS);
+			costButton = skulls.getHead(LTSkulls.Type.MAILBOX_BUTTON_COST);
+			labelButton = skulls.getHead(LTSkulls.Type.MAILBOX_BUTTON_LABEL);
+			denyButton = skulls.getHead(LTSkulls.Type.MAILBOX_BUTTON_DENY);
+			acceptButton = skulls.getHead(LTSkulls.Type.MAILBOX_BUTTON_ACCEPT);
 		}
 		gui.setItemMeta(prepareItem(gui.getItemMeta(), ModelsModule.get(ModelsModule.Type.MAILBOX_GUI_NORMAL), null, null));
 		limiter.setItemMeta(prepareItem(limiter.getItemMeta(), ModelsModule.get(ModelsModule.Type.MAILBOX_LIMITER), null, null));

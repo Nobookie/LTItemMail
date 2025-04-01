@@ -49,19 +49,38 @@ public final class BukkitUtil {
 		}
 	}
 	public static final class DataContainer {
-		public static final ItemMeta setMailbox(final ItemMeta meta) {
-			meta.getPersistentDataContainer().set(new NamespacedKey(LTItemMail.getInstance(), Item.Type.MAILBOX_ITEM.toString()), PersistentDataType.STRING, Item.Type.MAILBOX_ITEM.toString());
-			return meta;
+		public static final class Mailbox {
+			public static final ItemMeta setMailbox(final ItemMeta meta) {
+				meta.getPersistentDataContainer().set(new NamespacedKey(LTItemMail.getInstance(), Item.Type.MAILBOX_ITEM.toString()), PersistentDataType.STRING, Item.Type.MAILBOX_ITEM.toString());
+				return meta;
+			}
+			public static final ItemStack setMailbox(final ItemStack item) {
+				item.setItemMeta(setMailbox(item.getItemMeta()));
+				return item;
+			}
+			public static final boolean isMailbox(final ItemMeta meta) {
+				return meta.getPersistentDataContainer().has(new NamespacedKey(LTItemMail.getInstance(), Item.Type.MAILBOX_ITEM.toString()), PersistentDataType.STRING);
+			}
+			public static final boolean isMailbox(final ItemStack item) {
+				return isMailbox(item.getItemMeta());
+			}
 		}
-		public static final ItemStack setMailbox(final ItemStack item) {
-			item.setItemMeta(setMailbox(item.getItemMeta()));
-			return item;
-		}
-		public static final boolean isMailbox(final ItemMeta meta) {
-			return meta.getPersistentDataContainer().has(new NamespacedKey(LTItemMail.getInstance(), Item.Type.MAILBOX_ITEM.toString()), PersistentDataType.STRING);
-		}
-		public static final boolean isMailbox(final ItemStack item) {
-			return isMailbox(item.getItemMeta());
+		public static final class Skulls {
+			public static final ItemMeta setID(final ItemMeta meta, final Integer id) {
+				meta.getPersistentDataContainer().set(new NamespacedKey(LTItemMail.getInstance(), "SKULL_ID"), PersistentDataType.INTEGER, id);
+				return meta;
+			}
+			public static final ItemStack setID(final ItemStack item, final Integer id) {
+				item.setItemMeta(setID(item.getItemMeta(), id));
+				return item;
+			}
+			public static final Integer getID(final ItemMeta meta) {
+				if(meta.getPersistentDataContainer().has(new NamespacedKey(LTItemMail.getInstance(), "SKULL_ID"), PersistentDataType.INTEGER)) return meta.getPersistentDataContainer().get(new NamespacedKey(LTItemMail.getInstance(), "SKULL_ID"), PersistentDataType.INTEGER);
+				return -1;
+			}
+			public static final Integer getID(final ItemStack item) {
+				return getID(item.getItemMeta());
+			}
 		}
 	}
 	public static final class AutoRun {

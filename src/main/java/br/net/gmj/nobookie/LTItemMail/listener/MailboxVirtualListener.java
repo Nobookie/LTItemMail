@@ -37,6 +37,7 @@ import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTHeadDatabase;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTSkulls;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 
 public final class MailboxVirtualListener implements Listener {
@@ -174,10 +175,14 @@ public final class MailboxVirtualListener implements Listener {
 			final Inventory inventory = event.getClickedInventory();
 			final ItemStack[] contents = inventory.getContents();
 			LTHeadDatabase headDB = null;
-			if(ExtensionModule.getInstance().isInstalled(ExtensionModule.Name.HEADDATABASE) && ExtensionModule.getInstance().isRegistered(ExtensionModule.Function.HEADDATABASE)) headDB = (LTHeadDatabase) ExtensionModule.getInstance().get(ExtensionModule.Function.HEADDATABASE);
+			LTSkulls skulls = null;
+			if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.HEADDATABASE)) headDB = (LTHeadDatabase) ExtensionModule.getInstance().get(ExtensionModule.EXT.HEADDATABASE);
+			if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.SKULLS)) skulls = (LTSkulls) ExtensionModule.getInstance().get(ExtensionModule.EXT.SKULLS);
 			Boolean primeCost = false;
 			if(headDB != null) {
 				if(selected.getItemMeta() instanceof SkullMeta) if(headDB.getId(selected).equals(LTHeadDatabase.Type.MAILBOX_BUTTON_COST.id())) primeCost = true;
+			} if(skulls != null) {
+				if(selected.getItemMeta() instanceof SkullMeta) if(skulls.getId(selected).equals(LTSkulls.Type.MAILBOX_BUTTON_COST.id())) primeCost = true;
 			} else if(selected.getType().equals(Material.EMERALD)) primeCost = true;
 			if(primeCost) {
 				final boolean isEmpty = BukkitUtil.Inventory.isEmpty(contents);
@@ -206,6 +211,11 @@ public final class MailboxVirtualListener implements Listener {
 					if(selected.getItemMeta() instanceof SkullMeta) {
 						if(headDB.getId(selected).equals(LTHeadDatabase.Type.MAILBOX_BUTTON_DENY.id())) primeDeny = true;
 						if(headDB.getId(selected).equals(LTHeadDatabase.Type.MAILBOX_BUTTON_ACCEPT.id())) primeAccept = true;
+					}
+				} else if(skulls != null) {
+					if(selected.getItemMeta() instanceof SkullMeta) {
+						if(skulls.getId(selected).equals(LTSkulls.Type.MAILBOX_BUTTON_DENY.id())) primeDeny = true;
+						if(skulls.getId(selected).equals(LTSkulls.Type.MAILBOX_BUTTON_ACCEPT.id())) primeAccept = true;
 					}
 				} else {
 					if(selected.getType().equals(Material.BARRIER)) primeDeny = true;

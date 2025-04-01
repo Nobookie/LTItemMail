@@ -67,10 +67,11 @@
 				<configuration>
 					<failOnError>false</failOnError>
 					<doctitle>LT Item Mail API ${project.version} #${v}</doctitle>
-					<windowtitle>LT Item Mail API ${project.version}</windowtitle>
+					<windowtitle>LT Item Mail API</windowtitle>
 					<links>
 						<link>https://hub.spigotmc.org/javadocs/spigot/</link>
 						<link>https://javadoc.io/doc/org.jetbrains/annotations/latest/</link>
+						<link>https://javadoc.io/doc/net.md-5/bungeecord-api/latest/</link>
 					</links>
 					<sourcepath>${project.basedir}/src/main/java</sourcepath>
 					<excludePackageNames>br.net.gmj.nobookie.LTItemMail.command:br.net.gmj.nobookie.LTItemMail.command.*:br.net.gmj.nobookie.LTItemMail.inventory:br.net.gmj.nobookie.LTItemMail.inventory.*:br.net.gmj.nobookie.LTItemMail.item:br.net.gmj.nobookie.LTItemMail.item.*:br.net.gmj.nobookie.LTItemMail.listener:br.net.gmj.nobookie.LTItemMail.listener.*:br.net.gmj.nobookie.LTItemMail.module:br.net.gmj.nobookie.LTItemMail.module.*:br.net.gmj.nobookie.LTItemMail.task:br.net.gmj.nobookie.LTItemMail.task.*:br.net.gmj.nobookie.LTItemMail.util:br.net.gmj.nobookie.LTItemMail.util.*:br.net.gmj.nobookie.LTItemMail.block.task:br.net.gmj.nobookie.LTItemMail.block.listener</excludePackageNames>
@@ -101,6 +102,7 @@
 							<file>${project.basedir}/target/${project.name}.jar</file>
 							<pomFile>${project.basedir}/pom.xml</pomFile>
 							<javadoc>${project.basedir}/target/${project.name}-javadoc.jar</javadoc>
+							<sources>${project.basedir}/target/${project.name}-sources.jar</sources>
 							<groupId>${project.groupId}</groupId>
 							<artifactId>${project.artifactId}</artifactId>
 							<version>${project.version}</version>
@@ -205,12 +207,6 @@
 			<version>1.14-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		<!--<dependency>
-		    <groupId>org.mockbukkit.mockbukkit</groupId>
-		    <artifactId>mockbukkit-v1.21</artifactId>
-		    <version>4.0.0</version>
-		    <scope>test</scope>
-		</dependency>-->
 		<dependency>
     		<groupId>com.googlecode.json-simple</groupId>
     		<artifactId>json-simple</artifactId>
@@ -390,6 +386,18 @@
 		    <artifactId>httpclient5</artifactId>
 		    <version>5.5-alpha1</version>
 		    <scope>compile</scope>
+		</dependency>
+		<dependency>
+		    <groupId>ca.tweetzy</groupId>
+		    <artifactId>skulls</artifactId>
+		    <version>v3.23.0</version>
+		    <scope>provided</scope>
+		    <exclusions>
+	            <exclusion>
+	                <groupId>*</groupId>
+	                <artifactId>*</artifactId>
+	            </exclusion>
+	        </exclusions>
 		</dependency>
 	</dependencies>
 </project>

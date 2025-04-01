@@ -8,7 +8,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.Function;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
 public class ModelsModule {
@@ -63,7 +62,8 @@ public class ModelsModule {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 		}
-		if(ExtensionModule.getInstance().isRegistered(Function.HEADDATABASE) && type.isHeadDB()) result = -1;
+		if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.HEADDATABASE) && type.skull()) result = -1;
+		if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.SKULLS) && type.skull()) result = -1;
 		return result;
 	}
 	public static final void addMissing() {
@@ -83,11 +83,11 @@ public class ModelsModule {
 		MAILBOX_GUI_ADMIN("mailbox.gui.admin", 999999005, false);
 		private final String path;
 		private final Integer result;
-		private final Boolean isHeadDB;
-		Type(final String path, final Integer result, final Boolean isHeadDB){
+		private final Boolean skull;
+		Type(final String path, final Integer result, final Boolean skull){
 			this.path = path;
 			this.result = result;
-			this.isHeadDB = isHeadDB;
+			this.skull = skull;
 		}
 		public final String path() {
 			return path;
@@ -95,8 +95,8 @@ public class ModelsModule {
 		public final Integer result() {
 			return result;
 		}
-		public final Boolean isHeadDB() {
-			return isHeadDB;
+		public final Boolean skull() {
+			return skull;
 		}
 	}
 }

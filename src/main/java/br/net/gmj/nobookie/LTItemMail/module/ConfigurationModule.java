@@ -131,6 +131,7 @@ public final class ConfigurationModule {
 		PLUGIN_HOOK_WORLDGUARD("hook.worldguard", false),
 		PLUGIN_HOOK_ULTIMATEADVANCEMENTAPI("hook.ultimateadvancementapi", false),
 		PLUGIN_HOOK_HEADDATABASE("hook.headdatabase", false),
+		PLUGIN_HOOK_SKULLS("hook.skulls", false),
 		MAILBOX_DISPLAY("mail.display", "CHAT"),
 		MAILBOX_TEXTURES("mail.textures", false),
 		MAILBOX_TYPE_COST("mail.cost.per-item", false),

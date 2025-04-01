@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 16
+config-version: 17
 version-number: ${project.version}
 build-number: ${v}
 plugin:
@@ -97,6 +97,10 @@ hook:
   #
   #Você pode substituir botões do corrêio com cabeças customizadas do HeadDatabase.
   headdatabase: false
+  #You can replace mail buttons with custom heads from Skulls.
+  #
+  #Você pode substituir botões do corrêio com cabeças customizadas do Skulls.
+  skulls: false
 mail:
   #When a new mail arrives, how do you want the message to appear? Valid: CHAT, TITLE, TOAST. Default: CHAT
   #
