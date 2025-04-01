@@ -11,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
@@ -22,20 +21,14 @@ import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 
 public final class LTDecentHolograms implements LTExtension {
-	private final Plugin plugin;
 	private final List<Material> items;
-	public LTDecentHolograms(final Plugin plugin) {
-		this.plugin = plugin;
+	public LTDecentHolograms() {
 		items = new ArrayList<>();
 		for(final Material material : Material.values()) {
 			final String name = material.toString();
 			if(!name.startsWith("LEGACY_") && (name.endsWith("_AXE") || name.endsWith("_PICKAXE") || name.endsWith("_SHOVEL") || name.endsWith("_HOE"))) items.add(material);
 		}
 		Collections.shuffle(items);
-	}
-	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
 	}
 	@Override
 	public final void unload() {}

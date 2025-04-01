@@ -7,7 +7,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
@@ -16,17 +15,11 @@ import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 
 public final class LTHeadDatabase implements LTExtension {
-	private final Plugin plugin;
 	private final HeadDatabaseAPI api;
-	public LTHeadDatabase(final Plugin plugin) {
-		this.plugin = plugin;
+	public LTHeadDatabase() {
 		api = new HeadDatabaseAPI();
 		check();
 		load();
-	}
-	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
 	}
 	@Override
 	public final void unload() {}

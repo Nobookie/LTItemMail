@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 
 import br.net.fabiozumbi12.RedProtect.Bukkit.RedProtect;
 import br.net.fabiozumbi12.RedProtect.Bukkit.Region;
@@ -12,15 +11,9 @@ import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTRedProtectListener;
 
 public final class LTRedProtect implements LTExtension {
-	private final Plugin plugin;
 	private final Listener listener;
-	public LTRedProtect(final Plugin plugin) {
-		this.plugin = plugin;
+	public LTRedProtect() {
 		listener = new LTRedProtectListener();
-	}
-	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
 	}
 	@Override
 	public final void unload() {

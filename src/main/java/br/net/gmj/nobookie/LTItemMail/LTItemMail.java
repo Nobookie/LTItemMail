@@ -30,7 +30,6 @@ import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.ModelsModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.RegistrationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ext.LTExtension;
 import br.net.gmj.nobookie.LTItemMail.task.UpdateTask;
 import br.net.gmj.nobookie.LTItemMail.task.VersionControlTask;
 import br.net.gmj.nobookie.LTItemMail.util.BStats;
@@ -89,10 +88,9 @@ public final class LTItemMail extends JavaPlugin {
 			loadModels();
 			loadDatabase();
 			ExtensionModule.getInstance().load();
-			for(final ExtensionModule.Function function : ExtensionModule.getInstance().reg().keySet()) {
-				final LTExtension extension = (LTExtension) ExtensionModule.getInstance().reg().get(function);
+			for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) {
 				metrics.addCustomChart(new BStats.SimplePie("extensions", () -> {
-			        return extension.getBasePlugin().getDescription().getName();
+			        return plugin.plugin().getDescription().getName();
 			    }));
 			}
 			PermissionModule.load();

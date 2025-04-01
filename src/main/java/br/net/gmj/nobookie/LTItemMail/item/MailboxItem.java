@@ -54,7 +54,7 @@ public final class MailboxItem implements Item {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(getName());
 		meta.setLore(getDescription(data));
-		meta = BukkitUtil.DataContainer.setMailbox(meta);
+		meta = BukkitUtil.DataContainer.Mailbox.setMailbox(meta);
 		item.setItemMeta(meta);
 		return item;
 	}

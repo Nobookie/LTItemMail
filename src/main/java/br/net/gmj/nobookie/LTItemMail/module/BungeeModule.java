@@ -33,7 +33,7 @@ public final class BungeeModule implements PluginMessageListener {
 			}
 		}, 10, 20);
 	}
-	private final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.Function.ULTIMATEADVANCEMENTAPI);
+	private final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
 	@Override
 	public final void onPluginMessageReceived(final String channel, final Player player, final byte[] message) {
 		if(!channel.equals("BungeeCord")) return;

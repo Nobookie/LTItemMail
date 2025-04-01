@@ -7,7 +7,6 @@ import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
@@ -20,24 +19,18 @@ import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
 
 public final class LTUltimateAdvancementAPI implements LTExtension {
-	private final Plugin plugin;
 	private final UltimateAdvancementAPI api;
 	private final List<Material> shulkers = new ArrayList<>();
 	private AdvancementTab tab = null;
 	private AdvancementDisplay display = null;
 	private RootAdvancement root = null;
-	public LTUltimateAdvancementAPI(final Plugin plugin) {
-		this.plugin = plugin;
+	public LTUltimateAdvancementAPI() {
 		api = UltimateAdvancementAPI.getInstance(LTItemMail.getInstance());
 		for(final Material shulker : Material.values()) {
 			final String name = shulker.toString();
 			if(!name.startsWith("LEGACY_") && name.endsWith("_SHULKER_BOX")) shulkers.add(shulker);
 		}
 		Collections.shuffle(shulkers);
-	}
-	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
 	}
 	@Override
 	public final void unload() {}

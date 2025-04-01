@@ -2,7 +2,6 @@ package br.net.gmj.nobookie.LTItemMail.module.ext;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -14,14 +13,6 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 
 public final class LTWorldGuard implements LTExtension {
-	private final Plugin plugin;
-	public LTWorldGuard(final Plugin plugin) {
-		this.plugin = plugin;
-	}
-	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
-	}
 	@Override
 	public final void unload() {}
 	public final boolean canBuild(final Player player, final Location location) {

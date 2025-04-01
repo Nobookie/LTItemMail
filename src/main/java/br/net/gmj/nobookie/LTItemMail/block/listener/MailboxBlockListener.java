@@ -52,9 +52,9 @@ import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 
 public final class MailboxBlockListener implements Listener {
 	private final Item mailbox = new MailboxItem();
-	private final LTDynmap dynmap = (LTDynmap) ExtensionModule.getInstance().get(ExtensionModule.Function.DYNMAP);
-	private final LTBlueMap blueMap = (LTBlueMap) ExtensionModule.getInstance().get(ExtensionModule.Function.BLUEMAP);
-	private final LTDecentHolograms decentHolograms = (LTDecentHolograms) ExtensionModule.getInstance().get(ExtensionModule.Function.DECENTHOLOGRAMS);
+	private final LTDynmap dynmap = (LTDynmap) ExtensionModule.getInstance().get(ExtensionModule.EXT.DYNMAP);
+	private final LTBlueMap blueMap = (LTBlueMap) ExtensionModule.getInstance().get(ExtensionModule.EXT.BLUEMAP);
+	private final LTDecentHolograms decentHolograms = (LTDecentHolograms) ExtensionModule.getInstance().get(ExtensionModule.EXT.DECENTHOLOGRAMS);
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onClick(final PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
@@ -81,7 +81,7 @@ public final class MailboxBlockListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onPlace(final BlockPlaceEvent event) {
 		final ItemStack item = event.getItemInHand();
-		if(item != null && item.getItemMeta() != null && item.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.isMailbox(item)) {
+		if(item != null && item.getItemMeta() != null && item.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.Mailbox.isMailbox(item)) {
 			final Player player = event.getPlayer();
 			final Block block = event.getBlockPlaced();
 			if(canBuildBreak(player, block.getLocation()) && canBuild(player, block.getLocation())) {
@@ -255,10 +255,10 @@ public final class MailboxBlockListener implements Listener {
 		}
 		event.setCancelled(cancel);
 	}
-	private final LTGriefPrevention griefPrevention = (LTGriefPrevention) ExtensionModule.getInstance().get(ExtensionModule.Function.GRIEFPREVENTION);
-	private final LTRedProtect redProtect = (LTRedProtect) ExtensionModule.getInstance().get(ExtensionModule.Function.REDPROTECT);
-	private final LTTownyAdvanced townyAdvanced = (LTTownyAdvanced) ExtensionModule.getInstance().get(ExtensionModule.Function.TOWNYADVANCED);
-	private final LTWorldGuard worldGuard = (LTWorldGuard) ExtensionModule.getInstance().get(ExtensionModule.Function.WORLDGUARD);
+	private final LTGriefPrevention griefPrevention = (LTGriefPrevention) ExtensionModule.getInstance().get(ExtensionModule.EXT.GRIEFPREVENTION);
+	private final LTRedProtect redProtect = (LTRedProtect) ExtensionModule.getInstance().get(ExtensionModule.EXT.REDPROTECT);
+	private final LTTownyAdvanced townyAdvanced = (LTTownyAdvanced) ExtensionModule.getInstance().get(ExtensionModule.EXT.TOWNYADVANCED);
+	private final LTWorldGuard worldGuard = (LTWorldGuard) ExtensionModule.getInstance().get(ExtensionModule.EXT.WORLDGUARD);
 	private final boolean canBuildBreak(final Player player, final Location location) {
 		Boolean canBuildBreak = true;
 		if(canBuildBreak && griefPrevention != null) canBuildBreak = griefPrevention.canBuildBreak(player, location);

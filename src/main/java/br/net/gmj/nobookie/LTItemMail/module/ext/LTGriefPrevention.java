@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTGriefPreventionListener;
@@ -13,15 +12,9 @@ import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 
 public final class LTGriefPrevention implements LTExtension {
-	private final Plugin plugin;
 	private final Listener listener;
-	public LTGriefPrevention(final Plugin plugin) {
-		this.plugin = plugin;
+	public LTGriefPrevention() {
 		listener = new LTGriefPreventionListener();
-	}
-	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
 	}
 	@Override
 	public final void unload() {

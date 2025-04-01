@@ -225,7 +225,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 					if(args.length == 2) {
 						final String color = args[1].toLowerCase();
 						final ItemStack current = player.getInventory().getItemInMainHand();
-						if(colors.contains(color) && current != null && current.getItemMeta() != null && current.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.isMailbox(current)) {
+						if(colors.contains(color) && current != null && current.getItemMeta() != null && current.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.Mailbox.isMailbox(current)) {
 							final ItemStack newMailbox = new ItemStack(Material.getMaterial(color.toUpperCase() + "_SHULKER_BOX"));
 							newMailbox.setAmount(current.getAmount());
 							newMailbox.setItemMeta(current.getItemMeta());
