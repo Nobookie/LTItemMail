@@ -1,6 +1,7 @@
 package br.net.gmj.nobookie.LTItemMail.module;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,9 @@ public final class ConsoleModule {
 		return Bukkit.getConsoleSender();
 	}
 	public static final void hello() {
-		String buildDate = FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), null);
+		final Map<String, Object> params = new HashMap<>();
+		params.put("format", "dd/MM/yyyy HH:mm:ss z");
+		String buildDate = FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params);
 		if(buildDate == null) buildDate = ChatColor.DARK_RED + "Server down!";
 		sender().sendMessage(ChatColor.DARK_AQUA + " _   _______ _____ __  __ ");
 		sender().sendMessage(ChatColor.DARK_AQUA + "| | |__   __|_   _|  \\/  |");

@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -47,17 +49,26 @@ import javadl.utils.SizeUtil;
 public final class FetchUtil {
 	private FetchUtil() {}
 	public static final class URL {
-		public static final CloseableHttpResponse request(final ClassicHttpRequest request, final Map<String, Object> params) {
+		@SuppressWarnings("deprecation")
+		public static final CloseableHttpResponse request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
 			try {
 				final CloseableHttpClient client = HttpClients.createDefault();
-				final List<NameValuePair> parameters = new ArrayList<>();
-				if(params != null) for(final String key : params.keySet()) parameters.add(new BasicNameValuePair(key, params.get(key).toString()));
-				request.setEntity(new UrlEncodedFormEntity(parameters));
-				@SuppressWarnings("deprecation")
-				final CloseableHttpResponse response = client.execute(request);
-				client.close();
-				return response;
-			} catch (final IOException e) {
+				if(params != null) {
+					final List<NameValuePair> parameters = new ArrayList<>();
+					for(final String key : params.keySet()) parameters.add(new BasicNameValuePair(key, params.get(key).toString()));
+					switch(method) {
+						case "GET":
+							final URIBuilder builder = new URIBuilder(request.getUri());
+							builder.addParameters(parameters);
+							request.setUri(builder.build());
+							break;
+						case "POST":
+							request.setEntity(new UrlEncodedFormEntity(parameters));
+							break;
+					}
+				}
+				return client.execute(request);
+			} catch (final IOException | URISyntaxException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			return null;
@@ -82,26 +93,14 @@ public final class FetchUtil {
 			return value;
 		}
 		public static final String get(final String url, final Map<String, Object> params) {
-			String value = null;
-			try {
-				final CloseableHttpResponse response = request(new HttpGet(url), params);
-				if(response.getEntity() != null) value = builder(response.getEntity());
-				response.close();
-			} catch (final IOException e) {
-				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-			}
-			return value;
+			final CloseableHttpResponse response = request("GET", new HttpGet(url), params);
+			if(response.getEntity() != null) return builder(response.getEntity());
+			return null;
 		}
 		public static final String post(final String url, final Map<String, Object> params) {
-			String value = null;
-			try {
-				final CloseableHttpResponse response = request(new HttpPost(url), params);
-				if(response.getEntity() != null) value = builder(response.getEntity());
-				response.close();
-			} catch (final IOException e) {
-				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-			}
-			return value;
+			final CloseableHttpResponse response = request("POST", new HttpPost(url), params);
+			if(response.getEntity() != null) return builder(response.getEntity());
+			return null;
 		}
 	}
 	public static final class FileManager {
@@ -117,27 +116,27 @@ public final class FetchUtil {
 				public final void onDownloadStart(final Download download) {
 					super.onDownloadStart(download);
 					if(!silent) {
-						ConsoleModule.info(LanguageModule.I.g(LanguageModule.I.i.R_S) + " [" + name + "]!");
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_S) + " [" + name + "]!");
+						ConsoleModule.warning("▶ " + LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
+					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
 				}
 				@Override
 				public final void onDownloadSpeedProgress(final Download download, final int downloadedSize, final int maxSize, final int downloadPercent, final int bytesPerSec) {
 					if(!silent) {
-						ConsoleModule.info(LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
+						ConsoleModule.info("⏳ " + LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
 					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
 				}
 				@Override
 				public final void onDownloadFinish(final Download download) {
 					super.onDownloadFinish(download);
 					if(!silent) {
-						ConsoleModule.info(LanguageModule.I.g(LanguageModule.I.i.R_C) + " [" + name + "]!");
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_C) + " [" + name + "]!");
+						ConsoleModule.info("✔️ " + LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
+					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
 				}
 				@Override
 				public final void onDownloadError(final Download download, final Exception e) {
 					super.onDownloadError(download, e);
 					if(!silent) {
-						ConsoleModule.warning(LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
+						ConsoleModule.severe("❌ " + LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
 					} else {
 						ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
 						if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
