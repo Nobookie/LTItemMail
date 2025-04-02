@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,8 +86,6 @@ public final class FetchUtil {
 					builder.append(string);
 					builder.append(System.lineSeparator());
 				}
-				reader.close();
-				input.close();
 				value = builder.toString();
 			} catch(final IOException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -108,42 +108,45 @@ public final class FetchUtil {
 			download(url, LTItemMail.getInstance().getDataFolder(), name, silent);
 		}
 		public static final void download(final String url, final File path, final String name, final Boolean silent) {
-			final File current = new File(path, name);
-			if(current.exists() && current.isFile()) current.delete();
-			final Downloader downloader = new Downloader();
-			downloader.setDownloadHandler(new CompleteDownloadHandler(downloader) {
-				@Override
-				public final void onDownloadStart(final Download download) {
-					super.onDownloadStart(download);
-					if(!silent) {
-						ConsoleModule.warning("▶ " + LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
+				try {
+					if(!path.exists()) Files.createDirectories(Paths.get(path.getAbsolutePath()));
+					final File current = new File(path, name);
+					if(current.exists() && current.isFile()) current.delete();
+					final Downloader downloader = new Downloader();
+					downloader.setDownloadHandler(new CompleteDownloadHandler(downloader) {
+						@Override
+						public final void onDownloadStart(final Download download) {
+							super.onDownloadStart(download);
+							if(!silent) {
+								ConsoleModule.warning("▶ " + LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
+							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
+						}
+						@Override
+						public final void onDownloadSpeedProgress(final Download download, final int downloadedSize, final int maxSize, final int downloadPercent, final int bytesPerSec) {
+							if(!silent) {
+								ConsoleModule.info("⏳ " + LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
+							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
+						}
+						@Override
+						public final void onDownloadFinish(final Download download) {
+							super.onDownloadFinish(download);
+							if(!silent) {
+								ConsoleModule.info("✔️ " + LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
+							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
+						}
+						@Override
+						public final void onDownloadError(final Download download, final Exception e) {
+							super.onDownloadError(download, e);
+							if(!silent) {
+								ConsoleModule.severe("❌ " + LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
+							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
+							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+						}
+					});
+					downloader.downloadFileToLocation(url, current.getAbsolutePath());
+				} catch (final IOException e) {
+					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 				}
-				@Override
-				public final void onDownloadSpeedProgress(final Download download, final int downloadedSize, final int maxSize, final int downloadPercent, final int bytesPerSec) {
-					if(!silent) {
-						ConsoleModule.info("⏳ " + LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
-				}
-				@Override
-				public final void onDownloadFinish(final Download download) {
-					super.onDownloadFinish(download);
-					if(!silent) {
-						ConsoleModule.info("✔️ " + LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
-				}
-				@Override
-				public final void onDownloadError(final Download download, final Exception e) {
-					super.onDownloadError(download, e);
-					if(!silent) {
-						ConsoleModule.severe("❌ " + LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
-					} else {
-						ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
-						if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-					}
-				}
-			});
-			downloader.downloadFileToLocation(url, current.getAbsolutePath());
 		}
 		public static final File get(final String name) {
 			final File file = new File(LTItemMail.getInstance().getDataFolder(), name);
