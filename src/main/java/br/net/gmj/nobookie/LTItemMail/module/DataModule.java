@@ -2,7 +2,8 @@ package br.net.gmj.nobookie.LTItemMail.module;
 
 public final class DataModule {
 	private DataModule() {}
-	private static final String DATE = "https://jenkins.gmj.net.br/job/LTItemMail/$build/buildTimestamp?format=dd/MM/yyyy%20HH:mm:ss%20z";
+	private static final String DATE = "https://jenkins.gmj.net.br/job/LTItemMail/$build/buildTimestamp";
+	private static final String LOG = "https://jenkins.gmj.net.br/job/LTItemMail/$build/api/json";
 	private static final String UPDATE = "https://jenkins.gmj.net.br/job/LTItemMail/lastSuccessfulBuild/buildNumber";
 	private static final String ARTIFACT = "https://jenkins.gmj.net.br/job/LTItemMail/lastSuccessfulBuild/artifact/target/LTItemMail.jar";
 	private static final String PLUGIN = "https://request.gmj.net.br/LTItemMail/$version/manifest.yml";
@@ -10,6 +11,9 @@ public final class DataModule {
 	private static final Integer STABLE = 83;
 	public static final String getDateURL(final Integer build) {
 		return DATE.replace("$build", String.valueOf(build));
+	}
+	public static final String getLogURL(final Integer build) {
+		return LOG.replace("$build", String.valueOf(build));
 	}
 	public static final String getUpdateURL() {
 		return UPDATE;

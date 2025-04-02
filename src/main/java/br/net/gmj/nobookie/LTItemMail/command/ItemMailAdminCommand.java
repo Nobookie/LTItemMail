@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -16,6 +17,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
@@ -30,7 +36,9 @@ import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
+import br.net.gmj.nobookie.LTItemMail.util.FetchUtil.URL;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
@@ -60,6 +68,8 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BANLIST)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin banlist " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_BANLIST_MAIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_INFO)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin info <player> " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_INFO_MAIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin blocks <player> " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_BLOCKS));
+				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin dump " + ChatColor.AQUA + "- " );
+				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin changelog " + ChatColor.AQUA + "- " );
 			}
 		} else if(args[0].equalsIgnoreCase("update")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UPDATE)) {
@@ -71,9 +81,9 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 						@Override
 						public final void run() {
 							final Integer localBuild = (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER);
-							final String http = FetchUtil.URL.get(DataModule.getUpdateURL(), null).replaceAll(System.lineSeparator(), "");
-							if(http != null) {
-								final Integer remoteBuild = Integer.parseInt(http);
+							final String response = FetchUtil.URL.get(DataModule.getUpdateURL(), null).replaceAll(System.lineSeparator(), "");
+							if(response != null) {
+								final Integer remoteBuild = Integer.parseInt(response);
 								if(remoteBuild > localBuild) {
 									final Integer outOfDate = remoteBuild - localBuild;
 									sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_FOUND)).replaceAll("%build%", "" + ChatColor.RED + outOfDate + ChatColor.YELLOW) + ChatColor.GREEN + " https://jenkins.gmj.net.br/job/LTItemMail/" + remoteBuild + "/");
@@ -237,6 +247,36 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 					for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + plugin.plugin().getDescription().getName() + " version " + ChatColor.GREEN + plugin.plugin().getDescription().getVersion());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
+		} else if(args[0].equalsIgnoreCase("changelog")) {
+			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) {
+				if(args.length == 1) {
+					new BukkitRunnable() {
+						@Override
+						public final void run() {
+							sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "Changelog:");
+							final Map<String, Object> params = new HashMap<>();
+							params.put("pretty", true);
+							params.put("tree", "changeSet[items[comment,commitId]]");
+							final String result = URL.get(DataModule.getLogURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params).replaceAll(System.lineSeparator(), "");
+							if(result != null) {
+								try {
+									final List<JsonElement> rawCommits = JsonParser.parseString(result).getAsJsonObject().get("changeSet").getAsJsonObject().get("items").getAsJsonArray().asList();
+									if(rawCommits.size() > 0) {
+										for(final JsonElement commits : rawCommits) {
+											final JsonObject commit = commits.getAsJsonObject();
+											sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString().replace("\\u000a", ""));
+											sender.sendMessage(ChatColor.DARK_GREEN + "    Details: " + ChatColor.GREEN + "https://github.com/leothawne/LTItemMail/commit/" + commit.get("commitId").getAsString());
+										}
+									} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "No changelog found!");
+								} catch(final JsonSyntaxException e) {
+									ConsoleModule.debug(getClass(), "Unable to retrieve changelog. Is the update server down?");
+									if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+								}
+							} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.DARK_RED + "Update server is down! Please, try again later.");
+						}
+					}.runTask(LTItemMail.getInstance());
+				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
+			}
 		} else if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_INVALID)).replaceAll("%command%", ChatColor.GREEN + "/itemmailadmin" + ChatColor.YELLOW));
 		if(!hasPermission) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_PERMISSIONERROR));
 		return true;
@@ -256,6 +296,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BANLIST)) commands.add("banlist");
 			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS)) commands.add("blocks");
 			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) commands.add("dump");
+			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) commands.add("changelog");
 			return TabUtil.partial(args[0], commands);
 		}
 		if(args.length == 2) if((PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_LIST) && args[0].equals("list")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BAN) && args[0].equals("ban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UNBAN) && args[0].equals("unban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_INFO) && args[0].equals("info")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS) && args[0].equals("blocks"))) {
