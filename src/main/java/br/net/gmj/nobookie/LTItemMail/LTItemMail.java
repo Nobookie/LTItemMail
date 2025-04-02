@@ -69,7 +69,7 @@ public final class LTItemMail extends JavaPlugin {
 		loadConfig();
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_ENABLE)) {
 			if(isDevBuild()) {
-				ConsoleModule.warning("You are running a development build! Be aware that bugs may occur.");
+				ConsoleModule.warning("⚠️ You are running a development build! Be aware that bugs may occur.");
 				final File dev = new File(getDataFolder(), ".dev");
 				ConfigurationModule.devMode = (dev.exists() && dev.isFile());
 			}
@@ -104,12 +104,12 @@ public final class LTItemMail extends JavaPlugin {
 			final Long done = Calendar.getInstance().getTimeInMillis() - startup;
 			String took = done + "ms";
 			if(done >= 1000.0) took = (done / 1000.0) + "s";
-			ConsoleModule.raw(ChatColor.GREEN + "Plugin took " + took + " to load.");
+			ConsoleModule.raw(ChatColor.GREEN + "👍🏼 Plugin took " + took + " to load.");
 		} else {
 			new BukkitRunnable() {
 				@Override
 				public final void run() {
-					ConsoleModule.severe("Plugin disabled in config.yml.");
+					ConsoleModule.severe("😢 Plugin disabled in config.yml.");
 					Bukkit.getPluginManager().disablePlugin(instance);
 				}
 			}.runTaskTimer(this, 10, 10);
