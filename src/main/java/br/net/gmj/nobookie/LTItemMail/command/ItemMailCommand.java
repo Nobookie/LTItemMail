@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -78,7 +79,9 @@ public final class ItemMailCommand extends LTCommandExecutor {
 							sender.sendMessage(ChatColor.YELLOW + "LT Item Mail");
 							sender.sendMessage(ChatColor.YELLOW + "Version: " + ChatColor.DARK_GREEN + ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER));
 							sender.sendMessage(ChatColor.YELLOW + "Build number: " + ChatColor.DARK_GREEN + ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
-							sender.sendMessage(ChatColor.YELLOW + "Build date: " + ChatColor.DARK_GREEN + FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), null).replaceAll(System.lineSeparator(), ""));
+							final Map<String, Object> params = new HashMap<>();
+							params.put("format", "dd/MM/yyyy HH:mm:ss z");
+							sender.sendMessage(ChatColor.YELLOW + "Build date: " + ChatColor.DARK_GREEN + FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params).replaceAll(System.lineSeparator(), ""));
 							String authors = "";
 							if(LTItemMail.getInstance().getDescription().getAuthors().size() > 1) {
 								String separator = ", ";

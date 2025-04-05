@@ -25,7 +25,6 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
@@ -52,7 +51,7 @@ public final class FetchUtil {
 	private FetchUtil() {}
 	public static final class URL {
 		@SuppressWarnings("deprecation")
-		public static final CloseableHttpResponse request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
+		public static final Store request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
 			try {
 				final CloseableHttpClient client = HttpClients.createDefault();
 				if(params != null) {
@@ -69,16 +68,16 @@ public final class FetchUtil {
 							break;
 					}
 				}
-				return client.execute(request);
+				return new Store(client, client.execute(request));
 			} catch (final IOException | URISyntaxException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			return null;
 		}
-		private static final String builder(final HttpEntity entity) {
+		private static final String builder(final Store store) {
 			String value = null;
-			try {
-				final InputStreamReader input = new InputStreamReader(entity.getContent(), Charset.forName("UTF-8"));
+			if(store.getResponse().getEntity() != null) try {
+				final InputStreamReader input = new InputStreamReader(store.getResponse().getEntity().getContent(), Charset.forName("UTF-8"));
 				final BufferedReader reader = new BufferedReader(input);
 				final StringBuilder builder = new StringBuilder();
 				String string;
@@ -87,20 +86,38 @@ public final class FetchUtil {
 					builder.append(System.lineSeparator());
 				}
 				value = builder.toString();
+				reader.close();
+				input.close();
+				store.getResponse().close();
+				store.getClient().close();
 			} catch(final IOException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			return value;
 		}
 		public static final String get(final String url, final Map<String, Object> params) {
-			final CloseableHttpResponse response = request("GET", new HttpGet(url), params);
-			if(response.getEntity() != null) return builder(response.getEntity());
+			final Store store = request("GET", new HttpGet(url), params);
+			if(store != null) return builder(store);
 			return null;
 		}
 		public static final String post(final String url, final Map<String, Object> params) {
-			final CloseableHttpResponse response = request("POST", new HttpPost(url), params);
-			if(response.getEntity() != null) return builder(response.getEntity());
+			final Store store = request("POST", new HttpPost(url), params);
+			if(store != null) return builder(store);
 			return null;
+		}
+		private static final class Store {
+			private final CloseableHttpClient client;
+			private final CloseableHttpResponse response;
+			private Store(final CloseableHttpClient client, final CloseableHttpResponse response) {
+				this.client = client;
+				this.response = response;
+			}
+			public final CloseableHttpClient getClient() {
+				return client;
+			}
+			public final CloseableHttpResponse getResponse() {
+				return response;
+			}
 		}
 	}
 	public static final class FileManager {
@@ -131,7 +148,7 @@ public final class FetchUtil {
 						public final void onDownloadFinish(final Download download) {
 							super.onDownloadFinish(download);
 							if(!silent) {
-								ConsoleModule.info("✔️ " + LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
+								ConsoleModule.warning("✔️ " + LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
 							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
 						}
 						@Override

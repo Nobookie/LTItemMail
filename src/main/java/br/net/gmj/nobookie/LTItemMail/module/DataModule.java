@@ -11,13 +11,13 @@ public final class DataModule {
 	public static final Integer STABLE = 83;
 	public static final String DISCORD = "https://discord.gg/Nvnrv3P";
 	public static final String getDateURL(final Integer build) {
-		return DATE.replaceAll("$build", String.valueOf(build));
+		return DATE.replace("$build", String.valueOf(build));
 	}
 	public static final String getLogURL(final Integer build) {
-		return LOG.replaceAll("$build", String.valueOf(build));
+		return LOG.replace("$build", String.valueOf(build));
 	}
 	public static final String getManifestURL(final String version) {
-		return PLUGIN.replaceAll("$version", version);
+		return PLUGIN.replace("$version", version);
 	}
 	public enum Version {
 		CONFIG_YML(17),

