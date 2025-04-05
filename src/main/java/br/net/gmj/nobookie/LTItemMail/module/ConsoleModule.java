@@ -1,7 +1,6 @@
 package br.net.gmj.nobookie.LTItemMail.module;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import org.bukkit.command.ConsoleCommandSender;
 
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
-import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
 public final class ConsoleModule {
 	private ConsoleModule() {}
@@ -20,15 +18,15 @@ public final class ConsoleModule {
 		return Bukkit.getConsoleSender();
 	}
 	public static final void hello() {
-		final Map<String, Object> params = new HashMap<>();
+		/*final Map<String, Object> params = new HashMap<>();
 		params.put("format", "dd/MM/yyyy HH:mm:ss z");
 		String buildDate = FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params);
-		if(buildDate == null) buildDate = ChatColor.DARK_RED + "Server down!";
+		if(buildDate == null) buildDate = ChatColor.DARK_RED + "Server down!";*/
 		sender().sendMessage(ChatColor.DARK_AQUA + " _   _______ _____ __  __ ");
 		sender().sendMessage(ChatColor.DARK_AQUA + "| | |__   __|_   _|  \\/  |");
 		sender().sendMessage(ChatColor.DARK_AQUA + "| |    | |    | | | \\  / |" + ChatColor.WHITE + "  Build number: #" + ConfigurationModule.get(Type.BUILD_NUMBER));
-		sender().sendMessage(ChatColor.DARK_AQUA + "| |____| |   _| |_| |\\/| |" + ChatColor.WHITE + "  Build date: " + buildDate.replaceAll(System.lineSeparator(), ""));
-		sender().sendMessage(ChatColor.DARK_AQUA + "|______|_|  |_____|_|  |_|" + ChatColor.WHITE + "  Need support or have questions? https://discord.gg/Nvnrv3P");
+		sender().sendMessage(ChatColor.DARK_AQUA + "| |____| |   _| |_| |\\/| |"/* + ChatColor.WHITE + "  Build date: " + buildDate.replaceAll(System.lineSeparator(), "")*/);
+		sender().sendMessage(ChatColor.DARK_AQUA + "|______|_|  |_____|_|  |_|" + ChatColor.WHITE + "  Need support or have any questions? " + ChatColor.DARK_GREEN + DataModule.DISCORD);
 	}
 	public static final void info(final String message) {
 		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + "LTIM " + ChatColor.WHITE + "I] " + message);

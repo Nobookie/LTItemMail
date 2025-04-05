@@ -91,7 +91,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 							sender.sendMessage(ChatColor.YELLOW + "Website: " + ChatColor.DARK_GREEN + LTItemMail.getInstance().getDescription().getWebsite());
 							if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage(ChatColor.YELLOW + "Version manifest: " + ChatColor.DARK_GREEN + DataModule.getManifestURL(LTItemMail.getInstance().getDescription().getVersion()));
 						}
-					}.runTask(LTItemMail.getInstance());
+					}.runTaskAsynchronously(LTItemMail.getInstance());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
 		} else if(args[0].equalsIgnoreCase("open")) {

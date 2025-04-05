@@ -4,31 +4,20 @@ public final class DataModule {
 	private DataModule() {}
 	private static final String DATE = "https://jenkins.gmj.net.br/job/LTItemMail/$build/buildTimestamp";
 	private static final String LOG = "https://jenkins.gmj.net.br/job/LTItemMail/$build/api/json";
-	private static final String UPDATE = "https://jenkins.gmj.net.br/job/LTItemMail/lastSuccessfulBuild/buildNumber";
-	private static final String ARTIFACT = "https://jenkins.gmj.net.br/job/LTItemMail/lastSuccessfulBuild/artifact/target/LTItemMail.jar";
+	public static final String UPDATE = "https://jenkins.gmj.net.br/job/LTItemMail/lastSuccessfulBuild/buildNumber";
+	public static final String ARTIFACT = "https://jenkins.gmj.net.br/job/LTItemMail/lastSuccessfulBuild/artifact/target/LTItemMail.jar";
 	private static final String PLUGIN = "https://request.gmj.net.br/LTItemMail/$version/manifest.yml";
-	private static final String RESOURCE_ARTIFACT = "https://jenkins.gmj.net.br/job/LTItemMail-ResourcePack/lastSuccessfulBuild/artifact/LTItemMail-ResourcePack.zip";
-	private static final Integer STABLE = 83;
+	public static final String RESOURCE_ARTIFACT = "https://jenkins.gmj.net.br/job/LTItemMail-ResourcePack/lastSuccessfulBuild/artifact/LTItemMail-ResourcePack.zip";
+	public static final Integer STABLE = 83;
+	public static final String DISCORD = "https://discord.gg/Nvnrv3P";
 	public static final String getDateURL(final Integer build) {
-		return DATE.replace("$build", String.valueOf(build));
+		return DATE.replaceAll("$build", String.valueOf(build));
 	}
 	public static final String getLogURL(final Integer build) {
-		return LOG.replace("$build", String.valueOf(build));
-	}
-	public static final String getUpdateURL() {
-		return UPDATE;
+		return LOG.replaceAll("$build", String.valueOf(build));
 	}
 	public static final String getManifestURL(final String version) {
-		return PLUGIN.replace("$version", version);
-	}
-	public static final String getArtifactURL() {
-		return ARTIFACT;
-	}
-	public static final String getResourceArtifactURL() {
-		return RESOURCE_ARTIFACT;
-	}
-	public static final Integer getLatestStable() {
-		return STABLE;
+		return PLUGIN.replaceAll("$version", version);
 	}
 	public enum Version {
 		CONFIG_YML(17),

@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -23,7 +24,7 @@ import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
 public final class BungeeModule implements PluginMessageListener {
 	private static final List<String> players = new ArrayList<>();
 	public BungeeModule() {
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new Runnable() {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) new BukkitRunnable() {
 			@Override
 			public final void run() {
 				final ByteArrayDataOutput bungee = ByteStreams.newDataOutput();
@@ -31,7 +32,7 @@ public final class BungeeModule implements PluginMessageListener {
 				bungee.writeUTF("ALL");
 				Bukkit.getServer().sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", bungee.toByteArray());
 			}
-		}, 10, 20);
+		}.runTaskTimer(LTItemMail.getInstance(), 10, 10);
 	}
 	private final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
 	@Override

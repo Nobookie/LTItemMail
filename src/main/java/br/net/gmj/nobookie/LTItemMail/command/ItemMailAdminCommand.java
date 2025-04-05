@@ -81,20 +81,20 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 						@Override
 						public final void run() {
 							final Integer localBuild = (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER);
-							final String response = FetchUtil.URL.get(DataModule.getUpdateURL(), null).replaceAll(System.lineSeparator(), "");
+							final String response = FetchUtil.URL.get(DataModule.UPDATE, null).replaceAll(System.lineSeparator(), "");
 							if(response != null) {
 								final Integer remoteBuild = Integer.parseInt(response);
 								if(remoteBuild > localBuild) {
 									final Integer outOfDate = remoteBuild - localBuild;
 									sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_FOUND)).replaceAll("%build%", "" + ChatColor.RED + outOfDate + ChatColor.YELLOW) + ChatColor.GREEN + " https://jenkins.gmj.net.br/job/LTItemMail/" + remoteBuild + "/");
 									if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_UPDATE_AUTOMATIC)) {
-										FetchUtil.FileManager.download(DataModule.getArtifactURL(), Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar", false);
+										FetchUtil.FileManager.download(DataModule.ARTIFACT, Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar", false);
 										sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_AUTOMATIC)));
 									}
 								} else if(!s) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_NONEW));
 							} else if(!s) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.DARK_RED + "Update server is down! Please, try again later.");
 						}
-					}.runTask(LTItemMail.getInstance());
+					}.runTaskAsynchronously(LTItemMail.getInstance());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
 		} else if(args[0].equalsIgnoreCase("list")) {
@@ -264,7 +264,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 									if(rawCommits.size() > 0) {
 										for(final JsonElement commits : rawCommits) {
 											final JsonObject commit = commits.getAsJsonObject();
-											sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString().replace("\\u000a", ""));
+											sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString().replaceAll("\\u000a", ""));
 											sender.sendMessage(ChatColor.DARK_GREEN + "    Details: " + ChatColor.GREEN + "https://github.com/leothawne/LTItemMail/commit/" + commit.get("commitId").getAsString());
 										}
 									} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "No changelog found!");
@@ -274,7 +274,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 								}
 							} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.DARK_RED + "Update server is down! Please, try again later.");
 						}
-					}.runTask(LTItemMail.getInstance());
+					}.runTaskAsynchronously(LTItemMail.getInstance());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
 		} else if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_INVALID)).replaceAll("%command%", ChatColor.GREEN + "/itemmailadmin" + ChatColor.YELLOW));

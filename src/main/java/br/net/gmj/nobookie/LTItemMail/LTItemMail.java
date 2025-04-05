@@ -112,7 +112,7 @@ public final class LTItemMail extends JavaPlugin {
 					ConsoleModule.severe("😢 Plugin disabled in config.yml.");
 					Bukkit.getPluginManager().disablePlugin(instance);
 				}
-			}.runTaskTimer(this, 10, 10);
+			}.runTaskTimerAsynchronously(this, 20, 20);
 		}
 	}
 	@Override
@@ -168,12 +168,12 @@ public final class LTItemMail extends JavaPlugin {
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.RESOURCE_PACK_DOWNLOAD)) new BukkitRunnable() {
 			@Override
 			public final void run() {
-				FetchUtil.FileManager.download(DataModule.getResourceArtifactURL(), "LTItemMail-ResourcePack.zip", false);
+				FetchUtil.FileManager.download(DataModule.RESOURCE_ARTIFACT, "LTItemMail-ResourcePack.zip", false);
 			}
-		}.runTask(this);
+		}.runTaskAsynchronously(this);
 	}
 	public final Boolean isDevBuild() {
-		return (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) > DataModule.getLatestStable();
+		return (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) > DataModule.STABLE;
 	}
 	public final ClassLoader getLTClassLoader() {
 		return getClassLoader();

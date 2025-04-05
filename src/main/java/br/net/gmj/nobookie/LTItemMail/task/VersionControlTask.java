@@ -59,8 +59,8 @@ public final class VersionControlTask {
 							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 						} catch(final IllegalArgumentException e) {}
 					}
-				}.runTaskTimer(LTItemMail.getInstance(), 20, 20);
+				}.runTaskTimerAsynchronously(LTItemMail.getInstance(), 20, 20);
 			}
-		}.runTask(LTItemMail.getInstance());
+		}.runTaskAsynchronously(LTItemMail.getInstance());
 	}
 }

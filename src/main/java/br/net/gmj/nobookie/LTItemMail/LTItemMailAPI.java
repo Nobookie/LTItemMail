@@ -19,6 +19,7 @@ import br.net.gmj.nobookie.LTItemMail.block.Block;
 import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.event.ServerSendMailEvent;
+import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
@@ -142,5 +143,35 @@ public final class LTItemMailAPI {
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 		}
 		return Collections.emptyList();
+	}
+	/**
+	 * 
+	 * Gets a list of online
+	 * players on the Bungee
+	 * network.
+	 * 
+	 * @return A list of player names (can be sensitive case) or null if bungee mode is disabled.
+	 * 
+	 */
+	public static final List<String> getBungeeOnlinePlayers(){
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) return BungeeModule.getOnlinePlayers();
+		return null;
+	}
+	/**
+	 * 
+	 * Gets a list of online
+	 * players on the Bungee
+	 * network.
+	 * 
+	 * @return A list of LTPlayer objects representing the players that are online or null if bungee mode is disabled. If you are not sure that all players ever joined (at least once) a server where LTItemMail is installed, it's recommend to use {@link LTItemMailAPI#getBungeeOnlinePlayers()} instead.
+	 * 
+	 */
+	public static final List<LTPlayer> getBungeeOnlineLTPlayers(){
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
+			final List<LTPlayer> players = new ArrayList<>();
+			for(final String name : getBungeeOnlinePlayers()) players.add(LTPlayer.fromName(name));
+			return players;
+		}
+		return null;
 	}
 }

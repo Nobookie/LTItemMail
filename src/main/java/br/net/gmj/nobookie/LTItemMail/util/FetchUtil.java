@@ -244,7 +244,7 @@ public final class FetchUtil {
 						}
 					} catch (final IOException | InvalidConfigurationException e) {}
 				}
-			}.runTaskTimer(LTItemMail.getInstance(), 1, 20 * 60 * 15);
+			}.runTaskTimerAsynchronously(LTItemMail.getInstance(), 1, 20 * 60 * 15);
 		}
 	}
 }
