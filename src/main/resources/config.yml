@@ -1,7 +1,7 @@
 #Do not touch it!
-config-version: 17
+config-version: 18
 version-number: ${project.version}
-build-number: ${v}
+build-number: ${buildNumber}
 plugin:
   #Enable or disable LTItemMail. Default: true
   #
@@ -35,15 +35,15 @@ plugin:
   #Somente para fins de depuração. Padrão: false
   debug: false
 database:
-  #'flatfile' or 'mysql'
+  #'sqlite' or 'mysql'
   #
-  #'flatfile' ou 'mysql'
-  type: 'flatfile'
+  #'sqlite' ou 'mysql'
+  type: 'sqlite'
   #Imports data from the old storage type to the new one.
   #
   #Importa os dados do tipo de armazenamento anterior para o novo.
   convert: false
-  flatfile:
+  sqlite:
     #Do not change it unless you have manually changed the name of the database file.
     #
     #Não mude a menos que tenha mudado manualmente o nome do arquivo banco de dados.

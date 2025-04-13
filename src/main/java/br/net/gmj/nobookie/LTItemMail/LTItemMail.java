@@ -1,7 +1,6 @@
 package br.net.gmj.nobookie.LTItemMail;
 
 import java.io.File;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -15,6 +14,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 import br.net.gmj.nobookie.LTItemMail.listener.MailboxVirtualListener;
 import br.net.gmj.nobookie.LTItemMail.listener.PlayerListener;
@@ -55,7 +56,7 @@ public final class LTItemMail extends JavaPlugin {
 	public FileConfiguration configuration;
 	public FileConfiguration language;
 	public FileConfiguration models;
-	public Connection connection = null;
+	public HikariDataSource data = null;
 	public List<Integer> boardsForPlayers = new ArrayList<>();
 	public Map<String, List<Integer>> boardsPlayers = new HashMap<>();
 	private Long startup;
@@ -112,7 +113,7 @@ public final class LTItemMail extends JavaPlugin {
 					ConsoleModule.severe("😢 Plugin disabled in config.yml.");
 					Bukkit.getPluginManager().disablePlugin(instance);
 				}
-			}.runTaskTimerAsynchronously(this, 20, 20);
+			}.runTask(this);
 		}
 	}
 	@Override
@@ -154,9 +155,11 @@ public final class LTItemMail extends JavaPlugin {
 		}
 	}
 	private final void loadDatabase() {
-		connection = DatabaseModule.connect();
-		DatabaseModule.checkForUpdates();
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_CONVERT)) DatabaseModule.convert();
+		data = DatabaseModule.connect();
+		if(data != null) {
+			DatabaseModule.checkForUpdates();
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_CONVERT)) DatabaseModule.convert();
+		}
 	}
 	private final void registerListeners() {
 		new PlayerListener();
