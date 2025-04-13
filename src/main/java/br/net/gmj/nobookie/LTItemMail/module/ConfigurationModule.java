@@ -34,14 +34,18 @@ public final class ConfigurationModule {
 				configuration.load(file);
 				ConsoleModule.info("Configuration loaded.");
 				if(configuration.getInt("config-version") < DataModule.Version.CONFIG_YML.value()) {
+					if(configuration.getInt("config-version") < 18 && configuration.getString(Type.DATABASE_TYPE.path()).equalsIgnoreCase("flatfile")) {
+						configuration.set(Type.DATABASE_TYPE.path(), "sqlite");
+						configuration.set(Type.DATABASE_SQLITE_FILE.path(), configuration.getString("database.flatfile.file"));
+					}
 					update = true;
 					ConsoleModule.warning("Configuration outdated!");
 					ConsoleModule.warning("New settings will be added.");
 					configuration.set("config-version", DataModule.Version.CONFIG_YML.value());
 				}
-				if(configuration.isSet("version-number")) if(!configuration.getString("version-number").equals(FetchUtil.Version.get())) configuration.set("boards-read", new ArrayList<Integer>());
-				configuration.set("version-number", FetchUtil.Version.get());
-				configuration.set("build-number", FetchUtil.Build.get());
+				if(configuration.isSet(Type.VERSION_NUMBER.path())) if(!configuration.getString(Type.VERSION_NUMBER.path()).equals(FetchUtil.Version.get())) configuration.set("boards-read", new ArrayList<Integer>());
+				configuration.set(Type.VERSION_NUMBER.path(), FetchUtil.Version.get());
+				configuration.set(Type.BUILD_NUMBER.path(), FetchUtil.Build.get());
 				configuration.save(file);
 				return configuration;
 			} catch (final IOException | InvalidConfigurationException e) {
@@ -63,7 +67,7 @@ public final class ConfigurationModule {
 		}
 	}
 	public static final void disableDatabaseConversion() {
-		LTItemMail.getInstance().configuration.set("database.convert", false);
+		LTItemMail.getInstance().configuration.set(Type.DATABASE_CONVERT.path(), false);
 		try {
 			LTItemMail.getInstance().configuration.save(file);
 		} catch (final IOException e) {
@@ -115,7 +119,7 @@ public final class ConfigurationModule {
 		PLUGIN_DEBUG("plugin.debug", false),
 		DATABASE_TYPE("database.type", "flatfile"),
 		DATABASE_CONVERT("database.convert", false),
-		DATABASE_FLATFILE_FILE("database.flatfile.file", "mailboxes.db"),
+		DATABASE_SQLITE_FILE("database.sqlite.file", "mailboxes.db"),
 		DATABASE_MYSQL_HOST("database.mysql.host", "127.0.0.1:3306"),
 		DATABASE_MYSQL_USER("database.mysql.user", "root"),
 		DATABASE_MYSQL_PASSWORD("database.mysql.password", ""),
