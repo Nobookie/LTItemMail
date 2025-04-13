@@ -16,6 +16,6 @@ public class UpdateTask {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ltitemmail:itemmailadmin update -s");
 				if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_UPDATE_PERIODIC_NOTIFICATION)) task.cancel();
 			}
-		}.runTaskTimer(LTItemMail.getInstance(), 10, 20 * 60 * 60 * 24);
+		}.runTaskTimer(LTItemMail.getInstance(), 1, 20 * 60 * 60 * 24);
 	}
 }
