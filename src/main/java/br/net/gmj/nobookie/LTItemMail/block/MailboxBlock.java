@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,7 @@ public final class MailboxBlock implements Block {
 	private final Integer id;
 	private LTPlayer owner;
 	private final String server;
-	private final String world;
+	private final World world;
 	private final Integer x;
 	private final Integer y;
 	private final Integer z;
@@ -43,7 +44,7 @@ public final class MailboxBlock implements Block {
 	 * 
 	 * 
 	 */
-	public MailboxBlock(final Integer id, final LTPlayer owner, final String server, final String world, final Integer x, final Integer y, final Integer z) {
+	public MailboxBlock(final Integer id, final LTPlayer owner, final String server, final World world, final Integer x, final Integer y, final Integer z) {
 		this.id = id;
 		this.owner = owner;
 		this.server = server;
@@ -51,20 +52,6 @@ public final class MailboxBlock implements Block {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-	}
-	/**
-	 * 
-	 * Used internally. Do not mess with it.
-	 * 
-	 */
-	public MailboxBlock() {
-		id = null;
-		owner = null;
-		server = null;
-		world = null;
-		x = null;
-		y = null;
-		z = null;
 	}
 	/**
 	 * 
@@ -100,7 +87,7 @@ public final class MailboxBlock implements Block {
 	 */
 	@Override
 	public final Location getLocation() {
-		return new Location(Bukkit.getWorld(world), x, y, z);
+		return new Location(world, x, y, z);
 	}
 	/**
 	 * 
@@ -128,7 +115,7 @@ public final class MailboxBlock implements Block {
 	 */
 	@Override
 	public final void runTasks() {
-		tasks.add(Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new MailboxBlockTask(), 20, 20));
+		if(LTItemMail.getInstance().data != null) tasks.add(Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new MailboxBlockTask(), 20, 20));
 	}
 	/**
 	 * 
@@ -159,7 +146,7 @@ public final class MailboxBlock implements Block {
 	 */
 	public final Boolean remove(@NotNull final Boolean virtual) {
 		try {
-			Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, virtual));
+			Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, virtual, null));
 			DatabaseModule.Block.breakMailbox(getLocation());
 			if(!virtual) getBukkitBlock().setType(Material.AIR);
 			return true;
@@ -176,7 +163,7 @@ public final class MailboxBlock implements Block {
 	 * 
 	 */
 	public final void replace() {
-		Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, false));
+		Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, false, null));
 		DatabaseModule.Block.breakMailbox(getLocation());
 		Bukkit.getPluginManager().callEvent(new PlaceMailboxBlockEvent(this, PlaceMailboxBlockEvent.Reason.BY_SERVER));
 		DatabaseModule.Block.placeMailbox(owner.getUniqueId(), getLocation());

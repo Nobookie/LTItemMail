@@ -35,6 +35,6 @@ public final class RegistrationModule {
 	}
 	private static final class Active {
 		private static final List<Item> ITEMS = Arrays.asList(new MailboxItem());
-		private static final List<Block> BLOCKS = Arrays.asList(new MailboxBlock());
+		private static final List<Block> BLOCKS = Arrays.asList(new MailboxBlock(null, null, null, null, null, null, null));
 	}
 }
