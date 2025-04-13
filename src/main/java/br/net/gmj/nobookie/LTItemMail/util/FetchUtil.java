@@ -17,16 +17,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.net.URIBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -52,8 +56,9 @@ public final class FetchUtil {
 	public static final class URL {
 		@SuppressWarnings("deprecation")
 		public static final Store request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
+			CloseableHttpClient client = null;
 			try {
-				final CloseableHttpClient client = HttpClients.createDefault();
+				client = HttpClientBuilder.create().setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create().setDefaultConnectionConfig(ConnectionConfig.custom().setConnectTimeout(10, TimeUnit.SECONDS).setSocketTimeout(10, TimeUnit.SECONDS).setTimeToLive(Integer.MAX_VALUE, TimeUnit.SECONDS).build()).build()).build();
 				if(params != null) {
 					final List<NameValuePair> parameters = new ArrayList<>();
 					for(final String key : params.keySet()) parameters.add(new BasicNameValuePair(key, params.get(key).toString()));
@@ -70,6 +75,7 @@ public final class FetchUtil {
 				}
 				return new Store(client, client.execute(request));
 			} catch (final IOException | URISyntaxException e) {
+				client.close(CloseMode.IMMEDIATE);
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			return null;
@@ -88,8 +94,8 @@ public final class FetchUtil {
 				value = builder.toString();
 				reader.close();
 				input.close();
-				store.getResponse().close();
-				store.getClient().close();
+				store.getResponse().close(CloseMode.GRACEFUL);
+				store.getClient().close(CloseMode.GRACEFUL);
 			} catch(final IOException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
