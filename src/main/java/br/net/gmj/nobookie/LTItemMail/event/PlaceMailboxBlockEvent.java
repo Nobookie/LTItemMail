@@ -1,5 +1,6 @@
 package br.net.gmj.nobookie.LTItemMail.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ public class PlaceMailboxBlockEvent extends Event {
 	private final Block block;
 	private Reason reason;
 	public PlaceMailboxBlockEvent(final Block block, final Reason reason) {
+		super(!Bukkit.getServer().isPrimaryThread());
 		this.block = block;
 		this.reason = reason;
 	}

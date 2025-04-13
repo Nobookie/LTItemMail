@@ -2,6 +2,7 @@ package br.net.gmj.nobookie.LTItemMail.event;
 
 import java.util.LinkedList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -29,6 +30,7 @@ public final class PlayerSendMailEvent extends Event implements Cancellable {
 	private Boolean cancelled = false;
 	private String cancelReason = "";
 	public PlayerSendMailEvent(final LTPlayer from, final LTPlayer to, final LinkedList<ItemStack> contents, final Boolean hasCost, final Double cost, final String label) {
+		super(!Bukkit.getServer().isPrimaryThread());
 		this.from = from;
 		this.to = to;
 		this.contents = contents;

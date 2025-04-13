@@ -1,5 +1,6 @@
 package br.net.gmj.nobookie.LTItemMail.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -17,10 +18,13 @@ public class BreakMailboxBlockEvent extends Event {
 	private final Block block;
 	private Reason reason;
 	private final Boolean virtual;
-	public BreakMailboxBlockEvent(final Block block, final Reason reason, Boolean virtual) {
+	private final ClaimProvider provider;
+	public BreakMailboxBlockEvent(final Block block, final Reason reason, final Boolean virtual, final ClaimProvider provider) {
+		super(!Bukkit.getServer().isPrimaryThread());
 		this.block = block;
 		this.reason = reason;
 		this.virtual = virtual;
+		this.provider = provider;
 	}
 	/**
 	 * 
@@ -59,6 +63,14 @@ public class BreakMailboxBlockEvent extends Event {
 	}
 	/**
 	 * 
+	 * Gets what plugin was involved on the break event if the reason is {@link Reason#ON_UNCLAIM}. Otherwise it will return null.
+	 * 
+	 */
+	public final ClaimProvider getClaimProvider() {
+		return provider;
+	}
+	/**
+	 * 
 	 * What triggered the event.
 	 * 
 	 * @author Nobookie
@@ -69,5 +81,17 @@ public class BreakMailboxBlockEvent extends Event {
 		BY_PLAYER_OWNER,
 		BY_PLAYER_ADMIN,
 		BY_SERVER
+	}
+	/**
+	 * 
+	 * Claim providers.
+	 * 
+	 * @author Nobookie
+	 * 
+	 */
+	public enum ClaimProvider {
+		GRIEFPREVENTION,
+		REDPROTECT,
+		TOWNYADVANCED
 	}
 }

@@ -2,6 +2,7 @@ package br.net.gmj.nobookie.LTItemMail.event;
 
 import java.util.LinkedList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +22,7 @@ public final class ServerSendMailEvent extends Event {
 	private final LinkedList<ItemStack> contents;
 	private final String label;
 	public ServerSendMailEvent(final LTPlayer to, final LinkedList<ItemStack> contents, final String label) {
+		super(!Bukkit.getServer().isPrimaryThread());
 		this.to = to;
 		this.contents = contents;
 		this.label = label;

@@ -18,7 +18,7 @@ public class PlayerBreakMailboxBlockEvent extends BreakMailboxBlockEvent impleme
 	private final LTPlayer player;
 	private Boolean cancelled = false;
 	public PlayerBreakMailboxBlockEvent(final Block block, final BreakMailboxBlockEvent.Reason reason, final LTPlayer player) {
-		super(block, reason, false);
+		super(block, reason, false, null);
 		this.player = player;
 	}
 	/**
