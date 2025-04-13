@@ -29,6 +29,7 @@ import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
+import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
@@ -36,7 +37,6 @@ import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
-import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil.URL;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
@@ -264,7 +264,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 									if(rawCommits.size() > 0) {
 										for(final JsonElement commits : rawCommits) {
 											final JsonObject commit = commits.getAsJsonObject();
-											sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString().replaceAll("\\u000a", ""));
+											sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString());
 											sender.sendMessage(ChatColor.DARK_GREEN + "    Details: " + ChatColor.GREEN + "https://github.com/leothawne/LTItemMail/commit/" + commit.get("commitId").getAsString());
 										}
 									} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "No changelog found!");
