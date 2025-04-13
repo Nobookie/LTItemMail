@@ -44,7 +44,7 @@ public final class LanguageModule {
 						update = true;
 						ConsoleModule.warning("Language " + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml outdated!");
 						ConsoleModule.warning("Missing translations will be added with default value.");
-						if(configuration.getInt("language-version") == 10) ConsoleModule.severe("All \"%\" arguments from the language file were changed! You MUST manually edit the file and replace all \"%\" with the new format. Reference example: https://github.com/leothawne/LTItemMail/blob/dev/src/main/resources/portuguese.yml");
+						if(configuration.getInt("language-version") < 11) ConsoleModule.severe("All \"%\" arguments from the language file were changed! You MUST manually edit the file and replace all \"%\" with the new format. Reference example: https://github.com/leothawne/LTItemMail/blob/dev/src/main/resources/portuguese.yml");
 						configuration.set("language-version", version.value());
 						configuration.save(file);
 					}
