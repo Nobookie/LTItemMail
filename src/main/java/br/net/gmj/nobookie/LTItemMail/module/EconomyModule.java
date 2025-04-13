@@ -15,7 +15,7 @@ import su.nightexpress.coinsengine.api.CoinsEngineAPI;
 
 public final class EconomyModule {
 	private static EconomyModule instance = null;
-	private static Boolean disable = false;
+	private static boolean available = false;
 	private Type type;
 	private Object currency = null;
 	private Object api = null;
@@ -32,24 +32,15 @@ public final class EconomyModule {
 			ConsoleModule.severe("Economy provider not found. Disabling.");
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 		}
-		if(type == null) {
-			disable = true;
-			return;
-		}
-		if(type.plugin() == null || (type.plugin() != null && !type.plugin().isEnabled())) {
-			disable = true;
-			return;
-		}
+		if(type == null) return;
+		if(type.plugin() == null || (type.plugin() != null && !type.plugin().isEnabled())) return;
 		switch(type) {
 			case VAULT:
 				final RegisteredServiceProvider<Economy> vault = Bukkit.getServicesManager().getRegistration(Economy.class);
 				if(vault != null) {
 					api = vault.getProvider();
 					plugin = vault.getPlugin();
-				} else {
-					disable = true;
-					return;
-				}
+				} else return;
 				break;
 			case COINSENGINE:
 				if(CoinsEngineAPI.class != null && coin != null) {
@@ -57,14 +48,8 @@ public final class EconomyModule {
 						currency = c;
 						break;
 					}
-					if(currency == null) {
-						disable = true;
-						return;
-					}
-				} else {
-					disable = true;
-					return;
-				}
+					if(currency == null) return;
+				} else return;
 				break;
 			case THENEWECONOMY:
 				if(TNECore.api() != null && coin != null) {
@@ -73,19 +58,14 @@ public final class EconomyModule {
 						currency = c;
 						break;
 					}
-					if(currency == null) {
-						disable = true;
-						return;
-					}
-				} else {
-					disable = true;
-					return;
-				}
+					if(currency == null) return;
+				} else return;
 				break;
 		}
 		if(plugin != null) {
 			ExtensionModule.getInstance().warn(type.plugin(), plugin);
 		} else ExtensionModule.getInstance().warn(null, type.plugin());
+		available = true;
 	}
 	public final boolean deposit(final Player player, final Double amount) {
 		switch(type) {
@@ -129,7 +109,7 @@ public final class EconomyModule {
 		if(instance == null) instance = new EconomyModule();
 	}
 	public static final EconomyModule getInstance() {
-		if(disable) instance = null;
+		if(!available) instance = null;
 		return instance;
 	}
 	public enum Type {
