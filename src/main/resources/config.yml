@@ -60,6 +60,10 @@ database:
     user: 'root'
     password: ''
     database: 'ltitemmail'
+    flags: '?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8'
+    max_pool_size: 5
+    max_lifetime: 180000
+    connection_timeout: 5000
 hook:
   #Set 'true' if you wish to use economy plugins (set the mail price).
   #

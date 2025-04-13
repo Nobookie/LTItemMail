@@ -115,7 +115,7 @@ public final class MailboxBlock implements Block {
 	 */
 	@Override
 	public final void runTasks() {
-		if(LTItemMail.getInstance().data != null) tasks.add(Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new MailboxBlockTask(), 20, 20));
+		if(LTItemMail.getInstance().connection != null) tasks.add(Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new MailboxBlockTask(), 20, 20));
 	}
 	/**
 	 * 

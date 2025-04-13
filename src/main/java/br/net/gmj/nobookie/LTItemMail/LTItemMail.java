@@ -1,6 +1,8 @@
 package br.net.gmj.nobookie.LTItemMail;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -56,7 +58,8 @@ public final class LTItemMail extends JavaPlugin {
 	public FileConfiguration configuration;
 	public FileConfiguration language;
 	public FileConfiguration models;
-	public HikariDataSource data = null;
+	public HikariDataSource dataSource = null;
+	public Connection connection = null;
 	public List<Integer> boardsForPlayers = new ArrayList<>();
 	public Map<String, List<Integer>> boardsPlayers = new HashMap<>();
 	private Long startup;
@@ -155,10 +158,14 @@ public final class LTItemMail extends JavaPlugin {
 		}
 	}
 	private final void loadDatabase() {
-		data = DatabaseModule.connect();
-		if(data != null) {
+		dataSource = DatabaseModule.connect();
+		if(dataSource != null) try {
+			connection = dataSource.getConnection();
 			DatabaseModule.checkForUpdates();
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_CONVERT)) DatabaseModule.convert();
+		} catch(final SQLException e) {
+			ConsoleModule.debug(getClass(), "Could not retrieve SQL connection.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 		}
 	}
 	private final void registerListeners() {
