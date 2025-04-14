@@ -33,9 +33,11 @@ import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTHeadDatabase;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTSkulls;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
@@ -44,6 +46,7 @@ public final class MailboxVirtualListener implements Listener {
 	public MailboxVirtualListener() {
 		Bukkit.getServer().getPluginManager().registerEvents(this, LTItemMail.getInstance());
 	}
+	private final LTCitizens citizens = (LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS);
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onInventoryClose(final InventoryCloseEvent event) {
 		final Player player = (Player) event.getPlayer();
@@ -59,6 +62,7 @@ public final class MailboxVirtualListener implements Listener {
 			} else DatabaseModule.Virtual.updateMailbox(mailboxID, new LinkedList<ItemStack>());
 			player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_CLOSED));
 			inventory.clear();
+			if(citizens != null) citizens.dismiss(player.getName());
 			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_CLAIMED_ONCLOSE, player);
 		}
 		if(inventoryView.getTitle().contains(MailboxInventory.getName(MailboxInventory.Type.OUT, null, null)) && inventoryView.getTitle().split("@").length == 2) {
@@ -113,10 +117,12 @@ public final class MailboxVirtualListener implements Listener {
 					}
 				}
 			} else sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_ABORTED));
+			if(citizens != null) citizens.dismiss(player.getName());
 			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_NEW_ONCLOSE, player);
 		}
 		if(inventoryView.getTitle().contains(MailboxInventory.getName(MailboxInventory.Type.IN_PENDING, null, null)) && inventoryView.getTitle().split("!").length == 2) {
 			inventory.clear();
+			if(citizens != null) citizens.dismiss(player.getName());
 			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_PENDING_ONCLOSE, player);
 		}
 	}

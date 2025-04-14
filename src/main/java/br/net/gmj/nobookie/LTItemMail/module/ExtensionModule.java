@@ -12,6 +12,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTBlueMap;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDecentHolograms;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDynmap;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTExtension;
@@ -30,6 +31,7 @@ import net.milkbowl.vault.permission.Permission;
 
 public final class ExtensionModule {
 	private static ExtensionModule instance = null;
+	private ExtensionModule() {}
 	public final Map<EXT, LTExtension> REG = new HashMap<>();
 	public final void warn(final Plugin source, final Plugin plugin) {
 		String sourceEXT = "";
@@ -75,6 +77,9 @@ public final class ExtensionModule {
 			case SKULLS:
 				REG.putIfAbsent(plugin, new LTSkulls());
 				break;
+			case CITIZENS:
+				REG.putIfAbsent(plugin, new LTCitizens());
+				break;
 		}
 		return isRegistered(plugin);
 	}
@@ -101,32 +106,32 @@ public final class ExtensionModule {
 	public final void load() {
 		ConsoleModule.info("Loading extensions...");
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) EconomyModule.init();
-		if(isInstalled(EXT.VAULT.plugin()) && !isRegistered(EXT.VAULT)) if(register(EXT.VAULT)) warn(EXT.VAULT.plugin(), ((LTVault) get(EXT.VAULT)).getPermissionPlugin());
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_GRIEFPREVENTION)) if(isInstalled(EXT.GRIEFPREVENTION.plugin()) && !isRegistered(EXT.GRIEFPREVENTION)) {
+		if(isInstalled(EXT.VAULT.plugin()) && !isRegistered(EXT.VAULT) && register(EXT.VAULT)) warn(EXT.VAULT.plugin(), ((LTVault) get(EXT.VAULT)).getPermissionPlugin());
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_GRIEFPREVENTION) && isInstalled(EXT.GRIEFPREVENTION.plugin()) && !isRegistered(EXT.GRIEFPREVENTION)) {
 			warn(null, EXT.GRIEFPREVENTION.plugin());
 			register(EXT.GRIEFPREVENTION);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_REDPROTECT)) if(isInstalled(EXT.REDPROTECT.plugin()) && !isRegistered(EXT.REDPROTECT)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_REDPROTECT) && isInstalled(EXT.REDPROTECT.plugin()) && !isRegistered(EXT.REDPROTECT)) {
 			warn(null, EXT.REDPROTECT.plugin());
 			register(EXT.REDPROTECT);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED)) if(isInstalled(EXT.TOWNYADVANCED.plugin()) && !isRegistered(EXT.TOWNYADVANCED)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED) && isInstalled(EXT.TOWNYADVANCED.plugin()) && !isRegistered(EXT.TOWNYADVANCED)) {
 			warn(null, EXT.TOWNYADVANCED.plugin());
 			register(EXT.TOWNYADVANCED);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_WORLDGUARD)) if(isInstalled(EXT.WORLDGUARD.plugin()) && !isRegistered(EXT.WORLDGUARD)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_WORLDGUARD) && isInstalled(EXT.WORLDGUARD.plugin()) && !isRegistered(EXT.WORLDGUARD)) {
 			warn(null, EXT.WORLDGUARD.plugin());
 			register(EXT.WORLDGUARD);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DYNMAP)) if(isInstalled(EXT.DYNMAP.plugin()) && !isRegistered(EXT.DYNMAP)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DYNMAP) && isInstalled(EXT.DYNMAP.plugin()) && !isRegistered(EXT.DYNMAP)) {
 			warn(null, EXT.DYNMAP.plugin());
 			register(EXT.DYNMAP);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_BLUEMAP)) if(isInstalled(EXT.BLUEMAP.plugin()) && !isRegistered(EXT.BLUEMAP)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_BLUEMAP) && isInstalled(EXT.BLUEMAP.plugin()) && !isRegistered(EXT.BLUEMAP)) {
 			warn(null, EXT.BLUEMAP.plugin());
 			register(EXT.BLUEMAP);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DECENTHOLOGRAMS)) if(isInstalled(EXT.DECENTHOLOGRAMS.plugin()) && !isRegistered(EXT.DECENTHOLOGRAMS)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DECENTHOLOGRAMS) && isInstalled(EXT.DECENTHOLOGRAMS.plugin()) && !isRegistered(EXT.DECENTHOLOGRAMS)) {
 			warn(null, EXT.DECENTHOLOGRAMS.plugin());
 			register(EXT.DECENTHOLOGRAMS);
 			if(isRegistered(EXT.DECENTHOLOGRAMS)) ((LTDecentHolograms) get(EXT.DECENTHOLOGRAMS)).cleanup();
@@ -154,20 +159,23 @@ public final class ExtensionModule {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_HEADDATABASE)) if(isInstalled(EXT.HEADDATABASE.plugin()) && !isRegistered(EXT.HEADDATABASE)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_HEADDATABASE) && isInstalled(EXT.HEADDATABASE.plugin()) && !isRegistered(EXT.HEADDATABASE)) {
 			warn(null, EXT.HEADDATABASE.plugin());
 			register(EXT.HEADDATABASE);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_SKULLS)) if(isInstalled(EXT.SKULLS.plugin()) && !isRegistered(EXT.SKULLS)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_SKULLS) && isInstalled(EXT.SKULLS.plugin()) && !isRegistered(EXT.SKULLS)) {
 			warn(null, EXT.SKULLS.plugin());
 			register(EXT.SKULLS);
+		}
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_CITIZENS) && isInstalled(EXT.CITIZENS.plugin()) && !isRegistered(EXT.CITIZENS)) {
+			warn(null, EXT.CITIZENS.plugin());
+			register(EXT.CITIZENS);
 		}
 		plugMan = new LTPlugMan();
 	}
 	public static final ExtensionModule reload() {
 		if(instance != null) {
 			instance.unload();
-			instance = null;
 			instance = new ExtensionModule();
 			return instance;
 		}
@@ -189,7 +197,8 @@ public final class ExtensionModule {
 		PLACEHOLDERAPI(Bukkit.getPluginManager().getPlugin("PlaceholderAPI")),
 		ULTIMATEADVANCEMENTAPI(Bukkit.getPluginManager().getPlugin("UltimateAdvancementAPI")),
 		HEADDATABASE(Bukkit.getPluginManager().getPlugin("HeadDatabase")),
-		SKULLS(Bukkit.getPluginManager().getPlugin("Skulls"));
+		SKULLS(Bukkit.getPluginManager().getPlugin("Skulls")),
+		CITIZENS(Bukkit.getPluginManager().getPlugin("Citizens"));
 		private final Plugin plugin;
 		EXT(final Plugin plugin){
 			this.plugin = plugin;

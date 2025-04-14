@@ -38,10 +38,12 @@ import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTBlueMap;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDecentHolograms;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDynmap;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTGriefPrevention;
@@ -72,7 +74,10 @@ public final class MailboxBlockListener implements Listener {
 							if(DatabaseModule.Virtual.getMailboxesList(player.getUniqueId(), DatabaseModule.Virtual.Status.PENDING).size() > 0) {
 								player.performCommand("ltitemmail:itemmail");
 							} else player.performCommand("ltitemmail:itemmail list");
-						} else player.openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, owner, null, player.getUniqueId(), "", false));
+						} else {
+							if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.CITIZENS)) ((LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS)).call(player);
+							player.openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, owner, null, player.getUniqueId(), "", false));
+						}
 					} else player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.BLOCK_USEERROR));
 				}
 			}

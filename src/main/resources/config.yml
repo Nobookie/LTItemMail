@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 18
+config-version: 19
 version-number: ${project.version}
 build-number: ${buildNumber}
 plugin:
@@ -69,7 +69,7 @@ hook:
   #
   #Defina 'true' se desejar usar um plugin de economia (defina o preço do corrêio).
   economy:
-    enable: false
+    enable: true
     #Compatible plugins: Vault for economies in general, CoinsEngine (ex: CoinsEngine:Coins) or The New Economy (ex: TheNewEconomy:USD). Default: Vault
     #
     #Plugins compatíveis: Vault para economias em geral, CoinsEngine (ex: CoinsEngine:Moedas) ou The New Economy (ex: TheNewEconomy:USD). Padrão: Vault
@@ -92,7 +92,7 @@ hook:
   griefprevention: false
   redprotect: false
   towny: false
-  worldguard: false
+  worldguard: true
   #Useful for TOAST notifications (refer to "mail.display" below).
   #
   #Útil para notificações TOAST (consulte "mail.display" abaixo).
@@ -105,6 +105,8 @@ hook:
   #
   #Você pode substituir botões do corrêio com cabeças customizadas do Skulls.
   skulls: false
+  #
+  citizens: true
 mail:
   #When a new mail arrives, how do you want the message to appear? Valid: CHAT, TITLE, TOAST. Default: CHAT
   #

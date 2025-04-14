@@ -28,9 +28,12 @@ import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
@@ -43,6 +46,7 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 	usage = "/<command> [help|version|list|open|delete|info|price|color|blocks]"
 )
 public final class ItemMailCommand extends LTCommandExecutor {
+	private final LTCitizens citizens = (LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS);
 	@SuppressWarnings("incomplete-switch")
 	@Override
 	public final boolean onCommand(final CommandSender sender, final Command command, final String commandLabel, final String[] args) {
@@ -119,6 +123,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 								if(mailboxes.size() >= pos) {
 									final List<Integer> ids = new ArrayList<>();
 									for(final Integer id : mailboxes.keySet()) ids.add(id);
+									if(citizens != null) citizens.call(player);
 									player.openInventory(MailboxInventory.getInventory(type, ids.get((pos - 1)), null, DatabaseModule.Virtual.getMailbox(ids.get((pos - 1))), DatabaseModule.Virtual.getMailboxFrom(ids.get((pos - 1))), DatabaseModule.Virtual.getMailboxLabel(ids.get((pos - 1))), false));
 								}
 							} else {
@@ -137,7 +142,10 @@ public final class ItemMailCommand extends LTCommandExecutor {
 											player.sendMessage(ChatColor.DARK_RED + DatabaseModule.Virtual.Status.class.getName() + ": " + DatabaseModule.Virtual.Status.UNDEFINED.toString());
 											break;
 									}
-									if(type != null) player.openInventory(MailboxInventory.getInventory(type, mailboxID, null, DatabaseModule.Virtual.getMailbox(mailboxID), DatabaseModule.Virtual.getMailboxFrom(mailboxID), DatabaseModule.Virtual.getMailboxLabel(mailboxID), false));
+									if(type != null) {
+										if(citizens != null) citizens.call(player);
+										player.openInventory(MailboxInventory.getInventory(type, mailboxID, null, DatabaseModule.Virtual.getMailbox(mailboxID), DatabaseModule.Virtual.getMailboxFrom(mailboxID), DatabaseModule.Virtual.getMailboxLabel(mailboxID), false));
+									}
 								}
 							}
 						} catch (final NumberFormatException e) {
