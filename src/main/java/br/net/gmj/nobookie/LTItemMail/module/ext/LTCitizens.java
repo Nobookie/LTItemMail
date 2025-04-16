@@ -1,6 +1,8 @@
 package br.net.gmj.nobookie.LTItemMail.module.ext;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -10,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Parrot;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -25,6 +28,11 @@ import net.citizensnpcs.api.npc.NPC;
 public final class LTCitizens implements LTExtension, Runnable {
 	private final Random random;
 	private final Map<String, LTParrot> parrots = new HashMap<>();
+	private final List<Parrot.Variant> variants = Arrays.asList(Parrot.Variant.BLUE,
+			Parrot.Variant.CYAN,
+			Parrot.Variant.GRAY,
+			Parrot.Variant.GREEN,
+			Parrot.Variant.RED);
 	public LTCitizens() {
 		random = new Random();
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(LTItemMail.getInstance(), this, 1, 1);
@@ -70,7 +78,7 @@ public final class LTCitizens implements LTExtension, Runnable {
 			spawn.add(x * 6, 3, z * 6);
 			move.add(x, 0, z);
 			parrot.spawn(spawn, SpawnReason.PLUGIN);
-			//((Parrot) parrot.getEntity()).setVariant(Parrot.Variant.BLUE);
+			((Parrot) parrot.getEntity()).setVariant(variants.get(new Random().nextInt(variants.size() - 1)));
 			parrots.put(player.getName(), new LTParrot(parrot));
 			new BukkitRunnable() {
 				@Override
