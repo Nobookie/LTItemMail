@@ -85,7 +85,6 @@ public final class ExtensionModule {
 	}
 	private Listener plugMan = null;
 	public final void unload() {
-		ConsoleModule.info("Unloading extensions...");
 		for(final EXT plugin : REG.keySet()) {
 			final LTExtension extension = (LTExtension) REG.get(plugin);
 			extension.unload();
@@ -104,7 +103,6 @@ public final class ExtensionModule {
 		return null;
 	}
 	public final void load() {
-		ConsoleModule.info("Loading extensions...");
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) EconomyModule.init();
 		if(isInstalled(EXT.VAULT.plugin()) && !isRegistered(EXT.VAULT) && register(EXT.VAULT)) warn(EXT.VAULT.plugin(), ((LTVault) get(EXT.VAULT)).getPermissionPlugin());
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_GRIEFPREVENTION) && isInstalled(EXT.GRIEFPREVENTION.plugin()) && !isRegistered(EXT.GRIEFPREVENTION)) {
