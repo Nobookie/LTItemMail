@@ -1,5 +1,6 @@
 package br.net.gmj.nobookie.LTItemMail.command;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,10 +44,10 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
 	name = "itemmailadmin",
-	description = "For administration purposes.",
+	description = "Lists admin commands.",
 	aliases = "ltitemmail:itemmailadmin,imad,imadmin",
 	permission = "ltitemmail.admin",
-	usage = "/<command> [help|update|list|recover|reload|info|ban|unban|banlist|blocks]"
+	usage = "/<command> [help|update|list|recover|reload|info|ban|unban|banlist|blocks|dump|changelog]"
 )
 public final class ItemMailAdminCommand extends LTCommandExecutor {
 	@Override
@@ -57,7 +58,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 			Bukkit.dispatchCommand(sender, "ltitemmail:itemmailadmin help");
 		} else if(args[0].equalsIgnoreCase("help")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) {
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ LT Item Mail " + ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + " #" + ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) + " ]");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ " + LTItemMail.getInstance().getDescription().getName() + " " + ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + " #" + ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) + " ]");
 				sender.sendMessage(ChatColor.GREEN + "/itemmailadmin help " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_ITEMMAILADMIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UPDATE)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin update " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_MAIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_LIST)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin list <player> " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_LIST));
@@ -70,6 +71,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin blocks <player> " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_BLOCKS));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin dump " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_DUMP));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin changelog " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_MAIN));
+				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) sender.sendMessage(ChatColor.GREEN + "/itemmailwipe " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_WIPE_WIPE));
 			}
 		} else if(args[0].equalsIgnoreCase("update")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UPDATE)) {
@@ -88,7 +90,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 									final Integer outOfDate = remoteBuild - localBuild;
 									sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_FOUND)).replaceAll("%build%", "" + ChatColor.RED + outOfDate + ChatColor.YELLOW) + ChatColor.GREEN + " https://jenkins.gmj.net.br/job/LTItemMail/" + remoteBuild + "/");
 									if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_UPDATE_AUTOMATIC)) {
-										FetchUtil.FileManager.download(DataModule.ARTIFACT, Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar", false);
+										if(!new File(Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar").exists()) FetchUtil.FileManager.download(DataModule.ARTIFACT, Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar", false);
 										sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_AUTOMATIC)));
 									}
 								} else if(!s) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_NONEW));

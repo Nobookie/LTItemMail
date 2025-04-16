@@ -135,7 +135,7 @@ public final class LanguageModule {
 		COMMAND_PLAYER_LIST("command.player.list", "Lists all pending mailboxes received."),
 		COMMAND_PLAYER_OPEN("command.player.open", "Opens a mail."),
 		COMMAND_PLAYER_DELETE("command.player.delete", "Deletes a mail."),
-		COMMAND_PLAYER_MAILITEM("command.player.mailitem", "Opens a new mail to put items inside and send it to another player."),
+		COMMAND_PLAYER_MAILITEM("command.player.mailitem", "Opens a new mail box to put items inside and send it to another player."),
 		COMMAND_PLAYER_INFO_MAIN("command.player.info.info", "Shows relevant informations about the player."),
 		COMMAND_PLAYER_INFO_REGISTRY("command.player.info.registry", "Registry date:"),
 		COMMAND_PLAYER_INFO_BANNED_MAIN("command.player.info.banned.banned", "Banned:"),
@@ -169,6 +169,13 @@ public final class LanguageModule {
 		COMMAND_ADMIN_CHANGELOG_MAIN("command.admin.changelog.changelog", "Shows the changelog of the current build of the plugin."),
 		COMMAND_ADMIN_CHANGELOG_NOTFOUND("command.admin.changelog.notfound", "No changelog found."),
 		COMMAND_ADMIN_CHANGELOG_DETAILS("command.admin.changelog.notfound", "Details:"),
+		COMMAND_WIPE_WIPE("command.wipe.wipe", "Wipe every data from the database."),
+		COMMAND_WIPE_WARNING("command.wipe.warning", "Every data from the database will be wiped and will not be possible to recover. Are you sure you want to continue? To agree and continue, type"),
+		COMMAND_WIPE_WIPING("command.wipe.purging", "Wiping database now..."),
+		COMMAND_WIPE_TURNOFF("command.wipe.turnoff", "Do not turn off the server!"),
+		COMMAND_WIPE_WIPED("command.wipe.purged", "Database wiped!"),
+		COMMAND_WIPE_RESTART("command.wipe.restart", "A server restart is recommended but not mandatory."),
+		COMMAND_WIPE_UNABLE("command.wipe.unable", "Unable to wipe database."),
 		ENTITY_PARROT_NAME("entity.parrot.name", "&6&lDelivery Parrot");
 		private final String path;
 		private final String result;

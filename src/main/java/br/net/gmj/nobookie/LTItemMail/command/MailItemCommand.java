@@ -24,7 +24,7 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
 	name = "mailitem",
-	description = "Used to send items.",
+	description = "Opens a new mail box to put items inside and send it to another player.",
 	aliases = "ltitemmail:mailitem,mit,enviaritem",
 	permission = "ltitemmail.player.send",
 	usage = "/<command> <player> [label]"

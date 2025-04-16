@@ -37,7 +37,7 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
 	name = "itemmail",
-	description = "Used to send items and to check your mailbox.",
+	description = "Lists player commands.",
 	aliases = "ltitemmail:itemmail,ima,imail",
 	permission = "ltitemmail.player",
 	usage = "/<command> [help|version|list|open|delete|info|price|color|blocks]"
@@ -59,7 +59,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 			} else Bukkit.dispatchCommand(sender, "ltitemmail:itemmail help");
 		} else if(args[0].equalsIgnoreCase("help")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_MAIN)) {
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ LT Item Mail ]");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ " + LTItemMail.getInstance().getDescription().getName() + " ]");
 				sender.sendMessage(ChatColor.GREEN + "/itemmail help " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_ITEMMAIL));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_VERSION)) sender.sendMessage(ChatColor.GREEN + "/itemmail version " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_VERSION));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_LIST)) sender.sendMessage(ChatColor.GREEN + "/itemmail list " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_LIST));
