@@ -60,6 +60,7 @@ public final class DatabaseModule {
 	}
 	private static final class MySQL {
 		private static final HikariDataSource connect() {
+			ConsoleModule.info("MySQL flags: [" + String.join(", ", ((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS)).replace("?", "").split("&")) + "]");
 			final HikariConfig config = new HikariConfig();
 			config.setPoolName("HikariCP - LTItemMail MySQL");
 			config.setJdbcUrl("jdbc:mysql://" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_HOST) + "/" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_NAME) + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS));
