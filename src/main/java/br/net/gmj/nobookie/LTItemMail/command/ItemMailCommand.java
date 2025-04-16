@@ -28,12 +28,9 @@ import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
-import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
-import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
-import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
@@ -46,7 +43,7 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 	usage = "/<command> [help|version|list|open|delete|info|price|color|blocks]"
 )
 public final class ItemMailCommand extends LTCommandExecutor {
-	private final LTCitizens citizens = (LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS);
+	//private final LTCitizens citizens = (LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS);
 	@SuppressWarnings("incomplete-switch")
 	@Override
 	public final boolean onCommand(final CommandSender sender, final Command command, final String commandLabel, final String[] args) {
@@ -96,7 +93,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 							} else authors = LTItemMail.getInstance().getDescription().getAuthors().get(0);
 							sender.sendMessage(ChatColor.YELLOW + "Authors: " + authors);
 							sender.sendMessage(ChatColor.YELLOW + "Website: " + ChatColor.DARK_GREEN + LTItemMail.getInstance().getDescription().getWebsite());
-							if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage(ChatColor.YELLOW + "Version manifest: " + ChatColor.DARK_GREEN + DataModule.getManifestURL(LTItemMail.getInstance().getDescription().getVersion()));
+							if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage(ChatColor.YELLOW + "Manifest: " + ChatColor.DARK_GREEN + DataModule.getManifestURL(LTItemMail.getInstance().getDescription().getVersion()));
 						}
 					}.runTaskAsynchronously(LTItemMail.getInstance());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
@@ -123,7 +120,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 								if(mailboxes.size() >= pos) {
 									final List<Integer> ids = new ArrayList<>();
 									for(final Integer id : mailboxes.keySet()) ids.add(id);
-									if(citizens != null) citizens.call(player);
+									//if(citizens != null) citizens.call(player);
 									player.openInventory(MailboxInventory.getInventory(type, ids.get((pos - 1)), null, DatabaseModule.Virtual.getMailbox(ids.get((pos - 1))), DatabaseModule.Virtual.getMailboxFrom(ids.get((pos - 1))), DatabaseModule.Virtual.getMailboxLabel(ids.get((pos - 1))), false));
 								}
 							} else {
@@ -143,7 +140,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 											break;
 									}
 									if(type != null) {
-										if(citizens != null) citizens.call(player);
+										//if(citizens != null) citizens.call(player);
 										player.openInventory(MailboxInventory.getInventory(type, mailboxID, null, DatabaseModule.Virtual.getMailbox(mailboxID), DatabaseModule.Virtual.getMailboxFrom(mailboxID), DatabaseModule.Virtual.getMailboxLabel(mailboxID), false));
 									}
 								}
@@ -161,6 +158,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 					if(args.length == 1) {
 						final HashMap<Integer, String> mailboxes = DatabaseModule.Virtual.getMailboxesList(player.getUniqueId(), DatabaseModule.Virtual.Status.ALL);
 						if(mailboxes.size() > 0) {
+							player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_NEW));
 							for(final Integer mailboxID : mailboxes.keySet()) {
 								String from = "CONSOLE";
 								final UUID uuidFrom = DatabaseModule.Virtual.getMailboxFrom(mailboxID);
@@ -263,7 +261,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 						Integer number = 1;
 						for(final MailboxBlock block : mailboxes) {
 							String server = "";
-							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) server = "Server=" + ChatColor.GREEN + block.getServer() + ChatColor.YELLOW + ", ";
+							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) server = LanguageModule.get(LanguageModule.Type.BLOCK_LIST_SERVER) + "=" + ChatColor.GREEN + block.getServer() + ChatColor.YELLOW + ", ";
 							final Location loc = block.getLocation();
 							player.sendMessage(ChatColor.YELLOW + "    - #" + ChatColor.GREEN + String.valueOf(number) + ChatColor.YELLOW + " : " + server + LanguageModule.get(LanguageModule.Type.BLOCK_LIST_WORLD) + "=" + ChatColor.GREEN + loc.getWorld().getName() + ChatColor.YELLOW + ", X=" + ChatColor.GREEN + String.valueOf(loc.getBlockX()) + ChatColor.YELLOW + ", Y=" + ChatColor.GREEN + String.valueOf(loc.getBlockY()) + ChatColor.YELLOW + ", Z=" + ChatColor.GREEN + String.valueOf(loc.getBlockZ()));
 							number++;

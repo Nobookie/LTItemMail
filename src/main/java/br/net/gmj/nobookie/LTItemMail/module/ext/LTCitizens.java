@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Parrot;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,6 +17,7 @@ import org.bukkit.scheduler.BukkitTask;
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.entity.LTParrot;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
+import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.SpawnReason;
 import net.citizensnpcs.api.npc.NPC;
@@ -38,8 +38,8 @@ public final class LTCitizens implements LTExtension, Runnable {
 		}
 	}
 	public final boolean call(final Player player) {
-		if(!parrots.containsKey(player.getName())) {
-			final NPC parrot = CitizensAPI.getNPCRegistry().createNPC(EntityType.PARROT, "Delivery Parrot");
+		if(!parrots.containsKey(player.getName())) if(checkLocation(player.getLocation())) {
+			final NPC parrot = CitizensAPI.getNPCRegistry().createNPC(EntityType.PARROT, LanguageModule.get(LanguageModule.Type.ENTITY_PARROT_NAME));
 			parrot.setFlyable(false);
 			parrot.setProtected(true);
 			parrot.setUseMinecraftAI(false);
@@ -70,7 +70,7 @@ public final class LTCitizens implements LTExtension, Runnable {
 			spawn.add(x * 6, 3, z * 6);
 			move.add(x, 0, z);
 			parrot.spawn(spawn, SpawnReason.PLUGIN);
-			((Parrot) parrot.getEntity()).setVariant(Parrot.Variant.BLUE);
+			//((Parrot) parrot.getEntity()).setVariant(Parrot.Variant.BLUE);
 			parrots.put(player.getName(), new LTParrot(parrot));
 			new BukkitRunnable() {
 				@Override
@@ -128,7 +128,7 @@ public final class LTCitizens implements LTExtension, Runnable {
 	private final boolean checkLocation(final Location location) {
 		for(int x = location.getBlockX() - 3; x < location.getBlockX() + 3; x++)
 			for(int z = location.getBlockZ() - 3; z < location.getBlockZ() + 3; z++)
-				for(int y = location.getBlockY(); y < location.getBlockY() + 6; y++) {
+				for(int y = location.getBlockY() + 1; y < location.getBlockY() + 6; y++) {
 					final Location block = location.clone();
 					block.setX(x);
 					block.setY(y);

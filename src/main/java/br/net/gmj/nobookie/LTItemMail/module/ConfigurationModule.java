@@ -124,7 +124,7 @@ public final class ConfigurationModule {
 		DATABASE_MYSQL_USER("database.mysql.user", "root"),
 		DATABASE_MYSQL_PASSWORD("database.mysql.password", ""),
 		DATABASE_MYSQL_NAME("database.mysql.database", "ltitemmail"),
-		DATABASE_MYSQL_FLAGS("database.mysql.flags", "?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8"),
+		DATABASE_MYSQL_FLAGS("database.mysql.flags", "?verifyServerCertificate=false&useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf-8"),
 		DATABASE_MYSQL_MAX_POOL_SIZE("database.mysql.max_pool_size", 5),
 		DATABASE_MYSQL_MAX_LIFETIME("database.mysql.max_lifetime", 180000),
 		DATABASE_MYSQL_CONNECTION_TIMEOUT("database.mysql.connection_timeout", 5000),
@@ -152,7 +152,7 @@ public final class ConfigurationModule {
 		PLUGIN_UPDATE_CHECK("update.check", true),
 		PLUGIN_UPDATE_PERIODIC_NOTIFICATION("update.periodic-notification", true),
 		PLUGIN_UPDATE_AUTOMATIC("update.automatic", true),
-		BOARDS_CONSOLE_ONLY("boards.console-only", false);
+		BOARDS_CONSOLE_ONLY("boards.console-only", true);
 		private final String path;
 		private final Object result;
 		Type(final String path, final Object result){

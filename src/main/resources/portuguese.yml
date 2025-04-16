@@ -1,5 +1,5 @@
 #Não toque nisso!
-language-version: 12
+language-version: 13
 player:
   permissionerror: 'Você não tem permissão para fazer isso.'
   missingerror: 'Você deve especificar o nome do jogador.'
@@ -16,6 +16,7 @@ mailbox:
   special: 'Corrêio especial!!!'
   aborted: 'Envio cancelado.'
   nonew: 'Não há novos corrêios.'
+  new: 'Novo corrêio encontrado! Digite /itemmail open <id>'
   iderror: 'ID do corrêio deve ser um número inteiro.'
   deleted: 'Deletado'
   empty: 'Vazio'
@@ -47,6 +48,7 @@ block:
   list:
     placed: 'Caixas de Corrêio que você colocou:'
     world: 'Mundo'
+    server: 'Servidor'
   adminlist:
     placed: 'Caixas de Corrêio de'
   notfound: 'Nenhum bloco caixa de corrêio encontrado.'
@@ -95,3 +97,11 @@ command:
       list: 'Jogadores banidos:'
       empty: 'Não há jogadores banidos.'
     blocks: 'Mostra uma lista das caixas de corrêio colocadas por um jogador.'
+    dump: 'Útil para depuração.'
+    changelog:
+      changelog: 'Mostra o registro de alterações da construção atual do plugin.'
+      notfound: 'Nenhum registro de alterações encontrado.'
+      details: 'Detalhes:'
+entity:
+  parrot:
+    name: '&6&lPapagaio de Entregas'
