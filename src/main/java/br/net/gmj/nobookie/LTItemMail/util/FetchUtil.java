@@ -55,7 +55,7 @@ public final class FetchUtil {
 	private FetchUtil() {}
 	public static final class URL {
 		@SuppressWarnings("deprecation")
-		public static final Store request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
+		private static final Store request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
 			CloseableHttpClient client = null;
 			try {
 				client = HttpClientBuilder.create().setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create().setDefaultConnectionConfig(ConnectionConfig.custom().setConnectTimeout(10, TimeUnit.SECONDS).setSocketTimeout(10, TimeUnit.SECONDS).setTimeToLive(Integer.MAX_VALUE, TimeUnit.SECONDS).build()).build()).build();

@@ -17,7 +17,7 @@ import br.net.gmj.nobookie.LTItemMail.item.Item;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
-import eu.decentsoftware.holograms.api.utils.PAPI;
+import me.clip.placeholderapi.PlaceholderAPI;
 
 public final class BukkitUtil {
 	private BukkitUtil() {}
@@ -92,7 +92,7 @@ public final class BukkitUtil {
 			for(final String rawCmd : (List<String>) ConfigurationModule.get(autorun)) {
 				final String executor = rawCmd.split("\\:")[0].toUpperCase();
 				String cmd = rawCmd.split("\\:")[1].toLowerCase().replaceAll("/", "");
-				if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.PLACEHOLDERAPI)) cmd = PAPI.setPlaceholders(player, cmd);
+				if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.PLACEHOLDERAPI)) cmd = PlaceholderAPI.setPlaceholders(player, cmd);
 				switch(executor) {
 					case "CONSOLE":
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
