@@ -106,17 +106,12 @@ public final class LTItemMail extends JavaPlugin {
 			MailboxModule.ready();
 			new FetchUtil.Stats();
 			final Long done = Calendar.getInstance().getTimeInMillis() - startup;
-			String took = done + "ms";
-			if(done >= 1000.0) took = (done / 1000.0) + "s";
-			ConsoleModule.raw(ChatColor.GREEN + "👍🏼 Plugin took " + took + " to load.");
+			String took = done + "ms" + ChatColor.GREEN;
+			if(done >= 1000.0) took = (done / 1000.0) + "s" + ChatColor.GREEN;
+			ConsoleModule.raw(ChatColor.GREEN + "👍🏼 Plugin took " + ChatColor.WHITE + took + " to load.");
 		} else {
-			new BukkitRunnable() {
-				@Override
-				public final void run() {
-					ConsoleModule.severe("😢 Plugin disabled in config.yml.");
-					Bukkit.getPluginManager().disablePlugin(instance);
-				}
-			}.runTask(this);
+			ConsoleModule.severe("😢 Plugin disabled in config.yml.");
+			Bukkit.getPluginManager().disablePlugin(instance);
 		}
 	}
 	@Override

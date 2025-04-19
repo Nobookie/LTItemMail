@@ -20,7 +20,7 @@ public final class DataModule {
 		return PLUGIN.replace("$version", version);
 	}
 	public enum Version {
-		CONFIG_YML(19),
+		CONFIG_YML(20),
 		ITEM_MODELS_YML(1),
 		HEADDATABASE_YML(1),
 		SKULLS_YML(1),

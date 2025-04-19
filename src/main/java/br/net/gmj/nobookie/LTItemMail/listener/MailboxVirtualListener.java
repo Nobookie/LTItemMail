@@ -123,7 +123,6 @@ public final class MailboxVirtualListener implements Listener {
 		if(inventoryView.getTitle().contains(MailboxInventory.getName(MailboxInventory.Type.IN_PENDING, null, null)) && inventoryView.getTitle().split("!").length == 2) {
 			inventory.clear();
 			if(citizens != null) citizens.dismiss(player.getName());
-			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_PENDING_ONCLOSE, player);
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -228,6 +227,7 @@ public final class MailboxVirtualListener implements Listener {
 					if(selected.getType().equals(Material.ENDER_EYE)) primeAccept = true;
 				}
 				if(primeDeny) {
+					BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_PENDING_WHENDENIED, player);
 					DatabaseModule.Virtual.setStatus(mailboxID, DatabaseModule.Virtual.Status.DENIED);
 					final UUID from = DatabaseModule.Virtual.getMailboxFrom(mailboxID);
 					if(from != null) {
@@ -239,6 +239,7 @@ public final class MailboxVirtualListener implements Listener {
 					inventoryView.close();
 				}
 				if(primeAccept) {
+					BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_PENDING_WHENACCEPTED, player);
 					DatabaseModule.Virtual.setStatus(mailboxID, DatabaseModule.Virtual.Status.ACCEPTED);
 					event.getInventory().clear();
 					inventoryView.close();

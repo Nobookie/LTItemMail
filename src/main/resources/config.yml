@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 19
+config-version: 20
 version-number: ${project.version}
 build-number: ${buildNumber}
 plugin:
@@ -134,7 +134,8 @@ autorun:
     new:
       on-close: []
     pending:
-      on-close:
+      when-accepted: []
+      when-denied:
         - 'PLAYER:/itemmail list'
     claimed:
       on-close:

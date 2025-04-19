@@ -58,7 +58,7 @@ public final class FetchUtil {
 		private static final Store request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
 			CloseableHttpClient client = null;
 			try {
-				client = HttpClientBuilder.create().setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create().setDefaultConnectionConfig(ConnectionConfig.custom().setConnectTimeout(10, TimeUnit.SECONDS).setSocketTimeout(10, TimeUnit.SECONDS).setTimeToLive(Integer.MAX_VALUE, TimeUnit.SECONDS).build()).build()).build();
+				client = HttpClientBuilder.create().setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create().setDefaultConnectionConfig(ConnectionConfig.custom().setConnectTimeout(10, TimeUnit.SECONDS).setSocketTimeout(10, TimeUnit.SECONDS).setTimeToLive(Integer.MAX_VALUE, TimeUnit.SECONDS).build()).build()).setUserAgent("Mozilla/5.0 (Windows; U; Windows NT 10.2; x64; en-US) AppleWebKit/601.49 (KHTML, like Gecko) Chrome/55.0.2790.220 Safari/602.0 Edge/16.15104").build();
 				if(params != null) {
 					final List<NameValuePair> parameters = new ArrayList<>();
 					for(final String key : params.keySet()) parameters.add(new BasicNameValuePair(key, params.get(key).toString()));

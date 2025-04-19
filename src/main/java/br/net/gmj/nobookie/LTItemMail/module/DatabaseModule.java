@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
@@ -60,48 +61,53 @@ public final class DatabaseModule {
 	}
 	private static final class MySQL {
 		private static final HikariDataSource connect() {
-			ConsoleModule.info("MySQL flags: [" + String.join(", ", ((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS)).replace("?", "").split("&")) + "]");
-			final HikariConfig config = new HikariConfig();
-			config.setPoolName("HikariCP - LTItemMail MySQL");
-			config.setJdbcUrl("jdbc:mysql://" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_HOST) + "/" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_NAME) + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS));
-			config.setUsername((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_USER));
-			config.setPassword((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_PASSWORD));
-			config.addDataSourceProperty("cachePrepStmts", "true");
-			config.addDataSourceProperty("prepStmtCacheSize", "250");
-			config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-			config.addDataSourceProperty("useServerPrepStmts", "true");
-			config.addDataSourceProperty("useLocalSessionState", "true");
-			config.addDataSourceProperty("rewriteBatchedStatements", "true");
-			config.addDataSourceProperty("cacheResultSetMetadata", "true");
-			config.addDataSourceProperty("cacheServerConfiguration", "true");
-			config.addDataSourceProperty("elideSetAutoCommits", "true");
-			config.addDataSourceProperty("maintainTimeStats", "false");
-			config.addDataSourceProperty("cacheCallableStmts", "true");
-			config.setMaximumPoolSize((Integer) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_MAX_POOL_SIZE));
-			config.setMaxLifetime((Integer) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_MAX_LIFETIME));
-			config.setConnectionTimeout((Integer) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_CONNECTION_TIMEOUT));
 			try {
-				Driver driver;
+				ConsoleModule.info("MySQL flags: [" + String.join(", ", ((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS)).replace("?", "").split("&")) + "]");
+				final HikariConfig config = new HikariConfig();
+				config.setPoolName("HikariCP - LTItemMail MySQL");
+				config.setJdbcUrl("jdbc:mysql://" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_HOST) + "/" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_NAME) + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS));
+				config.setUsername((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_USER));
+				config.setPassword((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_PASSWORD));
+				config.addDataSourceProperty("cachePrepStmts", "true");
+				config.addDataSourceProperty("prepStmtCacheSize", "250");
+				config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+				config.addDataSourceProperty("useServerPrepStmts", "true");
+				config.addDataSourceProperty("useLocalSessionState", "true");
+				config.addDataSourceProperty("rewriteBatchedStatements", "true");
+				config.addDataSourceProperty("cacheResultSetMetadata", "true");
+				config.addDataSourceProperty("cacheServerConfiguration", "true");
+				config.addDataSourceProperty("elideSetAutoCommits", "true");
+				config.addDataSourceProperty("maintainTimeStats", "false");
+				config.addDataSourceProperty("cacheCallableStmts", "true");
+				config.setMaximumPoolSize((Integer) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_MAX_POOL_SIZE));
+				config.setMaxLifetime((Integer) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_MAX_LIFETIME));
+				config.setConnectionTimeout((Integer) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_CONNECTION_TIMEOUT));
 				try {
-					driver = (Driver) Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-				} catch (final ClassNotFoundException e) {
-					// The non deprecated driver was not found, fall back to the deprecated one.
-					driver = (Driver) Class.forName("com.mysql.jdbc.Driver").getDeclaredConstructor().newInstance();
+					Driver driver;
+					try {
+						driver = (Driver) Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+					} catch (final ClassNotFoundException e) {
+						// The non deprecated driver was not found, fall back to the deprecated one.
+						driver = (Driver) Class.forName("com.mysql.jdbc.Driver").getDeclaredConstructor().newInstance();
+					}
+					DriverManager.registerDriver(driver);
+				} catch (final Exception e) {
+					ConsoleModule.debug(DatabaseModule.MySQL.class, "Driver error.");
+					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 				}
-				DriverManager.registerDriver(driver);
-			} catch (final Exception e) {
-				ConsoleModule.debug(DatabaseModule.MySQL.class, "Driver error.");
+				final HikariDataSource data = new HikariDataSource(config);
+				if(data != null && data.isRunning()) {
+					ConsoleModule.info("Opened MySQL connection.");
+					return data;
+				}
+				data.close();
+			} catch(final PoolInitializationException e) {
+				ConsoleModule.severe("Could not open MySQL connection.");
+				ConsoleModule.severe("Check the MySQL login information in config.yml and restart your Minecraft server.");
+				ConsoleModule.severe("Is the MySQL server set up correctly?");
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+				Bukkit.getPluginManager().disablePlugin(LTItemMail.getInstance());
 			}
-			final HikariDataSource data = new HikariDataSource(config);
-			if(data != null && data.isRunning()) {
-				ConsoleModule.info("Opened MySQL connection.");
-				return data;
-			}
-			data.close();
-			ConsoleModule.severe("Could not open MySQL connection.");
-			ConsoleModule.severe("Check the MySQL login information in config.yml and restart your Minecraft server.");
-			ConsoleModule.severe("Is the MySQL server set up correctly?");
 			return null;
 		}
 	}
