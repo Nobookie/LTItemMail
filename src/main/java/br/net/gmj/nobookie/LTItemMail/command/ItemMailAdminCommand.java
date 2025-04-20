@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -19,18 +18,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
@@ -39,7 +32,6 @@ import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
-import br.net.gmj.nobookie.LTItemMail.util.FetchUtil.URL;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
@@ -256,26 +248,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 					new BukkitRunnable() {
 						@Override
 						public final void run() {
-							sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "Changelog:");
-							final Map<String, Object> params = new HashMap<>();
-							params.put("pretty", true);
-							params.put("tree", "changeSet[items[comment,commitId]]");
-							final String result = URL.get(DataModule.getLogURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params).replaceAll(System.lineSeparator(), "");
-							if(result != null) {
-								try {
-									final List<JsonElement> rawCommits = JsonParser.parseString(result).getAsJsonObject().get("changeSet").getAsJsonObject().get("items").getAsJsonArray().asList();
-									if(rawCommits.size() > 0) {
-										for(final JsonElement commits : rawCommits) {
-											final JsonObject commit = commits.getAsJsonObject();
-											sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString());
-											sender.sendMessage(ChatColor.DARK_GREEN + "    " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_DETAILS) + ": " + ChatColor.GREEN + "https://github.com/leothawne/LTItemMail/commit/" + commit.get("commitId").getAsString());
-										}
-									} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_NOTFOUND));
-								} catch(final JsonSyntaxException e) {
-									ConsoleModule.debug(getClass(), "Unable to retrieve changelog. Is the update server down?");
-									if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-								}
-							} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.DARK_RED + "Update server is down! Please, try again later.");
+							FetchUtil.Build.changelog(sender);
 						}
 					}.runTaskAsynchronously(LTItemMail.getInstance());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
