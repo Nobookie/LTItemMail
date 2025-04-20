@@ -22,6 +22,7 @@ import br.net.gmj.nobookie.LTItemMail.module.ext.LTPlaceholderAPI;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTPlugMan;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTRedProtect;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTSkulls;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTSlimefun;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTTownyAdvanced;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTVault;
@@ -79,6 +80,9 @@ public final class ExtensionModule {
 				break;
 			case CITIZENS:
 				REG.putIfAbsent(plugin, new LTCitizens());
+				break;
+			case SLIMEFUN:
+				REG.putIfAbsent(plugin, new LTSlimefun());
 				break;
 		}
 		return isRegistered(plugin);
@@ -169,6 +173,10 @@ public final class ExtensionModule {
 			warn(null, EXT.CITIZENS.plugin());
 			register(EXT.CITIZENS);
 		}
+		if(isInstalled(EXT.SLIMEFUN.plugin()) && !isRegistered(EXT.SLIMEFUN)) {
+			warn(null, EXT.SLIMEFUN.plugin());
+			register(EXT.SLIMEFUN);
+		}
 		plugMan = new LTPlugMan();
 	}
 	public static final ExtensionModule reload() {
@@ -196,7 +204,8 @@ public final class ExtensionModule {
 		ULTIMATEADVANCEMENTAPI(Bukkit.getPluginManager().getPlugin("UltimateAdvancementAPI")),
 		HEADDATABASE(Bukkit.getPluginManager().getPlugin("HeadDatabase")),
 		SKULLS(Bukkit.getPluginManager().getPlugin("Skulls")),
-		CITIZENS(Bukkit.getPluginManager().getPlugin("Citizens"));
+		CITIZENS(Bukkit.getPluginManager().getPlugin("Citizens")),
+		SLIMEFUN(Bukkit.getPluginManager().getPlugin("Slimefun"));
 		private final Plugin plugin;
 		EXT(final Plugin plugin){
 			this.plugin = plugin;
