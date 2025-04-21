@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
+import br.net.gmj.nobookie.LTItemMail.item.listener.MailboxItemListener;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
@@ -41,7 +42,7 @@ public final class MailboxItem implements Item {
 	}
 	@Override
 	public final List<Listener> getListeners() {
-		return Collections.emptyList();
+		return Arrays.asList(new MailboxItemListener());
 	}
 	@Override
 	public final void runTasks() {}

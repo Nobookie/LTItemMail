@@ -464,7 +464,7 @@ public final class DatabaseModule {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
 				final ResultSet results = statement.executeQuery("SELECT uuid_from FROM mailbox WHERE id = '" + mailboxID + "';");
 				if(results.next()) {
-					try {
+					if(!results.getString("uuid_from").isEmpty()) try {
 						final UUID from = UUID.fromString(results.getString("uuid_from"));
 						return from;
 					} catch(final IllegalArgumentException e) {

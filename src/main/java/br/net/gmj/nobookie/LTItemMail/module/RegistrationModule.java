@@ -15,7 +15,7 @@ import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 public final class RegistrationModule {
 	private RegistrationModule() {}
 	public static final void setupItems() {
-		for(final Item i : Active.ITEMS) {
+		for(final Item i : ITEMS) {
 			for(final Listener l : i.getListeners()) Bukkit.getPluginManager().registerEvents(l, LTItemMail.getInstance());
 			i.runTasks();
 			try {
@@ -28,13 +28,11 @@ public final class RegistrationModule {
 		}
 	}
 	public static final void setupBlocks() {
-		for(final Block b : Active.BLOCKS) {
+		for(final Block b : BLOCKS) {
 			for(final Listener l : b.getListeners()) Bukkit.getPluginManager().registerEvents(l, LTItemMail.getInstance());
 			b.runTasks();
 		}
 	}
-	private static final class Active {
-		private static final List<Item> ITEMS = Arrays.asList(new MailboxItem());
-		private static final List<Block> BLOCKS = Arrays.asList(new MailboxBlock(null, null, null, null, null, null, null));
-	}
+	private static final List<Item> ITEMS = Arrays.asList(new MailboxItem());
+	private static final List<Block> BLOCKS = Arrays.asList(new MailboxBlock(null, null, null, null, null, null, null));
 }
