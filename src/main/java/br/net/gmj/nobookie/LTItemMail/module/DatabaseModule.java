@@ -46,7 +46,7 @@ public final class DatabaseModule {
 		private static final HikariDataSource connect() {
 			if(file.exists()) {
 				final HikariConfig config = new HikariConfig();
-				config.setPoolName("HikariCP - LTItemMail SQLite");
+				config.setPoolName("LTItemMail SQLite");
 				config.setJdbcUrl("jdbc:sqlite:" + LTItemMail.getInstance().getDataFolder() + File.separator + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_SQLITE_FILE));
 				final HikariDataSource data = new HikariDataSource(config);
 				if(data != null && data.isRunning()) {
@@ -64,7 +64,7 @@ public final class DatabaseModule {
 			try {
 				ConsoleModule.info("MySQL flags: [" + String.join(", ", ((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS)).replace("?", "").split("&")) + "]");
 				final HikariConfig config = new HikariConfig();
-				config.setPoolName("HikariCP - LTItemMail MySQL");
+				config.setPoolName("LTItemMail MySQL");
 				config.setJdbcUrl("jdbc:mysql://" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_HOST) + "/" + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_NAME) + (String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_FLAGS));
 				config.setUsername((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_USER));
 				config.setPassword((String) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_MYSQL_PASSWORD));
