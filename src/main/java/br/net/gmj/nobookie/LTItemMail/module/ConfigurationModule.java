@@ -91,7 +91,7 @@ public final class ConfigurationModule {
 			} else result = LTItemMail.getInstance().configuration.get(path);
 			if(type.equals(Type.PLUGIN_TAG) || type.equals(Type.MAILBOX_NAME) || type.equals(Type.MAILBOX_NAME)) result = BukkitUtil.Text.Color.format((String) result);
 		} else {
-			ConsoleModule.info("Configuration fallback: [" + path + ":" + result + "]");
+			ConsoleModule.info("Configuration fallback [" + path + ":\"" + result + "\"]");
 			LTItemMail.getInstance().configuration.set(path, result);
 			try {
 				LTItemMail.getInstance().configuration.save(file);
