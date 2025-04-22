@@ -66,7 +66,7 @@ public final class LanguageModule {
 			result = LTItemMail.getInstance().language.getString(path);
 			if(type.equals(Type.MAILBOX_COST) || type.equals(Type.MAILBOX_LABEL) || type.equals(Type.ENTITY_PARROT_NAME)) result = BukkitUtil.Text.Color.format((String) result);
 		} else {
-			ConsoleModule.info("Language fallback: [" + path + ":" + result + "]");
+			ConsoleModule.info("Language fallback [" + path + ":\"" + result + "\"]");
 			LTItemMail.getInstance().language.set(path, result);
 			try {
 				LTItemMail.getInstance().language.save(file);
@@ -168,7 +168,7 @@ public final class LanguageModule {
 		COMMAND_ADMIN_DUMP("command.admin.dump", "Useful for debugging."),
 		COMMAND_ADMIN_CHANGELOG_MAIN("command.admin.changelog.changelog", "Shows the changelog of the current build of the plugin."),
 		COMMAND_ADMIN_CHANGELOG_NOTFOUND("command.admin.changelog.notfound", "No changelog found."),
-		COMMAND_ADMIN_CHANGELOG_DETAILS("command.admin.changelog.notfound", "Details:"),
+		COMMAND_ADMIN_CHANGELOG_DETAILS("command.admin.changelog.details", "Details:"),
 		COMMAND_WIPE_WIPE("command.wipe.wipe", "Wipe every data from the database."),
 		COMMAND_WIPE_WARNING("command.wipe.warning", "Every data from the database will be wiped and will not be possible to recover. Are you sure you want to continue? To agree and continue, type"),
 		COMMAND_WIPE_WIPING("command.wipe.purging", "Wiping database now..."),
@@ -188,37 +188,6 @@ public final class LanguageModule {
 		}
 		public final String result() {
 			return result;
-		}
-	}
-	public static final class I {
-		public static final String g(final i i) {
-			if(((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).equals("portuguese")) switch(i) {
-				case R_S:
-					return "Download de recurso iniciado";
-				case R_D:
-					return "Baixando recurso";
-				case R_C:
-					return "Download de recurso finalizado";
-				case R_F:
-					return "Download de recurso falhou";
-			}
-			switch(i) {
-				case R_S:
-					return "Resource download started";
-				case R_D:
-					return "Downloading resource";
-				case R_C:
-					return "Resource download completed";
-				case R_F:
-					return "Resource download failed";
-			}
-			return null;
-		}
-		public enum i {
-			R_S,
-			R_D,
-			R_C,
-			R_F
 		}
 	}
 }
