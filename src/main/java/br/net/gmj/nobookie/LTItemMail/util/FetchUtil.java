@@ -149,29 +149,46 @@ public final class FetchUtil {
 						@Override
 						public final void onDownloadStart(final Download download) {
 							super.onDownloadStart(download);
-							if(!silent) {
-								ConsoleModule.warning("▶ " + LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
-							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_S) + ": " + name);
+							if(!silent) ConsoleModule.info("▶ Download started [" + name + "].");
+							ConsoleModule.debug(FetchUtil.FileManager.class, "Download started [" + name + "]: " + url);
 						}
 						@Override
-						public final void onDownloadSpeedProgress(final Download download, final int downloadedSize, final int maxSize, final int downloadPercent, final int bytesPerSec) {
-							if(!silent) {
-								ConsoleModule.info("⏳ " + LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
-							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
+						public final void onDownloadSpeedProgress(final Download download, final int current, final int max, final int progress, final int speed) {
+							if(!silent) ConsoleModule.info("⏳ Downloading resource [" + name + "]: " + progress + "%");
+							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) {
+								double currentSize = current;
+								double maxSize = max;
+								String suffix = "B";
+								if(current >= 1000) currentSize = SizeUtil.toKBFB(current);
+								if(current >= 1000000) currentSize = SizeUtil.toMBFB(current);
+								if(current >= 1000000000) currentSize = SizeUtil.toGBFB(current);
+								if(max >= 1000) {
+									maxSize = SizeUtil.toKBFB(max);
+									suffix = "KB";
+								}
+								if(max >= 1000000) {
+									maxSize = SizeUtil.toMBFB(max);
+									suffix = "MB";
+								}
+								if(max >= 1000000000) {
+									maxSize = SizeUtil.toGBFB(max);
+									suffix = "GB";
+								}
+								ConsoleModule.debug(FetchUtil.FileManager.class, "Downloading resource [" + name + "]: " + progress + "% (Size: " + String.format("%.2f", currentSize) + "/" + String.format("%.2f", maxSize) + " " + suffix + ", Speed: " + String.format("%.2f", SizeUtil.toMBFB(speed)) + " MB/s)");
+							}
 						}
 						@Override
 						public final void onDownloadFinish(final Download download) {
 							super.onDownloadFinish(download);
-							if(!silent) {
-								ConsoleModule.warning("✔️ " + LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
-							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_C) + ": " + current.getAbsolutePath());
+							if(!silent) ConsoleModule.info("✔️ Download completed [" + name + "].");
+							ConsoleModule.debug(FetchUtil.FileManager.class, "Download completed [" + name + "]: " + current.getAbsolutePath());
 						}
 						@Override
 						public final void onDownloadError(final Download download, final Exception e) {
 							super.onDownloadError(download, e);
-							if(!silent) {
-								ConsoleModule.severe("❌ " + LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
-							} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
+							current.delete();
+							if(!silent) ConsoleModule.warning("❌ Download failed [" + name + "].");
+							ConsoleModule.debug(FetchUtil.FileManager.class, "Download failed [" + name + "].");
 							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 						}
 					});
@@ -251,7 +268,7 @@ public final class FetchUtil {
 						for(final JsonElement commits : rawCommits) {
 							final JsonObject commit = commits.getAsJsonObject();
 							sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString());
-							sender.sendMessage(ChatColor.DARK_GREEN + "    " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_DETAILS) + ": " + ChatColor.GREEN + "https://github.com/leothawne/LTItemMail/commit/" + commit.get("commitId").getAsString());
+							sender.sendMessage(ChatColor.DARK_GREEN + "    " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_DETAILS) + ChatColor.GREEN + "https://github.com/leothawne/LTItemMail/commit/" + commit.get("commitId").getAsString());
 						}
 					} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_NOTFOUND));
 				} catch(final JsonSyntaxException e) {
