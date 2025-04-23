@@ -1,24 +1,24 @@
-package br.net.gmj.nobookie.LTItemMail.event;
+package br.net.gmj.nobookie.LTItemMail.api.event;
 
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
 
-import br.net.gmj.nobookie.LTItemMail.block.Block;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.block.Block;
+import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 /**
  * 
- * Event called when a mailbox block is placed by a player.
+ * Event called when a mailbox block is broken by a player.
  * 
  * @author Nobookie
  * 
  */
-public class PlayerPlaceMailboxBlockEvent extends PlaceMailboxBlockEvent implements Cancellable {
+public class PlayerBreakMailboxBlockEvent extends BreakMailboxBlockEvent implements Cancellable {
 	private final LTPlayer player;
 	private Boolean cancelled = false;
-	public PlayerPlaceMailboxBlockEvent(final Block block, final PlaceMailboxBlockEvent.Reason reason, final LTPlayer player) {
-		super(block, reason);
+	public PlayerBreakMailboxBlockEvent(final Block block, final BreakMailboxBlockEvent.Reason reason, final LTPlayer player) {
+		super(block, reason, false, null);
 		this.player = player;
 	}
 	/**
@@ -41,7 +41,7 @@ public class PlayerPlaceMailboxBlockEvent extends PlaceMailboxBlockEvent impleme
 	}
 	/**
 	 * 
-	 * Cancels the event. If cancelled, the block will not be placed.
+	 * Cancels the event. If cancelled, the block will not be broken.
 	 * 
 	 */
 	@Override

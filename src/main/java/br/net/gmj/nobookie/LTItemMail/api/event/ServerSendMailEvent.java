@@ -1,4 +1,4 @@
-package br.net.gmj.nobookie.LTItemMail.event;
+package br.net.gmj.nobookie.LTItemMail.api.event;
 
 import java.util.LinkedList;
 
@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 /**
  * 
  * Event called when a mailbox is sent.

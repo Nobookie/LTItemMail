@@ -27,11 +27,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
-import br.net.gmj.nobookie.LTItemMail.event.BreakMailboxBlockEvent;
-import br.net.gmj.nobookie.LTItemMail.event.PlayerBreakMailboxBlockEvent;
-import br.net.gmj.nobookie.LTItemMail.event.PlayerPlaceMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.event.BreakMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.event.PlayerBreakMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.event.PlayerPlaceMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.item.Item;
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;

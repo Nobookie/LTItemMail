@@ -1,6 +1,6 @@
 package br.net.gmj.nobookie.LTItemMail.block.task;
 
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;

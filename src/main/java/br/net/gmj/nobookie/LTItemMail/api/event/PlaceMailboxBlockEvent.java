@@ -1,11 +1,11 @@
-package br.net.gmj.nobookie.LTItemMail.event;
+package br.net.gmj.nobookie.LTItemMail.api.event;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import br.net.gmj.nobookie.LTItemMail.block.Block;
+import br.net.gmj.nobookie.LTItemMail.api.block.Block;
 /**
  * 
  * Event called when a mailbox block is placed.

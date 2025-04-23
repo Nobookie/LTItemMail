@@ -1,4 +1,4 @@
-package br.net.gmj.nobookie.LTItemMail.block;
+package br.net.gmj.nobookie.LTItemMail.api.block;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package br.net.gmj.nobookie.LTItemMail.entity;
+package br.net.gmj.nobookie.LTItemMail.api.event.entity;
 
 import java.util.LinkedList;
 import java.util.UUID;

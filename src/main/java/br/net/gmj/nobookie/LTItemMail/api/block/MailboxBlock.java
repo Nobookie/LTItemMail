@@ -1,4 +1,4 @@
-package br.net.gmj.nobookie.LTItemMail.block;
+package br.net.gmj.nobookie.LTItemMail.api.block;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,12 +13,12 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.LTItemMailAPI;
+import br.net.gmj.nobookie.LTItemMail.api.LTItemMailAPI;
+import br.net.gmj.nobookie.LTItemMail.api.event.BreakMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.event.PlaceMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.block.listener.MailboxBlockListener;
 import br.net.gmj.nobookie.LTItemMail.block.task.MailboxBlockTask;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
-import br.net.gmj.nobookie.LTItemMail.event.BreakMailboxBlockEvent;
-import br.net.gmj.nobookie.LTItemMail.event.PlaceMailboxBlockEvent;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
