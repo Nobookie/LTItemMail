@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.api.block.Block;
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.item.Item;
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
@@ -27,12 +26,10 @@ public final class RegistrationModule {
 			}
 		}
 	}
-	public static final void setupBlocks() {
-		for(final Block b : BLOCKS) {
-			for(final Listener l : b.getListeners()) Bukkit.getPluginManager().registerEvents(l, LTItemMail.getInstance());
-			b.runTasks();
-		}
+	public static final void setupBlock() {
+		final MailboxBlock mailbox = new MailboxBlock(null, null, null, null, null, null, null);
+		for(final Listener listener : mailbox.getListeners()) Bukkit.getPluginManager().registerEvents(listener, LTItemMail.getInstance());
+		mailbox.runTasks();
 	}
 	private static final List<Item> ITEMS = Arrays.asList(new MailboxItem());
-	private static final List<Block> BLOCKS = Arrays.asList(new MailboxBlock(null, null, null, null, null, null, null));
 }

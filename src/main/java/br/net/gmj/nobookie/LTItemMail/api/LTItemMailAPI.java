@@ -1,12 +1,12 @@
 package br.net.gmj.nobookie.LTItemMail.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,10 +16,9 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.api.block.Block;
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.api.event.ServerSendMailEvent;
-import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
@@ -105,45 +104,32 @@ public final class LTItemMailAPI {
 	}
 	/**
 	 * 
-	 * Gets all existing types of
-	 * LT Item Mail blocks standing
-	 * in one or more worlds.
+	 * Gets all existing mailbox
+	 * blocks standing in
+	 * one or more worlds.
 	 * 
-	 * @return A list of LT Item Mail blocks.
+	 * @return List of {@link MailboxBlock}.
 	 * 
 	 */
 	@NotNull
-	public static final List<Block> getBlockList(){
-		final List<Block> blockList = new ArrayList<>();
+	public static final List<MailboxBlock> getMailboxBlockList(){
+		final List<MailboxBlock> blockList = new ArrayList<>();
 		for(final MailboxBlock mailboxBlock : DatabaseModule.Block.getMailboxBlocks()) blockList.add(mailboxBlock);
 		return blockList;
 	}
 	/**
 	 * 
-	 * Gets all existing LT Item Mail
-	 * blocks standing in one or
-	 * more worlds of the specified
-	 * block type.
+	 * Gets a LT Item Mail block
+	 * on the provided location.
 	 * 
-	 * @param blockType The type of block to be retrieved (See {@link Block.Type}).
+	 * @param location The location to look (See {@link Location}).
 	 * 
-	 * @return A list of LT Item Mail blocks.
+	 * @return The {@link MailboxBlock} object or null if not found.
 	 * 
 	 */
-	@NotNull
-	public static final List<Block> getBlockList(@NotNull final Block.Type blockType){
-		try {
-			final List<Block> blockList = new ArrayList<>();
-			switch(blockType) {
-				case MAILBOX_BLOCK:
-					for(final MailboxBlock mailboxBlock : DatabaseModule.Block.getMailboxBlocks()) blockList.add(mailboxBlock);
-					return blockList;
-			}
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(LTItemMailAPI.class, "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
-		return Collections.emptyList();
+	public static final MailboxBlock getMailboxBlock(final Location location) {
+		if(DatabaseModule.Block.isMailboxBlock(location)) for(final MailboxBlock mailbox : getMailboxBlockList()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID)) && mailbox.getLocation().equals(location)) return mailbox;
+		return null;
 	}
 	/**
 	 * 

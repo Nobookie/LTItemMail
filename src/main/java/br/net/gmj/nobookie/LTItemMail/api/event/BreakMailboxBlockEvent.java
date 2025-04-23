@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import br.net.gmj.nobookie.LTItemMail.api.block.Block;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 /**
  * 
  * Event called when a mailbox block breaks.
@@ -15,11 +15,11 @@ import br.net.gmj.nobookie.LTItemMail.api.block.Block;
  */
 public class BreakMailboxBlockEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
-	private final Block block;
+	private final MailboxBlock block;
 	private Reason reason;
 	private final Boolean virtual;
 	private final ClaimProvider provider;
-	public BreakMailboxBlockEvent(final Block block, final Reason reason, final Boolean virtual, final ClaimProvider provider) {
+	public BreakMailboxBlockEvent(final MailboxBlock block, final Reason reason, final Boolean virtual, final ClaimProvider provider) {
 		super(!Bukkit.getServer().isPrimaryThread());
 		this.block = block;
 		this.reason = reason;
@@ -32,7 +32,7 @@ public class BreakMailboxBlockEvent extends Event {
 	 * 
 	 */
 	@NotNull
-	public final Block getBlock() {
+	public final MailboxBlock getBlock() {
 		return block;
 	}
 	/**

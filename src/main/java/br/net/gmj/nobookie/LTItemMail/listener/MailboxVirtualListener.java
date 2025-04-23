@@ -24,8 +24,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.api.event.PlayerSendMailEvent;
-import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;

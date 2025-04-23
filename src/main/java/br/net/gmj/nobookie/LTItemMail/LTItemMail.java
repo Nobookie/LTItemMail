@@ -101,7 +101,7 @@ public final class LTItemMail extends JavaPlugin {
 			registerListeners();
 			runTasks();
 			RegistrationModule.setupItems();
-			RegistrationModule.setupBlocks();
+			RegistrationModule.setupBlock();
 			new CommandModule();
 			MailboxModule.ready();
 			new FetchUtil.Stats();

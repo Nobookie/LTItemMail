@@ -14,8 +14,8 @@ import org.bukkit.inventory.ItemStack;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.api.event.BreakMailboxBlockEvent;
-import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;

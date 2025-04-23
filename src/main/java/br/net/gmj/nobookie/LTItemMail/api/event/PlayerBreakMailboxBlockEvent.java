@@ -3,8 +3,8 @@ package br.net.gmj.nobookie.LTItemMail.api.event;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
 
-import br.net.gmj.nobookie.LTItemMail.api.block.Block;
-import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 /**
@@ -17,7 +17,7 @@ import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 public class PlayerBreakMailboxBlockEvent extends BreakMailboxBlockEvent implements Cancellable {
 	private final LTPlayer player;
 	private Boolean cancelled = false;
-	public PlayerBreakMailboxBlockEvent(final Block block, final BreakMailboxBlockEvent.Reason reason, final LTPlayer player) {
+	public PlayerBreakMailboxBlockEvent(final MailboxBlock block, final BreakMailboxBlockEvent.Reason reason, final LTPlayer player) {
 		super(block, reason, false, null);
 		this.player = player;
 	}

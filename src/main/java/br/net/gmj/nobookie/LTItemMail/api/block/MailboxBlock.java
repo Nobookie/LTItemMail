@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.LTItemMailAPI;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.api.event.BreakMailboxBlockEvent;
 import br.net.gmj.nobookie.LTItemMail.api.event.PlaceMailboxBlockEvent;
-import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.block.listener.MailboxBlockListener;
 import br.net.gmj.nobookie.LTItemMail.block.task.MailboxBlockTask;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
@@ -30,7 +30,7 @@ import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
  * @author Nobookie
  * 
  */
-public final class MailboxBlock implements Block {
+public final class MailboxBlock {
 	private final Integer id;
 	private LTPlayer owner;
 	private final String server;
@@ -58,25 +58,14 @@ public final class MailboxBlock implements Block {
 	 * Gets the block id.
 	 * 
 	 */
-	@Override
 	public final Integer getId() {
 		return id;
-	}
-	/**
-	 * 
-	 * Gets the block type.
-	 * 
-	 */
-	@Override
-	public final Block.Type getType(){
-		return Block.Type.MAILBOX_BLOCK;
 	}
 	/**
 	 * 
 	 * Gets in which server the block was created.
 	 * 
 	 */
-	@Override
 	public final String getServer() {
 		return server;
 	}
@@ -85,7 +74,6 @@ public final class MailboxBlock implements Block {
 	 * Gets the block current location.
 	 * 
 	 */
-	@Override
 	public final Location getLocation() {
 		return new Location(world, x, y, z);
 	}
@@ -94,7 +82,6 @@ public final class MailboxBlock implements Block {
 	 * Converts from LT Item Mail block to Bukkit block.
 	 * 
 	 */
-	@Override
 	public final org.bukkit.block.Block getBukkitBlock(){
 		return getLocation().getBlock();
 	}
@@ -103,7 +90,6 @@ public final class MailboxBlock implements Block {
 	 * Used internally. Do not mess with it.
 	 * 
 	 */
-	@Override
 	public final List<Listener> getListeners(){
 		return Arrays.asList(new MailboxBlockListener());
 	}
@@ -113,7 +99,6 @@ public final class MailboxBlock implements Block {
 	 * Used internally. Do not mess with it.
 	 * 
 	 */
-	@Override
 	public final void runTasks() {
 		if(LTItemMail.getInstance().connection != null) tasks.add(Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new MailboxBlockTask(), 20, 20));
 	}
@@ -122,7 +107,6 @@ public final class MailboxBlock implements Block {
 	 * Used internally. Do not mess with it.
 	 * 
 	 */
-	@Override
 	public final List<BukkitTask> getTasks(){
 		return tasks;
 	}

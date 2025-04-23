@@ -7,7 +7,7 @@ import java.util.List;
 import org.bukkit.OfflinePlayer;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.api.event.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
