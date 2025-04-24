@@ -19,8 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
@@ -238,7 +238,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 		} else if(args[0].equalsIgnoreCase("dump")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) {
 				if(args.length == 1) {
-					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + LTItemMail.getInstance().getDescription().getName() + " version " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER));
+					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + LTItemMail.getInstance().getDescription().getName() + " version " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + ChatColor.RESET + " build " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
 					for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + plugin.plugin().getDescription().getName() + " version " + ChatColor.GREEN + plugin.plugin().getDescription().getVersion());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
