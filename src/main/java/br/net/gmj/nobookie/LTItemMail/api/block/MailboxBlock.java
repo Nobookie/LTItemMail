@@ -40,7 +40,7 @@ public final class MailboxBlock {
 	private final Integer z;
 	/**
 	 * 
-	 * Use {@link LTItemMailAPI#getBlockList()} instead.
+	 * Use {@link LTItemMailAPI#getMailboxBlock(Location)} instead.
 	 * 
 	 * 
 	 */
