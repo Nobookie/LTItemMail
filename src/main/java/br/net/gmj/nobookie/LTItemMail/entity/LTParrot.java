@@ -4,7 +4,7 @@ import net.citizensnpcs.api.npc.NPC;
 
 public final class LTParrot {
 	private final NPC parrot;
-	private boolean dismiss = false;
+	private boolean dismissed = false;
 	public LTParrot(final NPC parrot) {
 		this.parrot = parrot;
 	}
@@ -12,9 +12,9 @@ public final class LTParrot {
 		return parrot;
 	}
 	public final boolean isDismissed() {
-		return dismiss;
+		return dismissed;
 	}
 	public final void setDismissed(final boolean dismiss) {
-		this.dismiss = dismiss;
+		this.dismissed = dismiss;
 	}
 }
