@@ -8,7 +8,7 @@ public final class DataModule {
 	public static final String ARTIFACT = "https://jenkins.gmj.net.br/job/LTItemMail/lastSuccessfulBuild/artifact/target/LTItemMail.jar";
 	private static final String PLUGIN = "https://request.gmj.net.br/LTItemMail/$version/manifest.yml";
 	public static final String RESOURCE_ARTIFACT = "https://jenkins.gmj.net.br/job/LTItemMail-ResourcePack/lastSuccessfulBuild/artifact/LTItemMail-ResourcePack.zip";
-	public static final Integer STABLE = 83;
+	public static final Integer STABLE = 99;
 	public static final String DISCORD = "https://discord.gg/Nvnrv3P";
 	public static final String getDateURL(final Integer build) {
 		return DATE.replace("$build", String.valueOf(build));
