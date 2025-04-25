@@ -1,6 +1,7 @@
 package br.net.gmj.nobookie.LTItemMail.api.event;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
@@ -10,8 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
-import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 /**
  * 
  * Event called when a mailbox is sent by a player.
@@ -115,13 +114,9 @@ public final class PlayerSendMailEvent extends Event implements Cancellable {
 	 * 
 	 */
 	@Override
-	public final void setCancelled(@NotNull final boolean cancel) {
-		try {
-			cancelled = cancel;
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(getClass(), "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+	public final void setCancelled(@NotNull final boolean cancel) throws NullPointerException {
+		Objects.requireNonNull(cancel);
+		cancelled = cancel;
 	}
 	/**
 	 * 
@@ -137,12 +132,8 @@ public final class PlayerSendMailEvent extends Event implements Cancellable {
 	 * Sets the event cancel reason.
 	 * 
 	 */
-	public final void setCancelReason(@NotNull final String reason) {
-		try {
-			cancelReason = reason;
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(getClass(), "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+	public final void setCancelReason(@NotNull final String reason) throws NullPointerException {
+		Objects.requireNonNull(reason);
+		cancelReason = reason;
 	}
 }

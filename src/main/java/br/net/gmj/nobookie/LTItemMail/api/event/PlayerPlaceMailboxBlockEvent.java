@@ -1,12 +1,12 @@
 package br.net.gmj.nobookie.LTItemMail.api.event;
 
+import java.util.Objects;
+
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
 
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
-import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 /**
  * 
  * Event called when a mailbox block is placed by a player.
@@ -45,12 +45,8 @@ public class PlayerPlaceMailboxBlockEvent extends PlaceMailboxBlockEvent impleme
 	 * 
 	 */
 	@Override
-	public final void setCancelled(@NotNull final boolean cancel) {
-		try {
-			cancelled = cancel;
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(getClass(), "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+	public final void setCancelled(@NotNull final boolean cancel) throws NullPointerException {
+		Objects.requireNonNull(cancel);
+		cancelled = cancel;
 	}
 }

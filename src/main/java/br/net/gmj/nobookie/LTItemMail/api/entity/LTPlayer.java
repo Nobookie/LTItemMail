@@ -1,6 +1,7 @@
 package br.net.gmj.nobookie.LTItemMail.api.entity;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -45,14 +46,10 @@ public final class LTPlayer {
 	 * @param name The player name.
 	 * 
 	 */
-	public static final LTPlayer fromName(@NotNull final String name) {
-		try {
-			final UUID uuid = FetchUtil.Player.fromName(name);
-			if(uuid != null) return new LTPlayer(Bukkit.getOfflinePlayer(uuid), FetchUtil.Player.fromUUID(uuid), uuid);
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(LTPlayer.class, "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+	public static final LTPlayer fromName(@NotNull final String name) throws NullPointerException {
+		Objects.requireNonNull(name);
+		final UUID uuid = FetchUtil.Player.fromName(name);
+		if(uuid != null) return new LTPlayer(Bukkit.getOfflinePlayer(uuid), FetchUtil.Player.fromUUID(uuid), uuid);
 		return null;
 	}
 	/**
@@ -62,14 +59,10 @@ public final class LTPlayer {
 	 * @param uuid The player UUID.
 	 * 
 	 */
-	public static final LTPlayer fromUUID(@NotNull final UUID uuid) {
-		try {
-			final String name = FetchUtil.Player.fromUUID(uuid);
-			if(name != null) return new LTPlayer(Bukkit.getOfflinePlayer(FetchUtil.Player.fromName(name)), name, FetchUtil.Player.fromName(name));
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(LTPlayer.class, "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+	public static final LTPlayer fromUUID(@NotNull final UUID uuid) throws NullPointerException {
+		Objects.requireNonNull(uuid);
+		final String name = FetchUtil.Player.fromUUID(uuid);
+		if(name != null) return new LTPlayer(Bukkit.getOfflinePlayer(FetchUtil.Player.fromName(name)), name, FetchUtil.Player.fromName(name));
 		return null;
 	}
 	/**
@@ -77,14 +70,9 @@ public final class LTPlayer {
 	 * Converts from Bukkit player to LTPlayer (same as {@link LTPlayer#fromName(String)}.
 	 * 
 	 */
-	public static final LTPlayer fromBukkitPlayer(@NotNull final OfflinePlayer player) {
-		try {
-			return LTPlayer.fromName(player.getName());
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(LTPlayer.class, "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
-		return null;
+	public static final LTPlayer fromBukkitPlayer(@NotNull final OfflinePlayer player) throws NullPointerException {
+		Objects.requireNonNull(player);
+		return LTPlayer.fromName(player.getName());
 	}
 	/**
 	 * 
@@ -105,15 +93,11 @@ public final class LTPlayer {
 	 * 
 	 */
 	@NotNull
-	public final Boolean forceSend(@NotNull final LTPlayer playerTo, @NotNull final LinkedList<ItemStack> items, @NotNull final String label) {
-		try {
-			MailboxModule.send(player.getPlayer(), playerTo, items, label);
-			return true;
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(getClass(), "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
-		return false;
+	public final void forceSend(@NotNull final LTPlayer playerTo, @NotNull final LinkedList<ItemStack> items, @NotNull final String label) throws NullPointerException {
+		Objects.requireNonNull(playerTo);
+		Objects.requireNonNull(items);
+		Objects.requireNonNull(label);
+		MailboxModule.send(player.getPlayer(), playerTo, items, label);
 	}
 	/**
 	 * 
@@ -218,16 +202,14 @@ public final class LTPlayer {
 	 * 
 	 */
 	@NotNull
-	public final void sendToastMessage(@NotNull final String message) {
-		try {
-			if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) {
-				final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
-				ultimateAdvancementAPI.show(this, message);
-			}
-		} catch(final IllegalArgumentException e) {
-			ConsoleModule.debug(getClass(), "Argument cannot be null.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+	public final Boolean sendToastMessage(@NotNull final String message) throws NullPointerException {
+		Objects.requireNonNull(message);
+		if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) {
+			final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
+			ultimateAdvancementAPI.show(this, message);
+			return true;
 		}
+		return false;
 	}
 	/**
 	 * 
@@ -244,7 +226,8 @@ public final class LTPlayer {
 	 * @param message The message that will be shown.
 	 * 
 	 */
-	public final Boolean sendMessage(@NotNull final String message) {
+	public final Boolean sendMessage(@NotNull final String message) throws NullPointerException {
+		Objects.requireNonNull(message);
 		if(getBukkitPlayer().getPlayer() != null) {
 			getBukkitPlayer().getPlayer().sendMessage(message);
 			return true;
@@ -274,7 +257,9 @@ public final class LTPlayer {
 		 * @param component The component to send.
 		 * 
 		 */
-		public final Boolean sendMessage(@NotNull final ChatMessageType type, @NotNull final BaseComponent[] component) {
+		public final Boolean sendMessage(@NotNull final ChatMessageType type, @NotNull final BaseComponent[] component) throws NullPointerException {
+			Objects.requireNonNull(type);
+			Objects.requireNonNull(component);
 			if(player.getBukkitPlayer().getPlayer() != null) {
 				player.getBukkitPlayer().getPlayer().spigot().sendMessage(type, component);
 				return true;
