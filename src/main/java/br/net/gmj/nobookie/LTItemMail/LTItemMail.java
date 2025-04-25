@@ -86,8 +86,8 @@ public final class LTItemMail extends JavaPlugin {
 			ConsoleModule.hello();
 			loadLang();
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-				getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeModule());
+				Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+				Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeModule());
 			}
 			loadModels();
 			loadDatabase();
@@ -119,10 +119,8 @@ public final class LTItemMail extends JavaPlugin {
 		Bukkit.getScheduler().cancelTasks(this);
 		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-			getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
-			getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
-		}
+		if(Bukkit.getMessenger().isOutgoingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
+		if(Bukkit.getMessenger().isIncomingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
 	}
 	public final void reload() {
 		PermissionModule.unload();

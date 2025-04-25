@@ -32,9 +32,8 @@ public final class BungeeModule implements PluginMessageListener {
 				bungee.writeUTF("ALL");
 				Bukkit.getServer().sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", bungee.toByteArray());
 			}
-		}.runTaskTimer(LTItemMail.getInstance(), 10, 10);
+		}.runTaskTimerAsynchronously(LTItemMail.getInstance(), 20, 20);
 	}
-	private final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
 	@Override
 	public final void onPluginMessageReceived(final String channel, final Player player, final byte[] message) {
 		if(!channel.equals("BungeeCord")) return;
@@ -71,7 +70,7 @@ public final class BungeeModule implements PluginMessageListener {
 								bukkitReceiver.sendTitle(ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) +  " " + ChatColor.GREEN, sender.getName() + " (#" + mailboxID + ")", 20 * 1, 20 * 5, 20 * 1);
 								break;
 							case TOAST:
-								if(ultimateAdvancementAPI != null) ultimateAdvancementAPI.show(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + " (#" + mailboxID + ")");
+								if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) ((LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)).show(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + " (#" + mailboxID + ")");
 								break;
 						}
 					}
@@ -81,11 +80,12 @@ public final class BungeeModule implements PluginMessageListener {
 					if(server.equals("ALL")) {
 						players.clear();
 						final String[] playerList = in.readUTF().split(", ");
-						for(final String bungeePlayer : playerList) players.add(bungeePlayer);
+						for(final String fromBungee : playerList) players.add(fromBungee);
 					}
 					break;
 			}
 		} catch(final IOException e) {
+			ConsoleModule.debug(getClass(), "An error occurred while receiving message from BungeeCord channel.");
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 		}
 	}
