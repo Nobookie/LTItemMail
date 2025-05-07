@@ -5,14 +5,14 @@
 	<version>1.1.1</version>
 	<name>LTItemMail</name>
 	<description>Have you ever imagined mailing items to your friends in Minecraft?</description>
-	<url>https://github.com/leothawne/LTItemMail</url>
+	<url>https://github.com/Nobookie/LTItemMail</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<distributionManagement>
         <repository>
             <id>gmj-repository</id>
-            <url>https://maven.gmj.net.br/releases</url>
+            <url>https://maven.nobookie.net.br/releases</url>
         </repository>
     </distributionManagement>
 	<build>
@@ -431,6 +431,18 @@
 	        <groupId>net.citizensnpcs</groupId>
 	        <artifactId>citizens-main</artifactId>
 	        <version>2.0.38-SNAPSHOT</version>
+	        <scope>provided</scope>
+	        <exclusions>
+	            <exclusion>
+	                <groupId>*</groupId>
+	                <artifactId>*</artifactId>
+	            </exclusion>
+	        </exclusions>
+	    </dependency>
+	    <dependency>
+	        <groupId>com.github.angeschossen</groupId>
+	        <artifactId>LandsAPI</artifactId>
+	        <version>7.15.4</version>
 	        <scope>provided</scope>
 	        <exclusions>
 	            <exclusion>
