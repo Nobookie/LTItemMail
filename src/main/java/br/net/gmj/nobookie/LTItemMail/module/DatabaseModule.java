@@ -605,6 +605,17 @@ public final class DatabaseModule {
 			}
 			return blocks;
 		}
+		public static final List<MailboxBlock> getMailboxBlocks(final UUID owner){
+			final List<MailboxBlock> blocks = new ArrayList<>();
+			try {
+				final Statement statement = LTItemMail.getInstance().connection.createStatement();
+				final ResultSet results = statement.executeQuery("SELECT * FROM mailbox_block WHERE owner_uuid = '" + owner.toString() + "' ORDER BY id ASC;");
+				while(results.next()) blocks.add(new MailboxBlock(results.getInt("id"), LTPlayer.fromUUID(owner), results.getString("mailbox_server"), Bukkit.getWorld(results.getString("mailbox_world")), results.getInt("mailbox_x"), results.getInt("mailbox_y"), results.getInt("mailbox_z")));
+			} catch (final SQLException | NullPointerException e) {
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+			}
+			return blocks;
+		}
 		public static final boolean placeMailbox(final UUID owner, Location block) {
 			try {
 				final PreparedStatement statement = LTItemMail.getInstance().connection.prepareStatement("INSERT INTO mailbox_block(owner_uuid, mailbox_server, mailbox_world, mailbox_x, mailbox_y, mailbox_z) VALUES(?, ?, ?, ?, ?, ?);");
