@@ -4,13 +4,15 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
@@ -45,8 +47,11 @@ public final class LTPlayer {
 	 * 
 	 * @param name The player name.
 	 * 
+	 * @return {@link LTPlayer} object representing a player.
+	 * 
 	 */
-	public static final LTPlayer fromName(@NotNull final String name) throws NullPointerException {
+	@Nullable
+	public static final LTPlayer fromName(@Nonnull final String name) throws NullPointerException {
 		Objects.requireNonNull(name);
 		final UUID uuid = FetchUtil.Player.fromName(name);
 		if(uuid != null) return new LTPlayer(Bukkit.getOfflinePlayer(uuid), FetchUtil.Player.fromUUID(uuid), uuid);
@@ -58,8 +63,11 @@ public final class LTPlayer {
 	 * 
 	 * @param uuid The player UUID.
 	 * 
+	 * @return {@link LTPlayer} object representing a player.
+	 * 
 	 */
-	public static final LTPlayer fromUUID(@NotNull final UUID uuid) throws NullPointerException {
+	@Nullable
+	public static final LTPlayer fromUUID(@Nonnull final UUID uuid) throws NullPointerException {
 		Objects.requireNonNull(uuid);
 		final String name = FetchUtil.Player.fromUUID(uuid);
 		if(name != null) return new LTPlayer(Bukkit.getOfflinePlayer(FetchUtil.Player.fromName(name)), name, FetchUtil.Player.fromName(name));
@@ -69,8 +77,13 @@ public final class LTPlayer {
 	 * 
 	 * Converts from Bukkit player to LTPlayer (same as {@link LTPlayer#fromName(String)}.
 	 * 
+	 * @param player The {@link OfflinePlayer} object from Bukkit.
+	 * 
+	 * @return {@link LTPlayer} object representing a player.
+	 * 
 	 */
-	public static final LTPlayer fromBukkitPlayer(@NotNull final OfflinePlayer player) throws NullPointerException {
+	@Nullable
+	public static final LTPlayer fromBukkitPlayer(@Nonnull final OfflinePlayer player) throws NullPointerException {
 		Objects.requireNonNull(player);
 		return LTPlayer.fromName(player.getName());
 	}
@@ -78,8 +91,10 @@ public final class LTPlayer {
 	 * 
 	 * Converts LTPlayer into Bukkit player.
 	 * 
+	 * @return {@link OfflinePlayer} representing the vanilla player from Bukkit.
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final OfflinePlayer getBukkitPlayer() {
 		return player;
 	}
@@ -92,8 +107,8 @@ public final class LTPlayer {
 	 * @param label The label you want to put on the mailbox.
 	 * 
 	 */
-	@NotNull
-	public final void forceSend(@NotNull final LTPlayer playerTo, @NotNull final LinkedList<ItemStack> items, @NotNull final String label) throws NullPointerException {
+	@Nonnull
+	public final void forceSend(@Nonnull final LTPlayer playerTo, @Nonnull final LinkedList<ItemStack> items, @Nonnull final String label) throws NullPointerException {
 		Objects.requireNonNull(playerTo);
 		Objects.requireNonNull(items);
 		Objects.requireNonNull(label);
@@ -103,10 +118,10 @@ public final class LTPlayer {
 	 * 
 	 * Gives to the LTPlayer a mailbox block.
 	 * 
-	 * @return true if the player is online and received the mailbox block. Otherwise, it will return false.
+	 * @return {@link Boolean#TRUE} if the player is online and received the mailbox block.
 	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final Boolean giveMailboxBlock() {
 		final Player player = this.player.getPlayer();
 		if(player != null && player.getInventory().firstEmpty() != -1) {
@@ -120,8 +135,10 @@ public final class LTPlayer {
 	 * 
 	 * Gets the LTPlayer user name.
 	 * 
+	 * @return {@link String} representing the player name.
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final String getName() {
 		return name;
 	}
@@ -129,8 +146,10 @@ public final class LTPlayer {
 	 * 
 	 * Gets the LTPlayer unique id.
 	 * 
+	 * @return {@link UUID} representing the player unique id.
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final UUID getUniqueId() {
 		return uuid;
 	}
@@ -138,7 +157,10 @@ public final class LTPlayer {
 	 * 
 	 * Gets the ban reason if the LTPlayer is banned.
 	 * 
+	 * @return {@link String} representing the ban reason or null.
+	 * 
 	 */
+	@Nullable
 	public final String getBanReason() {
 		if(isRegistered()) return DatabaseModule.User.getBanReason(uuid);
 		return null;
@@ -147,10 +169,10 @@ public final class LTPlayer {
 	 * 
 	 * Checks if the LTPlayer is banned from the post office (cannot send items, receive only).
 	 * 
-	 * @return true if the player is banned. Otherwise, it will return false.
+	 * @return {@link Boolean#TRUE} if the player is banned. Otherwise, it will return false.
 	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final Boolean isBanned() {
 		if(isRegistered()) return DatabaseModule.User.isBanned(uuid);
 		return false;
@@ -159,8 +181,10 @@ public final class LTPlayer {
 	 * 
 	 * Gets the count of mails sent from the LTPlayer.
 	 * 
+	 * @return {@link Integer} representing the amount of mails sent by this player.
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final Integer getMailSentCount() {
 		if(isRegistered()) return DatabaseModule.User.getSentCount(uuid);
 		return 0;
@@ -169,8 +193,10 @@ public final class LTPlayer {
 	 * 
 	 * Gets the count of mails sent to the LTPlayer.
 	 * 
+	 * @return {@link Integer} representing the amount of mails received by this player.
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final Integer getMailReceivedCount() {
 		if(isRegistered()) return DatabaseModule.User.getReceivedCount(uuid);
 		return 0;
@@ -179,10 +205,10 @@ public final class LTPlayer {
 	 * 
 	 * Checks if the LTPlayer has a registration on the post office.
 	 * 
-	 * @return true if the player is registered. Otherwise, it will return false.
+	 * @return {@link Boolean#TRUE} if the player is registered. Otherwise, it will return false.
 	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final Boolean isRegistered() {
 		return DatabaseModule.User.isRegistered(uuid);
 	}
@@ -190,7 +216,10 @@ public final class LTPlayer {
 	 * 
 	 * Gets the registry date of the LTPlayer (dd/MM/yyyy).
 	 * 
+	 * @return {@link String} or null
+	 * 
 	 */
+	@Nullable
 	public final String getRegistryDate() {
 		return DatabaseModule.User.getRegistryDate(uuid);
 	}
@@ -200,9 +229,11 @@ public final class LTPlayer {
 	 * 
 	 * @param message The message that will be shown.
 	 * 
+	 * @return {@link Boolean#TRUE} if the toast message was successfully sent.
+	 * 
 	 */
-	@NotNull
-	public final Boolean sendToastMessage(@NotNull final String message) throws NullPointerException {
+	@Nonnull
+	public final Boolean sendToastMessage(@Nonnull final String message) throws NullPointerException {
 		Objects.requireNonNull(message);
 		if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) {
 			final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
@@ -215,7 +246,10 @@ public final class LTPlayer {
 	 * 
 	 * Checks if the player is online.
 	 * 
+	 * @return {@link Boolean#TRUE} if the player is currently online.
+	 * 
 	 */
+	@Nonnull
 	public final Boolean isOnline() {
 		return getBukkitPlayer().getPlayer() != null;
 	}
@@ -225,8 +259,11 @@ public final class LTPlayer {
 	 * 
 	 * @param message The message that will be shown.
 	 * 
+	 * @return {@link Boolean#TRUE} if the message was successfully sent.
+	 * 
 	 */
-	public final Boolean sendMessage(@NotNull final String message) throws NullPointerException {
+	@Nonnull
+	public final Boolean sendMessage(@Nonnull final String message) throws NullPointerException {
 		Objects.requireNonNull(message);
 		if(getBukkitPlayer().getPlayer() != null) {
 			getBukkitPlayer().getPlayer().sendMessage(message);
@@ -234,16 +271,31 @@ public final class LTPlayer {
 		}
 		return false;
 	}
+	/**
+	 * 
+	 * Works with Spigot and forks only.
+	 * 
+	 * @return {@link Spigot} object or null.
+	 * 
+	 */
+	@Nullable
 	public final Spigot spigot() {
 		try {
 			Class.forName("org.spigotmc.CustomTimingsHandler.class");
 			return new Spigot(this);
 		} catch (final ClassNotFoundException e) {
-			ConsoleModule.debug(getClass(), "Server is not a Spigot implementation.");
+			ConsoleModule.debug(getClass(), "Server is not a Spigot implementation. Aborted.");
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 		}
 		return null;
 	}
+	/**
+	 * 
+	 * Works with Spigot and forks only.
+	 * 
+	 * @author Nobookie
+	 * 
+	 */
 	public static class Spigot {
 		private final LTPlayer player;
 		private Spigot(final LTPlayer player) {
@@ -256,8 +308,11 @@ public final class LTPlayer {
 		 * @param type The screen position.
 		 * @param component The component to send.
 		 * 
+		 * @return {@link Boolean#TRUE} if the message was successfully sent.
+		 * 
 		 */
-		public final Boolean sendMessage(@NotNull final ChatMessageType type, @NotNull final BaseComponent[] component) throws NullPointerException {
+		@Nonnull
+		public final Boolean sendMessage(@Nonnull final ChatMessageType type, @Nonnull final BaseComponent[] component) throws NullPointerException {
 			Objects.requireNonNull(type);
 			Objects.requireNonNull(component);
 			if(player.getBukkitPlayer().getPlayer() != null) {
