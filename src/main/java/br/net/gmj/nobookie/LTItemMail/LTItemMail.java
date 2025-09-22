@@ -27,6 +27,7 @@ import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
+import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
@@ -38,13 +39,6 @@ import br.net.gmj.nobookie.LTItemMail.task.VersionControlTask;
 import br.net.gmj.nobookie.LTItemMail.util.BStats;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
-/**
- * 
- * Main class of the plugin. This is typically of no use for developers.
- * 
- * @author Nobookie
- * 
- */
 public final class LTItemMail extends JavaPlugin {
 	private static LTItemMail instance;
 	public LTItemMail() {
@@ -69,50 +63,51 @@ public final class LTItemMail extends JavaPlugin {
 	}
 	@Override
 	public final void onEnable() {
-		final BStats metrics = new BStats(this, 3647);
 		loadConfig();
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_ENABLE)) {
-			if(isDevBuild()) {
-				ConsoleModule.warning("⚠️ You are running a development build! Be aware that bugs may occur.");
-				final File dev = new File(getDataFolder(), ".dev");
-				ConfigurationModule.devMode = (dev.exists() && dev.isFile());
-			}
-			metrics.addCustomChart(new BStats.SimplePie("builds", () -> {
-		        return String.valueOf((Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
-		    }));
-			metrics.addCustomChart(new BStats.SimplePie("language", () -> {
-		        return ((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase();
-		    }));
-			ConsoleModule.hello();
-			loadLang();
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-				Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-				Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeModule());
-			}
-			loadModels();
-			loadDatabase();
-			ExtensionModule.getInstance().load();
-			for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) {
-				metrics.addCustomChart(new BStats.SimplePie("extensions", () -> {
-			        return plugin.plugin().getDescription().getName();
-			    }));
-			}
-			PermissionModule.load();
-			registerListeners();
-			runTasks();
-			RegistrationModule.setupItems();
-			RegistrationModule.setupBlock();
-			new CommandModule();
-			MailboxModule.ready();
-			new FetchUtil.Stats();
-			final Long done = Calendar.getInstance().getTimeInMillis() - startup;
-			String took = done + "ms" + ChatColor.GREEN;
-			if(done >= 1000.0) took = (done / 1000.0) + "s" + ChatColor.GREEN;
-			ConsoleModule.raw(ChatColor.GREEN + "👍🏼 Plugin took " + ChatColor.WHITE + took + " to load.");
-		} else {
+		if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_ENABLE)) {
 			ConsoleModule.severe("😢 Plugin disabled in config.yml.");
 			Bukkit.getPluginManager().disablePlugin(instance);
+			return;
 		}
+		if(isDevBuild()) {
+			ConsoleModule.warning("⚠️ You are running a development build! Be aware that bugs may occur.");
+			final File dev = new File(getDataFolder(), ".dev");
+			ConfigurationModule.devMode = (dev.exists() && dev.isFile());
+		}
+		final BStats metrics = new BStats(this, 3647);
+		metrics.addCustomChart(new BStats.SimplePie("builds", () -> {
+	        return String.valueOf((Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
+	    }));
+		metrics.addCustomChart(new BStats.SimplePie("language", () -> {
+	        return ((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase();
+	    }));
+		ConsoleModule.hello();
+		loadLang();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
+			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+			Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeModule());
+		}
+		loadModels();
+		loadDatabase();
+		ExtensionModule.getInstance().load();
+		for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) metrics.addCustomChart(new BStats.SimplePie("extensions", () -> {
+	        return plugin.plugin().getDescription().getName();
+	    }));
+		if(EconomyModule.getInstance() != null && EconomyModule.getInstance().getEconomy() != null) metrics.addCustomChart(new BStats.SimplePie("economy", () -> {
+	        return EconomyModule.getInstance().getEconomy().plugin().getName();
+	    }));
+		PermissionModule.load();
+		registerListeners();
+		runTasks();
+		RegistrationModule.setupItems();
+		RegistrationModule.setupBlock();
+		new CommandModule();
+		MailboxModule.ready();
+		new FetchUtil.Stats();
+		final Long done = Calendar.getInstance().getTimeInMillis() - startup;
+		String took = done + "ms" + ChatColor.GREEN;
+		if(done >= 1000.0) took = (done / 1000.0) + "s" + ChatColor.GREEN;
+		ConsoleModule.raw(ChatColor.GREEN + "👍🏼 Plugin took " + ChatColor.WHITE + took + " to load.");
 	}
 	@Override
 	public final void onDisable() {
