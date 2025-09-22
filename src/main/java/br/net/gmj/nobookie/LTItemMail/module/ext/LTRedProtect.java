@@ -45,14 +45,14 @@ public final class LTRedProtect implements LTExtension, Listener {
 		ConsoleModule.debug(getClass(), "#canInteract: " + player.getName() + " " + result);
 		return result;
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onRegionDelete(final DeleteRegionEvent event) {
 		final Location min = event.getRegion().getMinLocation();
 		final Location max = event.getRegion().getMaxLocation();
 		for(int x = min.getBlockX(); x < max.getBlockX(); x++) for(int z = min.getBlockZ(); z < max.getBlockZ(); z++) for(int y = min.getBlockY(); y < max.getBlockY(); y++) {
 			final Block block = new Location(min.getWorld(), x, y, z).getBlock();
 			if(block != null && block.getType().toString().endsWith("_SHULKER_BOX") && DatabaseModule.Block.isMailboxBlock(block.getLocation())) {
-				Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.REDPROTECT));
+				Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.REDPROTECT, event));
 				final ItemStack mailbox = new MailboxItem().getItem(null);
 				mailbox.setType(block.getType());
 				block.setType(Material.AIR);
