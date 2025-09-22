@@ -5,13 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.LTItemMailAPI;
@@ -41,6 +43,13 @@ public final class MailboxBlock {
 	 * 
 	 * Use {@link LTItemMailAPI#getMailboxBlock(Location)} instead.
 	 * 
+	 * @param id The block unique identification.
+	 * @param owner The block owner.
+	 * @param server The block server.
+	 * @param world The block world.
+	 * @param x The block X position.
+	 * @param y The block Y position.
+	 * @param z The block Z position.
 	 * 
 	 */
 	public MailboxBlock(final Integer id, final LTPlayer owner, final String server, final World world, final Integer x, final Integer y, final Integer z) {
@@ -56,7 +65,10 @@ public final class MailboxBlock {
 	 * 
 	 * Gets the block id.
 	 * 
+	 * @return {@link Integer} representing the mailbox block ID.
+	 * 
 	 */
+	@Nonnull
 	public final Integer getId() {
 		return id;
 	}
@@ -64,7 +76,10 @@ public final class MailboxBlock {
 	 * 
 	 * Gets in which server the block was created.
 	 * 
+	 * @return {@link String} representing the server ID that the mailbox is placed.
+	 * 
 	 */
+	@Nonnull
 	public final String getServer() {
 		return server;
 	}
@@ -72,7 +87,10 @@ public final class MailboxBlock {
 	 * 
 	 * Gets the block current location.
 	 * 
+	 * @return {@link Location} representing the current location of the mailbox.
+	 * 
 	 */
+	@Nonnull
 	public final Location getLocation() {
 		return new Location(world, x, y, z);
 	}
@@ -80,15 +98,21 @@ public final class MailboxBlock {
 	 * 
 	 * Converts from LT Item Mail block to Bukkit block.
 	 * 
+	 * @return {@link Block} representing the vanilla block from Bukkit.
+	 * 
 	 */
-	public final org.bukkit.block.Block getBukkitBlock(){
+	@Nonnull
+	public final Block getBukkitBlock(){
 		return getLocation().getBlock();
 	}
 	/**
 	 * 
 	 * Used internally. Do not mess with it.
 	 * 
+	 * @return {@link List<Listener>}
+	 * 
 	 */
+	@Deprecated
 	public final List<Listener> getListeners(){
 		return Arrays.asList(new MailboxBlockListener());
 	}
@@ -98,14 +122,18 @@ public final class MailboxBlock {
 	 * Used internally. Do not mess with it.
 	 * 
 	 */
+	@Deprecated
 	public final void runTasks() {
-		if(LTItemMail.getInstance().connection != null) tasks.add(Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new MailboxBlockTask(), 20, 20));
+		if(LTItemMail.getInstance().connection != null) tasks.add(Bukkit.getScheduler().runTaskTimer(LTItemMail.getInstance(), new MailboxBlockTask(), 20 * 10, 20 * 10));
 	}
 	/**
 	 * 
 	 * Used internally. Do not mess with it.
 	 * 
+	 * @return {@link List<BukkitTask>}
+	 * 
 	 */
+	@Deprecated
 	public final List<BukkitTask> getTasks(){
 		return tasks;
 	}
@@ -113,8 +141,10 @@ public final class MailboxBlock {
 	 * 
 	 * Gets the owner of the mailbox block.
 	 * 
+	 * @return {@link LTPlayer} object representing the owner.
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final LTPlayer getOwner() {
 		return owner;
 	}
@@ -127,9 +157,9 @@ public final class MailboxBlock {
 	 * @param virtual If set to true, the current block will be set to air.
 	 * 
 	 */
-	public final void remove(@NotNull final Boolean virtual) throws NullPointerException {
+	public final void remove(@Nonnull final Boolean virtual) throws NullPointerException {
 		Objects.requireNonNull(virtual);
-		Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, virtual, null));
+		Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, virtual, null, null));
 		DatabaseModule.Block.breakMailbox(getLocation());
 		if(!virtual) getBukkitBlock().setType(Material.AIR);
 	}
@@ -140,7 +170,7 @@ public final class MailboxBlock {
 	 * 
 	 */
 	public final void replace() {
-		Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, false, null));
+		Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, false, null, null));
 		DatabaseModule.Block.breakMailbox(getLocation());
 		Bukkit.getPluginManager().callEvent(new PlaceMailboxBlockEvent(this, PlaceMailboxBlockEvent.Reason.BY_SERVER));
 		DatabaseModule.Block.placeMailbox(owner.getUniqueId(), getLocation());
@@ -150,8 +180,11 @@ public final class MailboxBlock {
 	 * Transfers the mailbox block to a new owner.
 	 * @param newOwner The new owner's unique id.
 	 * 
+	 * @return {@link Boolean#TRUE} if the block was successfully transfered to the new owner.
+	 * 
 	 */
-	public final Boolean transferOwnership(@NotNull final LTPlayer newOwner) throws NullPointerException {
+	@Nonnull
+	public final Boolean transferOwnership(@Nonnull final LTPlayer newOwner) throws NullPointerException {
 		Objects.requireNonNull(newOwner);
 		if(newOwner.getUniqueId() == owner.getUniqueId()) return false;
 		DatabaseModule.Block.breakMailbox(getLocation());
