@@ -1,9 +1,10 @@
 package br.net.gmj.nobookie.LTItemMail.api.event;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
 
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 /**
@@ -16,7 +17,15 @@ import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 public class PlaceMailboxBlockEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 	private final MailboxBlock block;
-	private Reason reason;
+	private final Reason reason;
+	/**
+	 * 
+	 * The constructor of the event.
+	 * 
+	 * @param block The {@link MailboxBlock} object
+	 * @param reason The reason of the event
+	 * 
+	 */
 	public PlaceMailboxBlockEvent(final MailboxBlock block, final Reason reason) {
 		super(!Bukkit.getServer().isPrimaryThread());
 		this.block = block;
@@ -26,8 +35,10 @@ public class PlaceMailboxBlockEvent extends Event {
 	 * 
 	 * Gets the block affected by this event.
 	 * 
+	 * @return {@link MailboxBlock}
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final MailboxBlock getBlock() {
 		return block;
 	}
@@ -35,7 +46,14 @@ public class PlaceMailboxBlockEvent extends Event {
 	public final HandlerList getHandlers() {
 		return handlers;
 	}
-	@NotNull
+	/**
+	 * 
+	 * See {@link HandlerList}
+	 * 
+	 * @return {@link HandlerList}
+	 * 
+	 */
+	@Nonnull
 	public static final HandlerList getHandlerList() {
 		return handlers;
 	}
@@ -43,8 +61,10 @@ public class PlaceMailboxBlockEvent extends Event {
 	 * 
 	 * Gets what triggered the event.
 	 * 
+	 * @return {@link Reason}
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final Reason getReason() {
 		return reason;
 	}
@@ -56,7 +76,17 @@ public class PlaceMailboxBlockEvent extends Event {
 	 * 
 	 */
 	public enum Reason {
+		/**
+		 * 
+		 * Called by player.
+		 * 
+		 */
 		BY_PLAYER,
+		/**
+		 * 
+		 * Called by server.
+		 * 
+		 */
 		BY_SERVER
 	}
 }
