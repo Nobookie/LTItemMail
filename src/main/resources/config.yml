@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 20
+config-version: 21
 version-number: ${project.version}
 build-number: ${buildNumber}
 plugin:
@@ -91,7 +91,11 @@ hook:
   #Meu plugin tem uma proteção imbutida para blocos de caixa de corrêio, mas você pode usar uma proteção extra com os plugins abaixo:
   griefprevention: false
   redprotect: false
-  towny: false
+  towny:
+    enable: false
+    taxes-per-mailbox:
+      enable: true
+      cost: 15
   worldguard: true
   #Useful for TOAST notifications (refer to "mail.display" below).
   #
