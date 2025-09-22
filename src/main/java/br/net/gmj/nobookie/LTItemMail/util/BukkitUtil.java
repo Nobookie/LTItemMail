@@ -40,8 +40,8 @@ public final class BukkitUtil {
 		public static final LinkedList<ItemStack> getContents(final ItemStack[] contents){
 			final LinkedList<ItemStack> items = new LinkedList<>();
 			for(int i = 0; i < 27; i++) if(contents[i] != null) {
-					items.add(contents[i]);
-				} else items.add(new ItemStack(Material.AIR));
+				items.add(contents[i]);
+			} else items.add(new ItemStack(Material.AIR));
 			return items;
 		}
 		public static final int getCount(final LinkedList<ItemStack> items) {
