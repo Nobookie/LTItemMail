@@ -38,6 +38,7 @@ public final class ConfigurationModule {
 						configuration.set(Type.DATABASE_TYPE.path(), "sqlite");
 						configuration.set(Type.DATABASE_SQLITE_FILE.path(), configuration.getString("database.flatfile.file"));
 					}
+					if(configuration.getInt("config-version") < 21 && configuration.isBoolean("hook.towny")) configuration.set(Type.PLUGIN_HOOK_TOWNYADVANCED_ENABLE.path(), configuration.getBoolean("hook.towny"));
 					update = true;
 					ConsoleModule.warning("Configuration outdated!");
 					ConsoleModule.warning("New settings will be added.");
@@ -135,7 +136,9 @@ public final class ConfigurationModule {
 		PLUGIN_HOOK_DECENTHOLOGRAMS("hook.decentholograms", true),
 		PLUGIN_HOOK_GRIEFPREVENTION("hook.griefprevention", false),
 		PLUGIN_HOOK_REDPROTECT("hook.redprotect", false),
-		PLUGIN_HOOK_TOWNYADVANCED("hook.towny", false),
+		PLUGIN_HOOK_TOWNYADVANCED_ENABLE("hook.towny.enable", false),
+		PLUGIN_HOOK_TOWNYADVANCED_TAXES_ENABLE("hook.towny.taxes-per-mailbox.enable", true),
+		PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST("hook.towny.taxes-per-mailbox.cost", 15),
 		PLUGIN_HOOK_WORLDGUARD("hook.worldguard", true),
 		PLUGIN_HOOK_ULTIMATEADVANCEMENTAPI("hook.ultimateadvancementapi", false),
 		PLUGIN_HOOK_HEADDATABASE("hook.headdatabase", false),
