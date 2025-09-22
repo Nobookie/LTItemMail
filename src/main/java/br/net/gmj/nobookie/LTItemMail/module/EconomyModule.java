@@ -3,7 +3,7 @@ package br.net.gmj.nobookie.LTItemMail.module;
 import java.math.BigDecimal;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -16,7 +16,7 @@ import su.nightexpress.coinsengine.api.CoinsEngineAPI;
 public final class EconomyModule {
 	private static EconomyModule instance = null;
 	private static boolean available = false;
-	private Type type;
+	private Type type = null;
 	private Object currency = null;
 	private Object api = null;
 	private Plugin plugin = null;
@@ -67,53 +67,63 @@ public final class EconomyModule {
 		} else ExtensionModule.getInstance().warn(null, type.plugin());
 		available = true;
 	}
-	public final boolean deposit(final Player player, final Double amount) {
+	public final boolean deposit(final OfflinePlayer player, final Integer amount) {
+		return deposit(player, Double.parseDouble(String.valueOf(amount)));
+	}
+	public final boolean deposit(final OfflinePlayer player, final Double amount) {
 		switch(type) {
 			case VAULT:
 				final EconomyResponse response = ((Economy) api).depositPlayer(player, amount);
 				return response.transactionSuccess();
 			case COINSENGINE:
-				CoinsEngineAPI.addBalance(player, (su.nightexpress.coinsengine.api.currency.Currency) currency, amount);
-				return true;
+				return CoinsEngineAPI.addBalance(player.getUniqueId(), (su.nightexpress.coinsengine.api.currency.Currency) currency, amount);
 			case THENEWECONOMY:
-				return ((TNEAPI) api).setHoldings(player.getName(), player.getLocation().getWorld().getName(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), player.getLocation().getWorld().getName(), ((net.tnemc.core.currency.Currency) currency).getIdentifier()).add(BigDecimal.valueOf(amount)));
+				return ((TNEAPI) api).setHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier()).add(BigDecimal.valueOf(amount)));
 		}
 		return false;
 	}
-	public final boolean withdraw(final Player player, final Double amount) {
+	public final boolean withdraw(final OfflinePlayer player, final Integer amount) {
+		return withdraw(player, Double.parseDouble(String.valueOf(amount)));
+	}
+	public final boolean withdraw(final OfflinePlayer player, final Double amount) {
 		switch(type) {
 			case VAULT:
 				final EconomyResponse response = ((Economy) api).withdrawPlayer(player, amount);
 				return response.transactionSuccess();
 			case COINSENGINE:
-				CoinsEngineAPI.removeBalance(player, (su.nightexpress.coinsengine.api.currency.Currency) currency, amount);
-				return true;
+				return CoinsEngineAPI.removeBalance(player.getUniqueId(), (su.nightexpress.coinsengine.api.currency.Currency) currency, amount);
 			case THENEWECONOMY:
-				return ((TNEAPI) api).setHoldings(player.getName(), player.getLocation().getWorld().getName(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), player.getLocation().getWorld().getName(), ((net.tnemc.core.currency.Currency) currency).getIdentifier()).subtract(BigDecimal.valueOf(amount)));
+				return ((TNEAPI) api).setHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier()).subtract(BigDecimal.valueOf(amount)));
+		}
+		return false;
 	}
-	return false;
+	public final boolean has(final OfflinePlayer player, final Integer amount) {
+		return has(player, Double.parseDouble(String.valueOf(amount)));
 	}
-	public final boolean has(final Player player, final Double amount) {
+	public final boolean has(final OfflinePlayer player, final Double amount) {
 		switch(type) {
 			case VAULT:
 				return ((Economy) api).has(player, amount);
 			case COINSENGINE:
-				final Double balance = CoinsEngineAPI.getBalance(player, (su.nightexpress.coinsengine.api.currency.Currency) currency);
+				final Double balance = CoinsEngineAPI.getBalance(player.getUniqueId(), (su.nightexpress.coinsengine.api.currency.Currency) currency);
 				return (balance >= amount);
 			case THENEWECONOMY:
-				return ((TNEAPI) api).hasHoldings(player.getName(), player.getLocation().getWorld().getName(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), BigDecimal.valueOf(amount));
+				return ((TNEAPI) api).hasHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), BigDecimal.valueOf(amount));
+		}
+		return false;
 	}
-	return false;
-	}
-	public static final void init() {
-		if(instance == null) instance = new EconomyModule();
+	public final Type getEconomy() {
+		if((api != null || currency != null) && type != null) return type;
+		return null;
 	}
 	public static final EconomyModule getInstance() {
-		if(!available) instance = null;
+		if(instance == null) {
+			instance = new EconomyModule();
+		} else if(!available) instance = null;
 		return instance;
 	}
 	public enum Type {
-		VAULT(Bukkit.getPluginManager().getPlugin("Vault")),
+		VAULT(ExtensionModule.EXT.VAULT.plugin()),
 		COINSENGINE(Bukkit.getPluginManager().getPlugin("CoinsEngine")),
 		THENEWECONOMY(Bukkit.getPluginManager().getPlugin("TheNewEconomy"));
 		private final Plugin plugin;
