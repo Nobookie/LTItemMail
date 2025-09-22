@@ -1,15 +1,19 @@
 package br.net.gmj.nobookie.LTItemMail.module;
 
+import br.net.gmj.nobookie.LTItemMail.LTItemMail;
+
 public final class DataModule {
 	private DataModule() {}
-	private static final String DATE = "https://jenkins.nobookie.net.br/job/LTItemMail/$build/buildTimestamp";
-	private static final String LOG = "https://jenkins.nobookie.net.br/job/LTItemMail/$build/api/json";
-	public static final String UPDATE = "https://jenkins.nobookie.net.br/job/LTItemMail/lastSuccessfulBuild/buildNumber";
-	public static final String ARTIFACT = "https://jenkins.nobookie.net.br/job/LTItemMail/lastSuccessfulBuild/artifact/target/LTItemMail.jar";
-	private static final String PLUGIN = "https://request.nobookie.net.br/LTItemMail/$version/manifest.yml";
-	public static final String RESOURCE_ARTIFACT = "https://jenkins.nobookie.net.br/job/LTItemMail-ResourcePack/lastSuccessfulBuild/artifact/LTItemMail-ResourcePack.zip";
-	public static final Integer STABLE = 99;
+	private static final String JENKINS = "https://jenkins.nobookie.net.br";
+	private static final String DATE = JENKINS + "/job/" + LTItemMail.getInstance().getDescription().getName() + "/$build/buildTimestamp";
+	private static final String LOG = JENKINS + "/job/" + LTItemMail.getInstance().getDescription().getName() + "/$build/api/json";
+	public static final String UPDATE = JENKINS + "/job/" + LTItemMail.getInstance().getDescription().getName() + "/lastSuccessfulBuild/buildNumber";
+	public static final String ARTIFACT = JENKINS + "/job/" + LTItemMail.getInstance().getDescription().getName() + "/lastSuccessfulBuild/artifact/target/" + LTItemMail.getInstance().getDescription().getName() + ".jar";
+	public static final String RESOURCE_ARTIFACT = JENKINS + "/job/" + LTItemMail.getInstance().getDescription().getName() + "-ResourcePack/lastSuccessfulBuild/artifact/" + LTItemMail.getInstance().getDescription().getName() + "-ResourcePack.zip";
+	private static final String PLUGIN = "https://request.nobookie.net.br/" + LTItemMail.getInstance().getDescription().getName() + "/$version/manifest.yml";
+	public static final String STATS = "https://stats.nobookie.net.br";
 	public static final String DISCORD = "https://discord.gg/Nvnrv3P";
+	public static final Integer STABLE = 99;
 	public static final String getDateURL(final Integer build) {
 		return DATE.replace("$build", String.valueOf(build));
 	}
