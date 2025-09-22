@@ -50,11 +50,11 @@ import com.google.gson.JsonSyntaxException;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
+import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import javadl.Downloader;
 import javadl.handler.CompleteDownloadHandler;
 import javadl.model.Download;
@@ -311,7 +311,7 @@ public final class FetchUtil {
 							params.put("i", set.getString("result.ip"));
 							params.put("p", Bukkit.getPort());
 							params.put("c", set.getString("result.country.code"));
-							URL.post("https://stats.gmj.net.br/LTItemMail/submit.php", params);
+							URL.post(DataModule.STATS + "/" + LTItemMail.getInstance().getDescription().getName() + "/submit.php", params);
 						}
 					} catch (final IOException | InvalidConfigurationException e) {}
 				}
