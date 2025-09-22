@@ -16,9 +16,9 @@ import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
-import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
