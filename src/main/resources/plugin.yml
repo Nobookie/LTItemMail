@@ -4,9 +4,7 @@ version: ${project.version}
 build: ${buildNumber}
 api-version: 1.17
 load: POSTWORLD
-authors:
-  - Nobookie
-  - leothawne
+author: Nobookie
 website: ${project.url}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 database: true
