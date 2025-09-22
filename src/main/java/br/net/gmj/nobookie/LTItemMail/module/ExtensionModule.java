@@ -103,7 +103,7 @@ public final class ExtensionModule {
 		return null;
 	}
 	public final void load() {
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) EconomyModule.init();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) EconomyModule.getInstance();
 		if(isInstalled(EXT.VAULT.plugin()) && !isRegistered(EXT.VAULT) && register(EXT.VAULT)) warn(EXT.VAULT.plugin(), ((LTVault) get(EXT.VAULT)).getPermissionPlugin());
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_GRIEFPREVENTION) && isInstalled(EXT.GRIEFPREVENTION.plugin()) && !isRegistered(EXT.GRIEFPREVENTION)) {
 			warn(null, EXT.GRIEFPREVENTION.plugin());
@@ -113,7 +113,7 @@ public final class ExtensionModule {
 			warn(null, EXT.REDPROTECT.plugin());
 			register(EXT.REDPROTECT);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED) && isInstalled(EXT.TOWNYADVANCED.plugin()) && !isRegistered(EXT.TOWNYADVANCED)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_ENABLE) && isInstalled(EXT.TOWNYADVANCED.plugin()) && !isRegistered(EXT.TOWNYADVANCED)) {
 			warn(null, EXT.TOWNYADVANCED.plugin());
 			register(EXT.TOWNYADVANCED);
 		}
