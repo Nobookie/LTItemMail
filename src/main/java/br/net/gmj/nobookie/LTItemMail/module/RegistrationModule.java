@@ -26,6 +26,7 @@ public final class RegistrationModule {
 			}
 		}
 	}
+	@SuppressWarnings("deprecation")
 	public static final void setupBlock() {
 		final MailboxBlock mailbox = new MailboxBlock(null, null, null, null, null, null, null);
 		for(final Listener listener : mailbox.getListeners()) Bukkit.getPluginManager().registerEvents(listener, LTItemMail.getInstance());
