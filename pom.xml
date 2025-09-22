@@ -70,11 +70,11 @@
 					<windowtitle>LT Item Mail API</windowtitle>
 					<links>
 						<link>https://hub.spigotmc.org/javadocs/spigot/</link>
-						<link>https://javadoc.io/doc/org.jetbrains/annotations/latest/</link>
-						<link>https://javadoc.io/doc/net.md-5/bungeecord-api/latest/</link>
+						<link>https://javadoc.io/doc/com.google.code.findbugs/jsr305/3.0.2/</link>
+						<link>https://javadoc.io/doc/net.md-5/bungeecord-chat/1.16-R0.4/</link>
 					</links>
 					<sourcepath>${project.basedir}/src/main/java</sourcepath>
-					<excludePackageNames>${project.groupId}.${project.artifactId}.command:${project.groupId}.${project.artifactId}.command.*:${project.groupId}.${project.artifactId}.inventory:${project.groupId}.${project.artifactId}.inventory.*:${project.groupId}.${project.artifactId}.item:${project.groupId}.${project.artifactId}.item.*:${project.groupId}.${project.artifactId}.listener:${project.groupId}.${project.artifactId}.listener.*:${project.groupId}.${project.artifactId}.module:${project.groupId}.${project.artifactId}.module.*:${project.groupId}.${project.artifactId}.task:${project.groupId}.${project.artifactId}.task.*:${project.groupId}.${project.artifactId}.util:${project.groupId}.${project.artifactId}.util.*:${project.groupId}.${project.artifactId}.block.task:${project.groupId}.${project.artifactId}.block.listener:${project.groupId}.${project.artifactId}.entity</excludePackageNames>
+					<excludePackageNames>${project.groupId}.${project.artifactId}:${project.groupId}.${project.artifactId}.command:${project.groupId}.${project.artifactId}.command.*:${project.groupId}.${project.artifactId}.inventory:${project.groupId}.${project.artifactId}.inventory.*:${project.groupId}.${project.artifactId}.item:${project.groupId}.${project.artifactId}.item.*:${project.groupId}.${project.artifactId}.listener:${project.groupId}.${project.artifactId}.listener.*:${project.groupId}.${project.artifactId}.module:${project.groupId}.${project.artifactId}.module.*:${project.groupId}.${project.artifactId}.task:${project.groupId}.${project.artifactId}.task.*:${project.groupId}.${project.artifactId}.util:${project.groupId}.${project.artifactId}.util.*:${project.groupId}.${project.artifactId}.block.task:${project.groupId}.${project.artifactId}.block.listener:${project.groupId}.${project.artifactId}.entity:${project.groupId}.${project.artifactId}.test</excludePackageNames>
 				</configuration>
 				<executions>
 					<execution>
@@ -203,6 +203,10 @@
         	<id>citizens-repo</id>
         	<url>https://maven.citizensnpcs.co/repo/</url>
     	</repository>
+    	<repository>
+	        <id>Modrinth</id>
+	        <url>https://api.modrinth.com/maven</url>
+	    </repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -431,18 +435,6 @@
 	        <groupId>net.citizensnpcs</groupId>
 	        <artifactId>citizens-main</artifactId>
 	        <version>2.0.38-SNAPSHOT</version>
-	        <scope>provided</scope>
-	        <exclusions>
-	            <exclusion>
-	                <groupId>*</groupId>
-	                <artifactId>*</artifactId>
-	            </exclusion>
-	        </exclusions>
-	    </dependency>
-	    <dependency>
-	        <groupId>com.github.angeschossen</groupId>
-	        <artifactId>LandsAPI</artifactId>
-	        <version>7.15.4</version>
 	        <scope>provided</scope>
 	        <exclusions>
 	            <exclusion>
