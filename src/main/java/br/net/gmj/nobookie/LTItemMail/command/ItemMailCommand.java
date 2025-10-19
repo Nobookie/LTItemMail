@@ -43,7 +43,6 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 	usage = "/<command> [help|version|list|open|delete|info|price|color|blocks]"
 )
 public final class ItemMailCommand extends LTCommandExecutor {
-	//private final LTCitizens citizens = (LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS);
 	@SuppressWarnings("incomplete-switch")
 	@Override
 	public final boolean onCommand(final CommandSender sender, final Command command, final String commandLabel, final String[] args) {
