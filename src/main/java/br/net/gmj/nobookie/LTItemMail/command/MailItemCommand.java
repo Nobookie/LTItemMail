@@ -46,7 +46,6 @@ public final class MailItemCommand extends LTCommandExecutor {
 							if(playerTo.getUniqueId().equals(player.getUniqueId())) {
 								if(args.length == 2 && args[1].equalsIgnoreCase("--bypass") && PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BYPASS)) {
 									player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "Ok...");
-									//LTCitizens.getInstance().call(player.getName());
 									if(citizens != null) citizens.call(player.getBukkitPlayer().getPlayer());
 									player.getBukkitPlayer().getPlayer().openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, playerTo, null, player.getUniqueId(), "", false));
 								} else player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_SELFERROR));
