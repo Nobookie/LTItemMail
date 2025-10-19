@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 21
+config-version: 22
 version-number: ${project.version}
 build-number: ${buildNumber}
 plugin:
@@ -34,6 +34,11 @@ plugin:
   #
   #Somente para fins de depuração. Padrão: false
   debug: false
+  experimental:
+    #Disabling it, command aliases will no longer work. Default: true
+    #
+    #Desabilitando, pseudônimos dos comandos não irão mais funcionar. Padrão: true 
+    use-commandmap-for-commands-registration: true
 database:
   #'sqlite' or 'mysql'
   #
@@ -77,11 +82,11 @@ hook:
   #Set 'true' if you wish to show mailbox blocks on the map.
   #
   #Defina 'true' se desejar mostrar blocos de caixa de corrêio no mapa.
-  dynmap: false
+  dynmap: true
   #Set 'true' if you wish to show mailbox blocks on the map.
   #
   #Defina 'true' se desejar mostrar blocos de caixa de corrêio no mapa.
-  bluemap: false
+  bluemap: true
   #Set 'true' if you wish to show holograms above mailbox blocks.
   #
   #Defina 'true' se desejar mostrar hologramas acima do blocos de caixa de corrêio.
@@ -89,10 +94,10 @@ hook:
   #My plugin has an in-built protection for mailbox blocks, but you can use some extra protection with the plugins listed below:
   #
   #Meu plugin tem uma proteção imbutida para blocos de caixa de corrêio, mas você pode usar uma proteção extra com os plugins abaixo:
-  griefprevention: false
-  redprotect: false
+  griefprevention: true
+  redprotect: true
   towny:
-    enable: false
+    enable: true
     taxes-per-mailbox:
       enable: true
       cost: 15
@@ -100,15 +105,15 @@ hook:
   #Useful for TOAST notifications (refer to "mail.display" below).
   #
   #Útil para notificações TOAST (consulte "mail.display" abaixo).
-  ultimateadvancementapi: false
+  ultimateadvancementapi: true
   #You can replace mail buttons with custom heads from HeadDatabase.
   #
   #Você pode substituir botões do corrêio com cabeças customizadas do HeadDatabase.
-  headdatabase: false
+  headdatabase: true
   #You can replace mail buttons with custom heads from Skulls.
   #
   #Você pode substituir botões do corrêio com cabeças customizadas do Skulls.
-  skulls: false
+  skulls: true
   #
   citizens: true
 mail:

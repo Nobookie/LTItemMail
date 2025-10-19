@@ -13,7 +13,7 @@ public final class DataModule {
 	private static final String PLUGIN = "https://request.nobookie.net.br/" + LTItemMail.getInstance().getDescription().getName() + "/$version/manifest.yml";
 	public static final String STATS = "https://stats.nobookie.net.br";
 	public static final String DISCORD = "https://discord.gg/Nvnrv3P";
-	public static final Integer STABLE = 99;
+	public static final Integer STABLE = 100;
 	public static final String getDateURL(final Integer build) {
 		return DATE.replace("$build", String.valueOf(build));
 	}
@@ -24,7 +24,7 @@ public final class DataModule {
 		return PLUGIN.replace("$version", version);
 	}
 	public enum Version {
-		CONFIG_YML(21),
+		CONFIG_YML(22),
 		ITEM_MODELS_YML(1),
 		HEADDATABASE_YML(1),
 		SKULLS_YML(1),
@@ -39,9 +39,5 @@ public final class DataModule {
 		public final Integer value() {
 			return value;
 		}
-	}
-	public enum ProjectType {
-		BUKKIT_DEV,
-		SPIGOT_MC
 	}
 }

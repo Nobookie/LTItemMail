@@ -26,3 +26,8 @@ softdepend:
   - HeadDatabase
   - Skulls
   - Citizens
+commands:
+  itemmail: {}
+  itemmailadmin: {}
+  itemmailwipe: {}
+  mailitem: {}

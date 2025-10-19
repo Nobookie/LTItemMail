@@ -45,7 +45,7 @@ public final class LTItemMail extends JavaPlugin {
 		super();
 		instance = this;
 	}
-	protected LTItemMail(final JavaPluginLoader loader, final PluginDescriptionFile descriptionFile, final File dataFolder, final File file) {
+	public LTItemMail(final JavaPluginLoader loader, final PluginDescriptionFile descriptionFile, final File dataFolder, final File file) {
         super(loader, descriptionFile, dataFolder, file);
         instance = this;
     }
@@ -101,7 +101,7 @@ public final class LTItemMail extends JavaPlugin {
 		runTasks();
 		RegistrationModule.setupItems();
 		RegistrationModule.setupBlock();
-		new CommandModule();
+		CommandModule.getInstance().init();
 		MailboxModule.ready();
 		new FetchUtil.Stats();
 		final Long done = Calendar.getInstance().getTimeInMillis() - startup;
