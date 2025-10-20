@@ -31,3 +31,4 @@ commands:
   itemmailadmin: {}
   itemmailwipe: {}
   mailitem: {}
+permissions: {}
