@@ -12,9 +12,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -42,13 +40,8 @@ import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 public final class LTItemMail extends JavaPlugin {
 	private static LTItemMail instance;
 	public LTItemMail() {
-		super();
 		instance = this;
 	}
-	public LTItemMail(final JavaPluginLoader loader, final PluginDescriptionFile descriptionFile, final File dataFolder, final File file) {
-        super(loader, descriptionFile, dataFolder, file);
-        instance = this;
-    }
 	public FileConfiguration configuration;
 	public FileConfiguration language;
 	public FileConfiguration models;
@@ -60,13 +53,14 @@ public final class LTItemMail extends JavaPlugin {
 	@Override
 	public final void onLoad() {
 		startup = Calendar.getInstance().getTimeInMillis();
+		loadConfig();
+		ConsoleModule.hello();
 	}
 	@Override
 	public final void onEnable() {
-		loadConfig();
 		if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_ENABLE)) {
 			ConsoleModule.severe("😢 Plugin disabled in config.yml.");
-			Bukkit.getPluginManager().disablePlugin(instance);
+			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
 		if(isDevBuild()) {
@@ -81,7 +75,6 @@ public final class LTItemMail extends JavaPlugin {
 		metrics.addCustomChart(new BStats.SimplePie("language", () -> {
 	        return ((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase();
 	    }));
-		ConsoleModule.hello();
 		loadLang();
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
 			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -112,13 +105,13 @@ public final class LTItemMail extends JavaPlugin {
 	@Override
 	public final void onDisable() {
 		Bukkit.getScheduler().cancelTasks(this);
+		PermissionModule.unload();
 		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
 		if(Bukkit.getMessenger().isOutgoingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
 		if(Bukkit.getMessenger().isIncomingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
 	}
 	public final void reload() {
-		PermissionModule.unload();
 		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
 		loadConfig();
@@ -126,7 +119,6 @@ public final class LTItemMail extends JavaPlugin {
 		loadModels();
 		loadDatabase();
 		ExtensionModule.reload().load();
-		PermissionModule.load();
 	}
 	private final void loadConfig() {
 		ConfigurationModule.check();
