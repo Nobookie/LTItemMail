@@ -119,7 +119,6 @@ public final class ItemMailCommand extends LTCommandExecutor {
 								if(mailboxes.size() >= pos) {
 									final List<Integer> ids = new ArrayList<>();
 									for(final Integer id : mailboxes.keySet()) ids.add(id);
-									//if(citizens != null) citizens.call(player);
 									player.openInventory(MailboxInventory.getInventory(type, ids.get((pos - 1)), null, DatabaseModule.Virtual.getMailbox(ids.get((pos - 1))), DatabaseModule.Virtual.getMailboxFrom(ids.get((pos - 1))), DatabaseModule.Virtual.getMailboxLabel(ids.get((pos - 1))), false));
 								}
 							} else {
@@ -139,7 +138,6 @@ public final class ItemMailCommand extends LTCommandExecutor {
 											break;
 									}
 									if(type != null) {
-										//if(citizens != null) citizens.call(player);
 										player.openInventory(MailboxInventory.getInventory(type, mailboxID, null, DatabaseModule.Virtual.getMailbox(mailboxID), DatabaseModule.Virtual.getMailboxFrom(mailboxID), DatabaseModule.Virtual.getMailboxLabel(mailboxID), false));
 									}
 								}
