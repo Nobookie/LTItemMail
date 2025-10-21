@@ -86,7 +86,7 @@ public final class LTItemMail extends JavaPlugin {
 		for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) metrics.addCustomChart(new BStats.SimplePie("extensions", () -> {
 	        return plugin.plugin().getDescription().getName();
 	    }));
-		if(EconomyModule.getInstance() != null && EconomyModule.getInstance().getEconomy() != null) metrics.addCustomChart(new BStats.SimplePie("economy", () -> {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) if(EconomyModule.getInstance() != null && EconomyModule.getInstance().getEconomy() != null) metrics.addCustomChart(new BStats.SimplePie("economy", () -> {
 	        return EconomyModule.getInstance().getEconomy().plugin().getName();
 	    }));
 		PermissionModule.load();
