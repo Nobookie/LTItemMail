@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
@@ -161,7 +162,12 @@ public final class MailboxBlock {
 		Objects.requireNonNull(virtual);
 		Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(this, BreakMailboxBlockEvent.Reason.BY_SERVER, virtual, null, null));
 		DatabaseModule.Block.breakMailbox(getLocation());
-		if(!virtual) getBukkitBlock().setType(Material.AIR);
+		if(!virtual) new BukkitRunnable() {
+			@Override
+			public final void run() {
+				getBukkitBlock().setType(Material.AIR);
+			}
+		}.runTask(LTItemMail.getInstance());
 	}
 	/**
 	 * 
