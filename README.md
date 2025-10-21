@@ -1,4 +1,4 @@
-# LT Item Mail [![Build Status](https://jenkins.nobookie.net.br/job/LTItemMail/badge/icon)](https://jenkins.nobookie.net.br/job/LTItemMail/) [![CodeFactor](https://www.codefactor.io/repository/github/leothawne/ltitemmail/badge)](https://www.codefactor.io/repository/github/leothawne/ltitemmail)
+# LT Item Mail [![Build Status](https://jenkins.nobookie.net.br/job/LTItemMail/badge/icon)](https://jenkins.nobookie.net.br/job/LTItemMail/) [![CodeFactor](https://www.codefactor.io/repository/github/nobookie/ltitemmail/badge)](https://www.codefactor.io/repository/github/nobookie/ltitemmail)
 ### Have you ever imagined mailing items to your friends in Minecraft?
 ### Dev builds: [CLICK HERE](https://jenkins.nobookie.net.br/job/LTItemMail/)
 ###
