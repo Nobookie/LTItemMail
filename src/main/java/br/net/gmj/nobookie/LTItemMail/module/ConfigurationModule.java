@@ -130,7 +130,7 @@ public final class ConfigurationModule {
 		DATABASE_MYSQL_MAX_POOL_SIZE("database.mysql.max_pool_size", 5),
 		DATABASE_MYSQL_MAX_LIFETIME("database.mysql.max_lifetime", 180000),
 		DATABASE_MYSQL_CONNECTION_TIMEOUT("database.mysql.connection_timeout", 5000),
-		PLUGIN_HOOK_ECONOMY_ENABLE("hook.economy.enable", true),
+		PLUGIN_HOOK_ECONOMY_ENABLE("hook.economy.enable", false),
 		PLUGIN_HOOK_ECONOMY_TYPE("hook.economy.type", "Vault"),
 		PLUGIN_HOOK_DYNMAP("hook.dynmap", true),
 		PLUGIN_HOOK_BLUEMAP("hook.bluemap", true),
