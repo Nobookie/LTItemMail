@@ -45,7 +45,7 @@ public final class LTRedProtect implements LTExtension, Listener {
 		ConsoleModule.debug(getClass(), "#canInteract: " + player.getName() + " " + result);
 		return result;
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onRegionDelete(final DeleteRegionEvent event) {
 		final Location min = event.getRegion().getMinLocation();
 		final Location max = event.getRegion().getMaxLocation();
