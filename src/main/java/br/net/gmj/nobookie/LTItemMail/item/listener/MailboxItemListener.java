@@ -12,12 +12,12 @@ import org.bukkit.inventory.ItemStack;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 
 public final class MailboxItemListener implements Listener {
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onBlockDispense(final BlockDispenseEvent e) {
 		final ItemStack mailbox = e.getItem();
 		if(mailbox != null && BukkitUtil.DataContainer.Mailbox.isMailbox(mailbox)) e.setCancelled(true);
 	}
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onShulkerWash(final CauldronLevelChangeEvent e) {
 		Player player = null;
 		if(e.getEntity() != null && e.getEntity() instanceof Player) player = (Player) e.getEntity();
