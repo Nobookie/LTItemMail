@@ -76,7 +76,7 @@ hook:
   #
   #Defina 'true' se desejar usar um plugin de economia (defina o preço do corrêio).
   economy:
-    enable: true
+    enable: false
     #Compatible plugins: Vault for economies in general, CoinsEngine (ex: CoinsEngine:Coins) or The New Economy (ex: TheNewEconomy:USD). Default: Vault
     #
     #Plugins compatíveis: Vault para economias em geral, CoinsEngine (ex: CoinsEngine:Moedas) ou The New Economy (ex: TheNewEconomy:USD). Padrão: Vault
