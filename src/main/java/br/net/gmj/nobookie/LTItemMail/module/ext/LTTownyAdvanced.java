@@ -101,23 +101,25 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onNewDay(final NewDayEvent event) {
-		Integer tax = 0;
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE) && (Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_ENABLE)) for(final OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-			for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks(player.getUniqueId())) {
-				if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) continue;
-				final TownBlock townBlock = api.getTownBlock(block.getLocation());
-				if(townBlock != null) if(EconomyModule.getInstance().has(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) {
-					if(EconomyModule.getInstance().withdraw(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) {
-						tax = tax + (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST);
-						try {
-							townBlock.getTown().depositToBank(api.getResident(player.getUniqueId()), (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST));
-						} catch (final TownyException e) {
-							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-						}
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) {
+			Integer tax = 0;
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE) && (Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_ENABLE)) for(final OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+				for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks(player.getUniqueId())) {
+					if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) continue;
+					final TownBlock townBlock = api.getTownBlock(block.getLocation());
+					if(townBlock != null) if(EconomyModule.getInstance().has(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) {
+						if(EconomyModule.getInstance().withdraw(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) {
+							tax = tax + (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST);
+							try {
+								townBlock.getTown().depositToBank(api.getResident(player.getUniqueId()), (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST));
+							} catch (final TownyException e) {
+								if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+							}
+						} else block.remove(false);
 					} else block.remove(false);
-				} else block.remove(false);
+				}
+				if(tax > 0 && player.getPlayer() != null) player.getPlayer().sendMessage("Você pagou " + tax + " de taxa adicional para ter caixas de corrêio em plots protegidos.");
 			}
-			if(tax > 0 && player.getPlayer() != null) player.getPlayer().sendMessage("Você pagou " + tax + " de taxa adicional para ter caixas de corrêio em plots protegidos.");
 		}
 	}
 }
