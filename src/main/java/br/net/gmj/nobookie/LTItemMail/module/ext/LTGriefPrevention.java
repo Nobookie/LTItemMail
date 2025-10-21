@@ -47,7 +47,7 @@ public final class LTGriefPrevention implements LTExtension, Listener {
 		ConsoleModule.debug(getClass(), "#canInteract: " + player.getName() + " " + result);
 		return result;
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onClaimDelete(final ClaimDeletedEvent event) {
 		for(final Chunk chunk : event.getClaim().getChunks()) for(int x = 0; x < 15; x++) for(int z = 0; z < 15; z++) for(int y = 0; y < 255; y++) {
 			final Block block = chunk.getBlock(x, y, z);
