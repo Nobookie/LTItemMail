@@ -15,7 +15,6 @@ import su.nightexpress.coinsengine.api.CoinsEngineAPI;
 
 public final class EconomyModule {
 	private static EconomyModule instance = null;
-	private static boolean available = false;
 	private Type type = null;
 	private Object currency = null;
 	private Object api = null;
@@ -65,7 +64,6 @@ public final class EconomyModule {
 		if(plugin != null) {
 			ExtensionModule.getInstance().warn(type.plugin(), plugin);
 		} else ExtensionModule.getInstance().warn(null, type.plugin());
-		available = true;
 	}
 	public final boolean deposit(final OfflinePlayer player, final Integer amount) {
 		return deposit(player, Double.parseDouble(String.valueOf(amount)));
@@ -119,7 +117,7 @@ public final class EconomyModule {
 	public static final EconomyModule getInstance() {
 		if(instance == null) {
 			instance = new EconomyModule();
-		} else if(!available) instance = null;
+		}
 		return instance;
 	}
 	public enum Type {
