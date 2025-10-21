@@ -13,7 +13,7 @@ public final class DataModule {
 	private static final String PLUGIN = "https://request.nobookie.net.br/" + LTItemMail.getInstance().getDescription().getName() + "/$version/manifest.yml";
 	public static final String STATS = "https://stats.nobookie.net.br";
 	public static final String DISCORD = "https://discord.gg/Nvnrv3P";
-	public static final Integer STABLE = 100;
+	public static final Integer STABLE = 101;
 	public static final String getDateURL(final Integer build) {
 		return DATE.replace("$build", String.valueOf(build));
 	}
