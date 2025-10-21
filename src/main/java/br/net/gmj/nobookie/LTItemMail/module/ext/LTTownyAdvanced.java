@@ -17,6 +17,7 @@ import com.palmergames.bukkit.towny.event.NewDayEvent;
 import com.palmergames.bukkit.towny.event.PreDeleteTownEvent;
 import com.palmergames.bukkit.towny.event.town.TownRuinedEvent;
 import com.palmergames.bukkit.towny.event.town.TownUnclaimEvent;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyPermission;
@@ -41,28 +42,28 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 	public final void unload() {
 		HandlerList.unregisterAll(this);
 	}
-	public final boolean canBuild(final Player player, final Location location) {
+	public final boolean canBuild(final Player player, final Location location) throws NotRegisteredException {
 		final TownBlock block = api.getTownBlock(location);
 		Boolean result = true;
-		if(block != null) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.BUILD);
+		if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.BUILD);
 		ConsoleModule.debug(getClass(), "#canBuild: " + player.getName() + " " + result);
 		return result;
 	}
-	public final boolean canBreak(final Player player, final Location location) {
+	public final boolean canBreak(final Player player, final Location location) throws NotRegisteredException {
 		final TownBlock block = api.getTownBlock(location);
 		Boolean result = true;
-		if(block != null) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.DESTROY);
+		if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.DESTROY);
 		ConsoleModule.debug(getClass(), "#canBreak: " + player.getName() + " " + result);
 		return result;
 	}
-	public final boolean canInteract(final Player player, final Location location) {
+	public final boolean canInteract(final Player player, final Location location) throws NotRegisteredException {
 		final TownBlock block = api.getTownBlock(location);
 		Boolean result = true;
-		if(block != null) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.ITEM_USE);
+		if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.ITEM_USE);
 		ConsoleModule.debug(getClass(), "#canInteract: " + player.getName() + " " + result);
 		return result;
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onPlotUnclaim(final TownUnclaimEvent event) {
 		final BoundingBox chunk = event.getWorldCoord().getBoundingBox();
 		for(double x = chunk.getMinX(); x < chunk.getMaxX(); x++) for(double z = chunk.getMinZ(); z < chunk.getMaxZ(); z++) for(double y = chunk.getMinY(); y < chunk.getMaxY(); y++) {
@@ -73,7 +74,7 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onTownRuined(final TownRuinedEvent event) {
 		for(final TownBlock townBlock : event.getTown().getTownBlocks()) {
 			final BoundingBox chunk = townBlock.getWorldCoord().getBoundingBox();
@@ -86,7 +87,7 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onTownDeleted(final PreDeleteTownEvent event) {
 		for(final TownBlock townBlock : event.getTown().getTownBlocks()) {
 			final BoundingBox chunk = townBlock.getWorldCoord().getBoundingBox();
@@ -99,26 +100,36 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onNewDay(final NewDayEvent event) {
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) {
-			Integer tax = 0;
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE) && (Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_ENABLE)) for(final OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE) && (Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_ENABLE)) {
+			for(final OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+				Integer tax = 0;
 				for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks(player.getUniqueId())) {
 					if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) continue;
-					final TownBlock townBlock = api.getTownBlock(block.getLocation());
-					if(townBlock != null) if(EconomyModule.getInstance().has(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) {
-						if(EconomyModule.getInstance().withdraw(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) {
+					try {
+						boolean remove = false;
+						final TownBlock townBlock = api.getTownBlock(block.getLocation());
+						if(townBlock != null && !townBlock.getTown().getMayor().getName().equals(player.getName()) && EconomyModule.getInstance().has(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) {
 							tax = tax + (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST);
-							try {
-								townBlock.getTown().depositToBank(api.getResident(player.getUniqueId()), (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST));
-							} catch (final TownyException e) {
-								if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+							api.getTown(block.getLocation()).depositToBank(api.getResident(player.getUniqueId()), (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST));
+						} else remove = true;
+						if(remove) {
+							block.remove(false);
+							if(player.getPlayer() != null) {
+								final String world = block.getLocation().getWorld().getName();
+								final Integer x = block.getLocation().getBlockX();
+								final Integer y = block.getLocation().getBlockY();
+								final Integer z = block.getLocation().getBlockZ();
+								player.getPlayer().sendMessage("Uma caixa de corrêio foi removida por falta de pagamento de taxa adicional! Mundo: " + world + ", X: " + x + ", Y: " + y + ", Z: " + z);
 							}
-						} else block.remove(false);
-					} else block.remove(false);
+						}
+					} catch (final NullPointerException | TownyException e) {
+						ConsoleModule.debug(getClass(), "Unable to tax residents.");
+						if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+					}
 				}
-				if(tax > 0 && player.getPlayer() != null) player.getPlayer().sendMessage("Você pagou " + tax + " de taxa adicional para ter caixas de corrêio em plots protegidos.");
+				if(tax > 0 && EconomyModule.getInstance().withdraw(player, (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST))) if(player.getPlayer() != null) player.getPlayer().sendMessage("Você pagou $ " + tax + " de taxa adicional para ter caixas de corrêio em seus terrenos!");
 			}
 		}
 	}
