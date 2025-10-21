@@ -28,9 +28,9 @@ public final class DataModule {
 		ITEM_MODELS_YML(1),
 		HEADDATABASE_YML(1),
 		SKULLS_YML(1),
-		ENGLISH_YML(14),
-		PORTUGUESE_YML(14),
-		VIETNAMESE_YML(14),
+		ENGLISH_YML(15),
+		PORTUGUESE_YML(15),
+		VIETNAMESE_YML(15),
 		DATABASE(5);
 		private final Integer value;
 		Version(final Integer value){

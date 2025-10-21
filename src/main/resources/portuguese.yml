@@ -1,5 +1,5 @@
 #Não toque nisso!
-language-version: 14
+language-version: 15
 player:
   permissionerror: 'Você não tem permissão para fazer isso.'
   missingerror: 'Você deve especificar o nome do jogador.'
@@ -102,6 +102,11 @@ command:
       changelog: 'Mostra o registro de alterações da construção atual do plugin.'
       notfound: 'Nenhum registro de alterações encontrado.'
       details: 'Detalhes:'
+    give:
+      give: 'Dá uma caixa de corrêio para o jogador especificado.'
+      offline: 'O jogador está offline.'
+      added: 'O bloco Caixa de Corrêio foi adicionado ao inventário do jogador.'
+      dropped: 'Não havia espaço disponível no inventário do jogador e o bloco Caixa de Corrêio foi jogado no chão.'
   wipe:
     wipe: 'Limpa todos os dados do banco de dados.'
     warning: 'Todos os dados do banco de dados serão apagados e não será possível recuperar. Tem certeza que deseja continuar? Para concordar e continuar, digite'

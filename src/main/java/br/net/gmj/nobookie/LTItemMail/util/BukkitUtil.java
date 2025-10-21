@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -48,6 +50,18 @@ public final class BukkitUtil {
 			int count = 0;
 			for(final ItemStack item : items) if(item.getType() != Material.AIR) count = count + item.getAmount();
 			return count;
+		}
+	}
+	public static final class PlayerInventory {
+		public static final boolean hasSpace(final org.bukkit.inventory.PlayerInventory inventory) {
+			if(inventory.firstEmpty() == -1) return false;
+			return true;
+		}
+		public static final void addItem(final Player player, final ItemStack item) {
+			if(hasSpace(player.getInventory())) {
+				player.getInventory().addItem(item);
+			} else player.getLocation().getWorld().dropItem(player.getLocation(), item);
+			player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 1f, 1f);
 		}
 	}
 	public static final class DataContainer {

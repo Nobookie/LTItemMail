@@ -9,8 +9,6 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,6 +19,7 @@ import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
+import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -124,9 +123,8 @@ public final class LTPlayer {
 	@Nonnull
 	public final Boolean giveMailboxBlock() {
 		final Player player = this.player.getPlayer();
-		if(player != null && player.getInventory().firstEmpty() != -1) {
-			player.getInventory().addItem(new MailboxItem().getItem(null));
-			player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.AMBIENT, 1, 1);
+		if(player != null) {
+			BukkitUtil.PlayerInventory.addItem(player, new MailboxItem().getItem(null));
 			return true;
 		}
 		return false;

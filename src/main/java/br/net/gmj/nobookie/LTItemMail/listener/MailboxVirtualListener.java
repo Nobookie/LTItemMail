@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -27,16 +26,13 @@ import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.api.event.PlayerSendMailEvent;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
-import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
-import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
-import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTHeadDatabase;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTSkulls;
@@ -79,7 +75,7 @@ public final class MailboxVirtualListener implements Listener {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_TYPE_COST)) {
 					newcost = (Double) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_COST) * count;
 				} else newcost = (Double) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_COST);
-				if(EconomyModule.getInstance() != null) {
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) {
 					if(EconomyModule.getInstance().has(sender.getBukkitPlayer().getPlayer(), newcost)) {
 						if(EconomyModule.getInstance().withdraw(player, newcost)) {
 							MailboxModule.log(sender, null, MailboxModule.Action.PAID, null, newcost, null, null);
@@ -123,17 +119,6 @@ public final class MailboxVirtualListener implements Listener {
 		if(inventoryView.getTitle().contains(MailboxInventory.getName(MailboxInventory.Type.IN_PENDING, null, null)) && inventoryView.getTitle().split("!").length == 2) {
 			inventory.clear();
 			if(citizens != null) citizens.dismiss(player.getName());
-		}
-	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public final void onItemDrop(final PlayerDropItemEvent event) {
-		final LTPlayer player = LTPlayer.fromUUID(event.getPlayer().getUniqueId());
-		final ItemStack ee = event.getItemDrop().getItemStack();
-		if(PermissionModule.hasPermission(player.getBukkitPlayer().getPlayer(), PermissionModule.Type.CMD_ADMIN_MAIN) && ee.getType().equals(Material.PAPER) && ee.getItemMeta() != null && ee.getItemMeta().getDisplayName().equalsIgnoreCase("give me a mailbox")) {
-			int i = 0;
-			for(i = 0; i < ee.getAmount(); i++) if(!player.giveMailboxBlock()) break;
-			ee.setAmount(ee.getAmount() - i);
-			ConsoleModule.info(ChatColor.RESET + "" + ChatColor.ITALIC + "Gave " + i + " x " + new MailboxItem().getName() + ChatColor.RESET + ChatColor.ITALIC + " to " + player.getName());
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -200,7 +185,7 @@ public final class MailboxVirtualListener implements Listener {
 				}
 				final ItemMeta selectedMeta = selected.getItemMeta();
 				final List<String> selectedLore = selectedMeta.getLore();
-				if(EconomyModule.getInstance() != null) {
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) {
 					selectedLore.set(0, ChatColor.RESET + "" + ChatColor.GREEN + "$ " + newcost);
 				} else selectedLore.set(0, ChatColor.RESET + "" + ChatColor.DARK_RED + LanguageModule.get(LanguageModule.Type.MAILBOX_COSTERROR));
 				selectedMeta.setLore(selectedLore);
