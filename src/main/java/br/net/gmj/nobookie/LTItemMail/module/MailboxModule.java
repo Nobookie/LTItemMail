@@ -1,6 +1,8 @@
 package br.net.gmj.nobookie.LTItemMail.module;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -147,22 +150,32 @@ public final class MailboxModule {
 					break;
 			}
 		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-			final ByteArrayDataOutput bungee = ByteStreams.newDataOutput();
-			if(pSender != null) {
-				bungee.writeUTF("Forward");
-				bungee.writeUTF("ALL");
-				bungee.writeUTF("LTItemMail_MailboxReceived");
-				final ByteArrayDataOutput function = ByteStreams.newDataOutput();
-				final String data = pSender.getName() + ";" + receiver.getName() + ";" + mailboxID;
-				function.writeUTF(data);
-				bungee.writeShort(function.toByteArray().length);
-				bungee.write(function.toByteArray());
-			} else {
-				bungee.writeUTF("Message");
-				bungee.writeUTF(receiver.getName());
-				bungee.writeUTF((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + ChatColor.GREEN + "" + sender.getName());
+			try {
+				final Player first = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+				if(first != null) {
+					final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+					out.writeUTF("Forward");
+					out.writeUTF("ONLINE");
+					final ByteArrayOutputStream msgbytesout = new ByteArrayOutputStream();
+					final DataOutputStream msgout = new DataOutputStream(msgbytesout);
+					if(pSender != null) {
+						out.writeUTF("LTIM_MBR");
+						msgout.writeUTF(pSender.getName());
+						msgout.writeUTF(receiver.getName());
+						msgout.writeShort(mailboxID);
+					} else {
+						out.writeUTF("LTIM_SM");
+						msgout.writeUTF(receiver.getName());
+						msgout.writeUTF((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + ChatColor.GREEN + "" + sender.getName());
+					}
+					out.writeShort(msgbytesout.toByteArray().length);
+					out.write(msgbytesout.toByteArray());
+					first.sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", out.toByteArray());
+				} else sender.sendMessage("É necessário ter um jogador online no servidor para poder enviar mensagens no canal BungeeCord.");
+			} catch(final IOException e) {
+				ConsoleModule.debug(MailboxModule.class, "Unable to send message to BungeeCord channel.");
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
-			Bukkit.getServer().sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", bungee.toByteArray());
 		}
 		return mailboxID;
 	}

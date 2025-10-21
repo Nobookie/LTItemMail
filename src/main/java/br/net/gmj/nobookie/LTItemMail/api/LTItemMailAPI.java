@@ -1,5 +1,8 @@
 package br.net.gmj.nobookie.LTItemMail.api;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -95,11 +99,25 @@ public final class LTItemMailAPI {
 					break;
 			}
 		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-			final ByteArrayDataOutput bungee = ByteStreams.newDataOutput();
-			bungee.writeUTF("Message");
-			bungee.writeUTF(player.getName());
-			bungee.writeUTF((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL));
-			Bukkit.getServer().sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", bungee.toByteArray());
+			try {
+				final Player first = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+				if(first != null) {
+					final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+					out.writeUTF("Forward");
+					out.writeUTF("ONLINE");
+					out.writeUTF("LTIM_SM");
+					final ByteArrayOutputStream msgbytesout = new ByteArrayOutputStream();
+					final DataOutputStream msgout = new DataOutputStream(msgbytesout);
+					msgout.writeUTF(player.getName());
+					msgout.writeUTF((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL));
+					out.writeShort(msgbytesout.toByteArray().length);
+					out.write(msgbytesout.toByteArray());
+					first.sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", out.toByteArray());
+				} else ConsoleModule.warning("É necessário ter um jogador online no servidor para poder enviar mensagens no canal BungeeCord.");
+			} catch(final IOException e) {
+				ConsoleModule.debug(LTItemMailAPI.class, "Unable to send message to BungeeCord channel.");
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+			}
 		}
 	}
 	/**
