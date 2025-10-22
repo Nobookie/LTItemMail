@@ -16,7 +16,7 @@ import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 @LTCommandInfo(
 	name = "itemmailwipe",
 	description = "Wipe every data from the database.",
-	aliases = "ltitemmail:itemmailwipe",
+	aliases = "",
 	permission = "ltitemmail.admin.wipe",
 	usage = "/<command> [confirm]"
 )

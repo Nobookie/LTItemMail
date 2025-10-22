@@ -34,13 +34,6 @@ plugin:
   #
   #Somente para fins de depuração. Padrão: false
   debug: false
-  experimental:
-    #Disabling it, command aliases will no longer work. Default: true
-    #Is highly recommended to keep it enabled. Disable it only if necessary.
-    #
-    #Desabilitando, pseudônimos dos comandos não irão mais funcionar. Padrão: true
-    #É altamente recomendado manter habilitado. Desabilite apenas se necessário.
-    use-commandmap-for-commands-registration: true
 database:
   #'sqlite' or 'mysql'
   #

@@ -37,7 +37,7 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 @LTCommandInfo(
 	name = "itemmail",
 	description = "Lists player commands.",
-	aliases = "ltitemmail:itemmail,ima,imail",
+	aliases = "ima,imail",
 	permission = "ltitemmail.player",
 	usage = "/<command> [help|version|list|open|delete|info|price|color|blocks]"
 )

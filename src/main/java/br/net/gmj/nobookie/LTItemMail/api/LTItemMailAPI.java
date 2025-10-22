@@ -16,6 +16,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Iterables;
@@ -44,6 +45,16 @@ import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
  */
 public final class LTItemMailAPI {
 	private LTItemMailAPI() {}
+	private static LTItemMailAPI instance = null;
+	public static final LTItemMailAPI get(@Nonnull final JavaPlugin plugin) {
+		Objects.requireNonNull(plugin);
+		if(instance == null) instance = new LTItemMailAPI();
+		if(plugin != LTItemMail.getInstance() && !LTItemMail.getInstance().apiHandlers.contains(plugin)) {
+			LTItemMail.getInstance().apiHandlers.add(plugin);
+			ConsoleModule.info("Hooked into " + plugin.getDescription().getName());
+		}
+		return instance;
+	}
 	/**
 	 * 
 	 * Method used to send items anonymously
@@ -57,7 +68,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nonnull
-	public static final void sendSpecialMail(@Nonnull final LTPlayer player, @Nonnull final LinkedList<ItemStack> items, @Nonnull final String label) throws NullPointerException {
+	public final void sendSpecialMail(@Nonnull final LTPlayer player, @Nonnull final LinkedList<ItemStack> items, @Nonnull final String label) throws NullPointerException {
 		Objects.requireNonNull(player);
 		Objects.requireNonNull(items);
 		Objects.requireNonNull(label);
@@ -130,7 +141,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nonnull
-	public static final List<MailboxBlock> getMailboxBlockList(){
+	public final List<MailboxBlock> getMailboxBlockList(){
 		final List<MailboxBlock> blocks = new ArrayList<>();
 		for(final MailboxBlock mailbox : DatabaseModule.Block.getMailboxBlocks()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) blocks.add(mailbox);
 		return blocks;
@@ -148,7 +159,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nonnull
-	public static final List<MailboxBlock> getMailboxBlockList(@Nonnull final LTPlayer owner) throws NullPointerException {
+	public final List<MailboxBlock> getMailboxBlockList(@Nonnull final LTPlayer owner) throws NullPointerException {
 		Objects.requireNonNull(owner);
 		final List<MailboxBlock> blocks = new ArrayList<>();
 		for(final MailboxBlock mailbox : DatabaseModule.Block.getMailboxBlocks()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID)) && mailbox.getOwner().getUniqueId().equals(owner.getUniqueId())) blocks.add(mailbox);
@@ -167,7 +178,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nonnull
-	public static final List<MailboxBlock> getMailboxBlockList(@Nonnull final String server) throws NullPointerException {
+	public final List<MailboxBlock> getMailboxBlockList(@Nonnull final String server) throws NullPointerException {
 		Objects.requireNonNull(server);
 		final List<MailboxBlock> blocks = new ArrayList<>();
 		for(final MailboxBlock mailbox : DatabaseModule.Block.getMailboxBlocks()) if(mailbox.getServer().equals(server)) blocks.add(mailbox);
@@ -188,7 +199,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nonnull
-	public static final List<MailboxBlock> getMailboxBlockList(@Nonnull final String server, @Nonnull final LTPlayer owner) throws NullPointerException {
+	public final List<MailboxBlock> getMailboxBlockList(@Nonnull final String server, @Nonnull final LTPlayer owner) throws NullPointerException {
 		Objects.requireNonNull(server);
 		Objects.requireNonNull(owner);
 		final List<MailboxBlock> blocks = new ArrayList<>();
@@ -206,7 +217,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nullable
-	public static final MailboxBlock getMailboxBlock(@Nonnull final Location location) throws NullPointerException {
+	public final MailboxBlock getMailboxBlock(@Nonnull final Location location) throws NullPointerException {
 		Objects.requireNonNull(location);
 		if(DatabaseModule.Block.isMailboxBlock(location)) for(final MailboxBlock mailbox : getMailboxBlockList()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID)) && mailbox.getLocation().equals(location)) return mailbox;
 		return null;
@@ -224,7 +235,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nullable
-	public static final MailboxBlock getMailboxBlock(@Nonnull final String server, @Nonnull final Location location) throws NullPointerException {
+	public final MailboxBlock getMailboxBlock(@Nonnull final String server, @Nonnull final Location location) throws NullPointerException {
 		Objects.requireNonNull(server);
 		Objects.requireNonNull(location);
 		if(DatabaseModule.Block.isMailboxBlock(location)) for(final MailboxBlock mailbox : getMailboxBlockList()) if(mailbox.getServer().equals(server) && mailbox.getLocation().equals(location)) return mailbox;
@@ -240,7 +251,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nullable
-	public static final List<String> getBungeeOnlinePlayers(){
+	public final List<String> getBungeeOnlinePlayers(){
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) return BungeeModule.getOnlinePlayers();
 		return null;
 	}
@@ -254,7 +265,7 @@ public final class LTItemMailAPI {
 	 * 
 	 */
 	@Nullable
-	public static final List<LTPlayer> getBungeeOnlineLTPlayers(){
+	public final List<LTPlayer> getBungeeOnlineLTPlayers(){
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
 			final List<LTPlayer> players = new ArrayList<>();
 			for(final String name : getBungeeOnlinePlayers()) players.add(LTPlayer.fromName(name));

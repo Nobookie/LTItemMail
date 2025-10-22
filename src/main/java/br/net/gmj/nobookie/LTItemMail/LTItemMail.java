@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,8 +46,9 @@ public final class LTItemMail extends JavaPlugin {
 	public FileConfiguration models;
 	public HikariDataSource dataSource = null;
 	public Connection connection = null;
-	public List<Integer> boardsForPlayers = new ArrayList<>();
-	public Map<String, List<Integer>> boardsPlayers = new HashMap<>();
+	public final ArrayList<Integer> boardsForPlayers = new ArrayList<>();
+	public final HashMap<String, List<Integer>> boardsPlayers = new HashMap<>();
+	public final ArrayList<JavaPlugin> apiHandlers = new ArrayList<>();
 	private Long startup;
 	@Override
 	public final void onLoad() {
@@ -94,7 +94,7 @@ public final class LTItemMail extends JavaPlugin {
 		runTasks();
 		RegistrationModule.setupItems();
 		RegistrationModule.setupBlock();
-		CommandModule.getInstance().init();
+		new CommandModule();
 		MailboxModule.ready();
 		new FetchUtil.Stats();
 		final Long done = Calendar.getInstance().getTimeInMillis() - startup;

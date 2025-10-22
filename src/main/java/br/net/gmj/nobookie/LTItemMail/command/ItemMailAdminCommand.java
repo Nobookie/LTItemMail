@@ -19,6 +19,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Iterables;
@@ -46,7 +47,7 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 @LTCommandInfo(
 	name = "itemmailadmin",
 	description = "Lists admin commands.",
-	aliases = "ltitemmail:itemmailadmin,imad,imadmin",
+	aliases = "imad,imadmin",
 	permission = "ltitemmail.admin",
 	usage = "/<command> [help|update|list|recover|reload|info|ban|unban|banlist|blocks|dump|changelog]"
 )
@@ -247,9 +248,11 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 		} else if(args[0].equalsIgnoreCase("dump")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) {
 				if(args.length == 1) {
-					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + "Server version " + ChatColor.GREEN + Bukkit.getServer().getVersion());
-					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + LTItemMail.getInstance().getDescription().getName() + " version " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + ChatColor.RESET + " build " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
-					for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + plugin.plugin().getDescription().getName() + " version " + ChatColor.GREEN + plugin.plugin().getDescription().getVersion());
+					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.GREEN + Bukkit.getServer().getName() + " " + ChatColor.RESET + "server version " + ChatColor.GREEN + Bukkit.getServer().getVersion());
+					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + LTItemMail.getInstance().getDescription().getName() + " version " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + ChatColor.RESET + " build " + ChatColor.GREEN + (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
+					for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.LIGHT_PURPLE + "Extension: " + ChatColor.RESET + plugin.plugin().getDescription().getName() + " version " + ChatColor.GREEN + plugin.plugin().getDescription().getVersion());
+					for(final JavaPlugin plugin : LTItemMail.getInstance().apiHandlers) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.LIGHT_PURPLE + "Using internal API: " + ChatColor.RESET + plugin.getDescription().getName() + " version " + ChatColor.GREEN + plugin.getDescription().getVersion());
+					Bukkit.dispatchCommand(sender, "ltitemmail:itemmailadmin update");
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
 		} else if(args[0].equalsIgnoreCase("changelog")) {

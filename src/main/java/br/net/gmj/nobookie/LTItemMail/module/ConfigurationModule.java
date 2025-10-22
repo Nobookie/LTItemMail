@@ -118,7 +118,6 @@ public final class ConfigurationModule {
 		BUNGEE_SERVER_ID("plugin.bungee-server-id", "server1"),
 		RESOURCE_PACK_DOWNLOAD("plugin.resource-pack-download", false),
 		PLUGIN_DEBUG("plugin.debug", false),
-		PLUGIN_EXPERIMENTAL_COMMANDMAP("plugin.experimental.use-commandmap-for-commands-registration", true),
 		DATABASE_TYPE("database.type", "flatfile"),
 		DATABASE_CONVERT("database.convert", false),
 		DATABASE_SQLITE_FILE("database.sqlite.file", "mailboxes.db"),
