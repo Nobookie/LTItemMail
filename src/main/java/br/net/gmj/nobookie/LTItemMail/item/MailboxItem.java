@@ -14,7 +14,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
+import br.net.gmj.nobookie.LTItemMail.item.listener.MailboxItemListener;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
+import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 
 public final class MailboxItem implements Item {
@@ -24,7 +26,7 @@ public final class MailboxItem implements Item {
 	}
 	@Override
 	public final List<String> getDescription(final String data) {
-		return Arrays.asList("");
+		return Arrays.asList(LanguageModule.get(LanguageModule.Type.BLOCK_BELOWERROR));
 	}
 	@Override
 	public final Item.Type getType() {
@@ -40,7 +42,7 @@ public final class MailboxItem implements Item {
 	}
 	@Override
 	public final List<Listener> getListeners() {
-		return Collections.emptyList();
+		return Arrays.asList(new MailboxItemListener());
 	}
 	@Override
 	public final void runTasks() {}
@@ -54,7 +56,7 @@ public final class MailboxItem implements Item {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(getName());
 		meta.setLore(getDescription(data));
-		meta = BukkitUtil.DataContainer.setMailbox(meta);
+		meta = BukkitUtil.DataContainer.Mailbox.setMailbox(meta);
 		item.setItemMeta(meta);
 		return item;
 	}

@@ -1,13 +1,15 @@
-package br.net.gmj.nobookie.LTItemMail.event;
+package br.net.gmj.nobookie.LTItemMail.api.event;
 
 import java.util.LinkedList;
 
+import javax.annotation.Nonnull;
+
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 /**
  * 
  * Event called when a mailbox is sent.
@@ -20,7 +22,17 @@ public final class ServerSendMailEvent extends Event {
 	private final LTPlayer to;
 	private final LinkedList<ItemStack> contents;
 	private final String label;
+	/**
+	 * 
+	 * The constructor of the event.
+	 * 
+	 * @param to The player who received it
+	 * @param contents The delivery contents
+	 * @param label The delivery label if there is any
+	 * 
+	 */
 	public ServerSendMailEvent(final LTPlayer to, final LinkedList<ItemStack> contents, final String label) {
+		super(!Bukkit.getServer().isPrimaryThread());
 		this.to = to;
 		this.contents = contents;
 		this.label = label;
@@ -29,8 +41,10 @@ public final class ServerSendMailEvent extends Event {
 	 * 
 	 * Gets who received the mailbox.
 	 * 
+	 * @return {@link LTPlayer} object representing a player.
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final LTPlayer getTo() {
 		return to;
 	}
@@ -38,8 +52,10 @@ public final class ServerSendMailEvent extends Event {
 	 * 
 	 * Gets the mailbox contents.
 	 * 
+	 * @return {@link LinkedList<ItemStack>}
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final LinkedList<ItemStack> getContents(){
 		return contents;
 	}
@@ -47,8 +63,10 @@ public final class ServerSendMailEvent extends Event {
 	 * 
 	 * Gets the label of the mail.
 	 * 
+	 * @return {@link String}
+	 * 
 	 */
-	@NotNull
+	@Nonnull
 	public final String getLabel() {
 		return label;
 	}
@@ -56,7 +74,14 @@ public final class ServerSendMailEvent extends Event {
 	public final HandlerList getHandlers() {
 		return handlers;
 	}
-	@NotNull
+	/**
+	 * 
+	 * See {@link HandlerList}
+	 * 
+	 * @return {@link HandlerList}
+	 * 
+	 */
+	@Nonnull
 	public static final HandlerList getHandlerList() {
 		return handlers;
 	}

@@ -1,13 +1,11 @@
 name: ${project.name}
 description: ${project.description}
 version: ${project.version}
-build: ${v}
-api-version: 1.14
+build: ${buildNumber}
+api-version: 1.17
 load: POSTWORLD
-authors:
-  - Nobookie
-  - leothawne
-website: https://www.spigotmc.org/resources/62294/
+author: Nobookie
+website: ${project.url}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 database: true
 softdepend:
@@ -26,3 +24,5 @@ softdepend:
   - PlugMan
   - PlugManX
   - HeadDatabase
+  - Skulls
+  - Citizens

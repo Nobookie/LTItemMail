@@ -5,10 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.Plugin;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
@@ -16,15 +15,10 @@ import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public final class LTPlaceholderAPI extends PlaceholderExpansion implements LTExtension {
-	private final Plugin plugin;
-	public LTPlaceholderAPI(final Plugin plugin) {
-		this.plugin = plugin;
+	public LTPlaceholderAPI() {
 		register();
 	}
 	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
-	}
 	public final void unload() {
 		unregister();
 	}

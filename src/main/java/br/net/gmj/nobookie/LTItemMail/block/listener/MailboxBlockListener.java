@@ -27,21 +27,26 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
-import br.net.gmj.nobookie.LTItemMail.event.BreakMailboxBlockEvent;
-import br.net.gmj.nobookie.LTItemMail.event.PlayerBreakMailboxBlockEvent;
-import br.net.gmj.nobookie.LTItemMail.event.PlayerPlaceMailboxBlockEvent;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.event.BreakMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.event.PlayerBreakMailboxBlockEvent;
+import br.net.gmj.nobookie.LTItemMail.api.event.PlayerPlaceMailboxBlockEvent;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.item.Item;
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
+import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTBlueMap;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDecentHolograms;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDynmap;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTGriefPrevention;
@@ -52,9 +57,9 @@ import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 
 public final class MailboxBlockListener implements Listener {
 	private final Item mailbox = new MailboxItem();
-	private final LTDynmap dynmap = (LTDynmap) ExtensionModule.getInstance().get(ExtensionModule.Function.DYNMAP);
-	private final LTBlueMap blueMap = (LTBlueMap) ExtensionModule.getInstance().get(ExtensionModule.Function.BLUEMAP);
-	private final LTDecentHolograms decentHolograms = (LTDecentHolograms) ExtensionModule.getInstance().get(ExtensionModule.Function.DECENTHOLOGRAMS);
+	private final LTDynmap dynmap = (LTDynmap) ExtensionModule.getInstance().get(ExtensionModule.EXT.DYNMAP);
+	private final LTBlueMap blueMap = (LTBlueMap) ExtensionModule.getInstance().get(ExtensionModule.EXT.BLUEMAP);
+	private final LTDecentHolograms decentHolograms = (LTDecentHolograms) ExtensionModule.getInstance().get(ExtensionModule.EXT.DECENTHOLOGRAMS);
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onClick(final PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
@@ -72,7 +77,10 @@ public final class MailboxBlockListener implements Listener {
 							if(DatabaseModule.Virtual.getMailboxesList(player.getUniqueId(), DatabaseModule.Virtual.Status.PENDING).size() > 0) {
 								player.performCommand("ltitemmail:itemmail");
 							} else player.performCommand("ltitemmail:itemmail list");
-						} else player.openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, owner, null, player.getUniqueId(), "", false));
+						} else {
+							if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.CITIZENS)) ((LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS)).call(player);
+							player.openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, owner, null, player.getUniqueId(), "", false));
+						}
 					} else player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.BLOCK_USEERROR));
 				}
 			}
@@ -81,7 +89,7 @@ public final class MailboxBlockListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onPlace(final BlockPlaceEvent event) {
 		final ItemStack item = event.getItemInHand();
-		if(item != null && item.getItemMeta() != null && item.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.isMailbox(item)) {
+		if(item != null && item.getItemMeta() != null && item.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.Mailbox.isMailbox(item)) {
 			final Player player = event.getPlayer();
 			final Block block = event.getBlockPlaced();
 			if(canBuildBreak(player, block.getLocation()) && canBuild(player, block.getLocation())) {
@@ -89,7 +97,7 @@ public final class MailboxBlockListener implements Listener {
 					final Block blockBelow = new Location(block.getLocation().getWorld(), block.getLocation().getBlockX(), (block.getLocation().getBlockY() - 1), block.getLocation().getBlockZ()).getBlock();
 					if(blockBelow.getType().toString().endsWith("_FENCE") || blockBelow.getType().toString().endsWith("_WALL")) {
 						if(!DatabaseModule.Block.isMailboxBlock(block.getLocation())) {
-							final PlayerPlaceMailboxBlockEvent placeEvent = new PlayerPlaceMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld().getName(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), PlayerPlaceMailboxBlockEvent.Reason.BY_PLAYER, LTPlayer.fromUUID(player.getUniqueId()));
+							final PlayerPlaceMailboxBlockEvent placeEvent = new PlayerPlaceMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), PlayerPlaceMailboxBlockEvent.Reason.BY_PLAYER, LTPlayer.fromUUID(player.getUniqueId()));
 							Bukkit.getPluginManager().callEvent(placeEvent);
 							if(!placeEvent.isCancelled()) {
 								if(DatabaseModule.Block.placeMailbox(player.getUniqueId(), block.getLocation())) {
@@ -121,7 +129,7 @@ public final class MailboxBlockListener implements Listener {
 			if(canBuildBreak(player, block.getLocation()) && canBreak(player, block.getLocation())) {
 				if(PermissionModule.hasPermission(player, PermissionModule.Type.BLOCK_PLAYER_BREAK)) {
 					if(DatabaseModule.Block.isMailboxOwner(player.getUniqueId(), block.getLocation())) {
-						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld().getName(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_OWNER, LTPlayer.fromUUID(player.getUniqueId()));
+						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_OWNER, LTPlayer.fromUUID(player.getUniqueId()));
 						Bukkit.getPluginManager().callEvent(breakEvent);
 						if(!breakEvent.isCancelled()) {
 							if(DatabaseModule.Block.breakMailbox(block.getLocation())) {
@@ -135,7 +143,7 @@ public final class MailboxBlockListener implements Listener {
 						} else event.setCancelled(true);
 					} else if(PermissionModule.hasPermission(player, PermissionModule.Type.BLOCK_ADMIN_BREAK)){
 						final LTPlayer owner = LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation()));
-						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), owner, (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld().getName(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_ADMIN, LTPlayer.fromUUID(player.getUniqueId()));
+						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), owner, (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_ADMIN, LTPlayer.fromUUID(player.getUniqueId()));
 						Bukkit.getPluginManager().callEvent(breakEvent);
 						if(!breakEvent.isCancelled()) {
 							if(DatabaseModule.Block.breakMailbox(block.getLocation())) {
@@ -167,7 +175,7 @@ public final class MailboxBlockListener implements Listener {
 		final Location block = event.getDestination().getLocation();
 		if(block != null && block.getBlock().getType().toString().endsWith("_SHULKER_BOX") && DatabaseModule.Block.isMailboxBlock(block)) if(event.getSource().getType().equals(InventoryType.HOPPER)) event.setCancelled(true);
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onPistonExtend(final BlockPistonExtendEvent event) {
 		Boolean cancel = false;
 		final List<Block> blocks = event.getBlocks();
@@ -182,7 +190,7 @@ public final class MailboxBlockListener implements Listener {
 		}
 		event.setCancelled(cancel);
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onPistonRetract(final BlockPistonRetractEvent event) {
 		Boolean cancel = false;
 		final List<Block> blocks = event.getBlocks();
@@ -255,10 +263,10 @@ public final class MailboxBlockListener implements Listener {
 		}
 		event.setCancelled(cancel);
 	}
-	private final LTGriefPrevention griefPrevention = (LTGriefPrevention) ExtensionModule.getInstance().get(ExtensionModule.Function.GRIEFPREVENTION);
-	private final LTRedProtect redProtect = (LTRedProtect) ExtensionModule.getInstance().get(ExtensionModule.Function.REDPROTECT);
-	private final LTTownyAdvanced townyAdvanced = (LTTownyAdvanced) ExtensionModule.getInstance().get(ExtensionModule.Function.TOWNYADVANCED);
-	private final LTWorldGuard worldGuard = (LTWorldGuard) ExtensionModule.getInstance().get(ExtensionModule.Function.WORLDGUARD);
+	private final LTGriefPrevention griefPrevention = (LTGriefPrevention) ExtensionModule.getInstance().get(ExtensionModule.EXT.GRIEFPREVENTION);
+	private final LTRedProtect redProtect = (LTRedProtect) ExtensionModule.getInstance().get(ExtensionModule.EXT.REDPROTECT);
+	private final LTTownyAdvanced townyAdvanced = (LTTownyAdvanced) ExtensionModule.getInstance().get(ExtensionModule.EXT.TOWNYADVANCED);
+	private final LTWorldGuard worldGuard = (LTWorldGuard) ExtensionModule.getInstance().get(ExtensionModule.EXT.WORLDGUARD);
 	private final boolean canBuildBreak(final Player player, final Location location) {
 		Boolean canBuildBreak = true;
 		if(canBuildBreak && griefPrevention != null) canBuildBreak = griefPrevention.canBuildBreak(player, location);
@@ -268,19 +276,34 @@ public final class MailboxBlockListener implements Listener {
 	private final boolean canBuild(final Player player, final Location location) {
 		Boolean canBuild = true;
 		if(canBuild && worldGuard != null) canBuild = worldGuard.canBuild(player, location);
-		if(canBuild && townyAdvanced != null) canBuild = townyAdvanced.canBuild(player, location);
+		if(canBuild && townyAdvanced != null) try {
+			canBuild = townyAdvanced.canBuild(player, location);
+		} catch (final NotRegisteredException e) {
+			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
 		return canBuild;
 	}
 	private final boolean canBreak(final Player player, final Location location) {
 		Boolean canBreak = true;
 		if(canBreak && worldGuard != null) canBreak = worldGuard.canBreak(player, location);
-		if(canBreak && townyAdvanced != null) canBreak = townyAdvanced.canBreak(player, location);
+		if(canBreak && townyAdvanced != null) try {
+			canBreak = townyAdvanced.canBreak(player, location);
+		} catch (final NotRegisteredException e) {
+			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
 		return canBreak;
 	}
 	private final boolean canInteract(final Player player, final Location location) {
 		Boolean canInteract = true;
 		if(canInteract && worldGuard != null) canInteract = worldGuard.canInteract(player, location);
-		if(canInteract && townyAdvanced != null) canInteract = townyAdvanced.canInteract(player, location);
+		if(canInteract && townyAdvanced != null) try {
+			canInteract = townyAdvanced.canInteract(player, location);
+		} catch (final NotRegisteredException e) {
+			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
 		if(canInteract && griefPrevention != null) canInteract = griefPrevention.canInteract(player, location);
 		if(canInteract && redProtect != null) canInteract = redProtect.canInteract(player, location);
 		return canInteract;

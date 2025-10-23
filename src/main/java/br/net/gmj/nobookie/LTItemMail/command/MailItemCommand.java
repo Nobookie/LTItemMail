@@ -10,23 +10,27 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
 	name = "mailitem",
-	description = "Used to send items.",
-	aliases = "ltitemmail:mailitem,mit,enviaritem",
+	description = "Opens a new mail box to put items inside and send it to another player.",
+	aliases = "mit,enviaritem",
 	permission = "ltitemmail.player.send",
-	usage = "/<command> <player> <label>"
+	usage = "/<command> <player> [label]"
 )
 public final class MailItemCommand extends LTCommandExecutor {
+	private final LTCitizens citizens = (LTCitizens) ExtensionModule.getInstance().get(EXT.CITIZENS);
 	@Override
 	public final boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
 		if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_SEND)) {
@@ -42,11 +46,13 @@ public final class MailItemCommand extends LTCommandExecutor {
 							if(playerTo.getUniqueId().equals(player.getUniqueId())) {
 								if(args.length == 2 && args[1].equalsIgnoreCase("--bypass") && PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BYPASS)) {
 									player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "Ok...");
+									if(citizens != null) citizens.call(player.getBukkitPlayer().getPlayer());
 									player.getBukkitPlayer().getPlayer().openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, playerTo, null, player.getUniqueId(), "", false));
 								} else player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_SELFERROR));
 							} else {
 								String label = "";
 								if(args.length > 1) for(int i = 1; i < args.length; i++) label = label + args[i] + " ";
+								if(citizens != null) citizens.call(player.getBukkitPlayer().getPlayer());
 								player.getBukkitPlayer().getPlayer().openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, playerTo, null, player.getUniqueId(), label, false));
 							}
 						} else player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_NEVERPLAYEDERROR));

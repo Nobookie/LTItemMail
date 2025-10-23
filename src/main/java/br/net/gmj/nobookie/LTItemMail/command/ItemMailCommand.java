@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -19,14 +20,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
-import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
@@ -36,8 +36,8 @@ import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
 	name = "itemmail",
-	description = "Used to send items and to check your mailbox.",
-	aliases = "ltitemmail:itemmail,ima,imail",
+	description = "Lists player commands.",
+	aliases = "ima,imail",
 	permission = "ltitemmail.player",
 	usage = "/<command> [help|version|list|open|delete|info|price|color|blocks]"
 )
@@ -57,7 +57,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 			} else Bukkit.dispatchCommand(sender, "ltitemmail:itemmail help");
 		} else if(args[0].equalsIgnoreCase("help")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_MAIN)) {
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ LT Item Mail ]");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ " + LTItemMail.getInstance().getDescription().getName() + " ]");
 				sender.sendMessage(ChatColor.GREEN + "/itemmail help " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_ITEMMAIL));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_VERSION)) sender.sendMessage(ChatColor.GREEN + "/itemmail version " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_VERSION));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_LIST)) sender.sendMessage(ChatColor.GREEN + "/itemmail list " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_LIST));
@@ -78,7 +78,9 @@ public final class ItemMailCommand extends LTCommandExecutor {
 							sender.sendMessage(ChatColor.YELLOW + "LT Item Mail");
 							sender.sendMessage(ChatColor.YELLOW + "Version: " + ChatColor.DARK_GREEN + ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER));
 							sender.sendMessage(ChatColor.YELLOW + "Build number: " + ChatColor.DARK_GREEN + ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
-							sender.sendMessage(ChatColor.YELLOW + "Build date: " + ChatColor.DARK_GREEN + FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER))).replaceAll(System.lineSeparator(), ""));
+							final Map<String, Object> params = new HashMap<>();
+							params.put("format", "dd/MM/yyyy HH:mm:ss z");
+							sender.sendMessage(ChatColor.YELLOW + "Build date: " + ChatColor.DARK_GREEN + FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params).replaceAll(System.lineSeparator(), ""));
 							String authors = "";
 							if(LTItemMail.getInstance().getDescription().getAuthors().size() > 1) {
 								String separator = ", ";
@@ -89,9 +91,9 @@ public final class ItemMailCommand extends LTCommandExecutor {
 							} else authors = LTItemMail.getInstance().getDescription().getAuthors().get(0);
 							sender.sendMessage(ChatColor.YELLOW + "Authors: " + authors);
 							sender.sendMessage(ChatColor.YELLOW + "Website: " + ChatColor.DARK_GREEN + LTItemMail.getInstance().getDescription().getWebsite());
-							if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage(ChatColor.YELLOW + "Version manifest: " + ChatColor.DARK_GREEN + DataModule.getManifestURL(LTItemMail.getInstance().getDescription().getVersion()));
+							if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage(ChatColor.YELLOW + "Manifest: " + ChatColor.DARK_GREEN + DataModule.getManifestURL(LTItemMail.getInstance().getDescription().getVersion()));
 						}
-					}.runTask(LTItemMail.getInstance());
+					}.runTaskAsynchronously(LTItemMail.getInstance());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
 		} else if(args[0].equalsIgnoreCase("open")) {
@@ -134,7 +136,9 @@ public final class ItemMailCommand extends LTCommandExecutor {
 											player.sendMessage(ChatColor.DARK_RED + DatabaseModule.Virtual.Status.class.getName() + ": " + DatabaseModule.Virtual.Status.UNDEFINED.toString());
 											break;
 									}
-									if(type != null) player.openInventory(MailboxInventory.getInventory(type, mailboxID, null, DatabaseModule.Virtual.getMailbox(mailboxID), DatabaseModule.Virtual.getMailboxFrom(mailboxID), DatabaseModule.Virtual.getMailboxLabel(mailboxID), false));
+									if(type != null) {
+										player.openInventory(MailboxInventory.getInventory(type, mailboxID, null, DatabaseModule.Virtual.getMailbox(mailboxID), DatabaseModule.Virtual.getMailboxFrom(mailboxID), DatabaseModule.Virtual.getMailboxLabel(mailboxID), false));
+									}
 								}
 							}
 						} catch (final NumberFormatException e) {
@@ -150,6 +154,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 					if(args.length == 1) {
 						final HashMap<Integer, String> mailboxes = DatabaseModule.Virtual.getMailboxesList(player.getUniqueId(), DatabaseModule.Virtual.Status.ALL);
 						if(mailboxes.size() > 0) {
+							player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_NEW));
 							for(final Integer mailboxID : mailboxes.keySet()) {
 								String from = "CONSOLE";
 								final UUID uuidFrom = DatabaseModule.Virtual.getMailboxFrom(mailboxID);
@@ -183,7 +188,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 		} else if(args[0].equalsIgnoreCase("price")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_PRICE)) {
 				if(args.length == 1) {
-					if(EconomyModule.getInstance() != null) {
+					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) {
 						String costs = null;
 						if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_TYPE_COST)) {
 							costs = (Double) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_COST) + " x Item";
@@ -225,7 +230,7 @@ public final class ItemMailCommand extends LTCommandExecutor {
 					if(args.length == 2) {
 						final String color = args[1].toLowerCase();
 						final ItemStack current = player.getInventory().getItemInMainHand();
-						if(colors.contains(color) && current != null && current.getItemMeta() != null && current.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.isMailbox(current)) {
+						if(colors.contains(color) && current != null && current.getItemMeta() != null && current.getType().toString().endsWith("_SHULKER_BOX") && BukkitUtil.DataContainer.Mailbox.isMailbox(current)) {
 							final ItemStack newMailbox = new ItemStack(Material.getMaterial(color.toUpperCase() + "_SHULKER_BOX"));
 							newMailbox.setAmount(current.getAmount());
 							newMailbox.setItemMeta(current.getItemMeta());
@@ -246,13 +251,13 @@ public final class ItemMailCommand extends LTCommandExecutor {
 				if(sender instanceof Player) {
 					final Player player = (Player) sender;
 					final List<MailboxBlock> mailboxes = new ArrayList<>();
-					for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) if(block.getOwner().equals(LTPlayer.fromUUID(player.getUniqueId()))) mailboxes.add(block);
+					for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) if(block.getOwner().getUniqueId().equals(LTPlayer.fromUUID(player.getUniqueId()).getUniqueId())) mailboxes.add(block);
 					if(mailboxes.size() > 0) {
 						player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.BLOCK_LIST));
 						Integer number = 1;
 						for(final MailboxBlock block : mailboxes) {
 							String server = "";
-							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) server = "Server=" + ChatColor.GREEN + block.getServer() + ChatColor.YELLOW + ", ";
+							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) server = LanguageModule.get(LanguageModule.Type.BLOCK_LIST_SERVER) + "=" + ChatColor.GREEN + block.getServer() + ChatColor.YELLOW + ", ";
 							final Location loc = block.getLocation();
 							player.sendMessage(ChatColor.YELLOW + "    - #" + ChatColor.GREEN + String.valueOf(number) + ChatColor.YELLOW + " : " + server + LanguageModule.get(LanguageModule.Type.BLOCK_LIST_WORLD) + "=" + ChatColor.GREEN + loc.getWorld().getName() + ChatColor.YELLOW + ", X=" + ChatColor.GREEN + String.valueOf(loc.getBlockX()) + ChatColor.YELLOW + ", Y=" + ChatColor.GREEN + String.valueOf(loc.getBlockY()) + ChatColor.YELLOW + ", Z=" + ChatColor.GREEN + String.valueOf(loc.getBlockZ()));
 							number++;

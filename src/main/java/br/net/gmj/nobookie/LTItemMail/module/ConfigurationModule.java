@@ -3,6 +3,7 @@ package br.net.gmj.nobookie.LTItemMail.module;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -33,14 +34,19 @@ public final class ConfigurationModule {
 				configuration.load(file);
 				ConsoleModule.info("Configuration loaded.");
 				if(configuration.getInt("config-version") < DataModule.Version.CONFIG_YML.value()) {
+					if(configuration.getInt("config-version") < 18 && configuration.getString(Type.DATABASE_TYPE.path()).equalsIgnoreCase("flatfile")) {
+						configuration.set(Type.DATABASE_TYPE.path(), "sqlite");
+						configuration.set(Type.DATABASE_SQLITE_FILE.path(), configuration.getString("database.flatfile.file"));
+					}
+					if(configuration.getInt("config-version") < 21 && configuration.isBoolean("hook.towny")) configuration.set(Type.PLUGIN_HOOK_TOWNYADVANCED_ENABLE.path(), configuration.getBoolean("hook.towny"));
 					update = true;
 					ConsoleModule.warning("Configuration outdated!");
 					ConsoleModule.warning("New settings will be added.");
 					configuration.set("config-version", DataModule.Version.CONFIG_YML.value());
 				}
-				if(configuration.isSet("version-number")) if(!configuration.getString("version-number").equals(FetchUtil.Version.get())) configuration.set("boards-read", new ArrayList<Integer>());
-				configuration.set("version-number", FetchUtil.Version.get());
-				configuration.set("build-number", FetchUtil.Build.get());
+				if(configuration.isSet(Type.VERSION_NUMBER.path())) if(!configuration.getString(Type.VERSION_NUMBER.path()).equals(FetchUtil.Version.get())) configuration.set("boards-read", new ArrayList<Integer>());
+				configuration.set(Type.VERSION_NUMBER.path(), FetchUtil.Version.get());
+				configuration.set(Type.BUILD_NUMBER.path(), FetchUtil.Build.get());
 				configuration.save(file);
 				return configuration;
 			} catch (final IOException | InvalidConfigurationException e) {
@@ -62,7 +68,7 @@ public final class ConfigurationModule {
 		}
 	}
 	public static final void disableDatabaseConversion() {
-		LTItemMail.getInstance().configuration.set("database.convert", false);
+		LTItemMail.getInstance().configuration.set(Type.DATABASE_CONVERT.path(), false);
 		try {
 			LTItemMail.getInstance().configuration.save(file);
 		} catch (final IOException e) {
@@ -86,7 +92,7 @@ public final class ConfigurationModule {
 			} else result = LTItemMail.getInstance().configuration.get(path);
 			if(type.equals(Type.PLUGIN_TAG) || type.equals(Type.MAILBOX_NAME) || type.equals(Type.MAILBOX_NAME)) result = BukkitUtil.Text.Color.format((String) result);
 		} else {
-			ConsoleModule.info("Configuration fallback: [" + path + ":" + result + "]");
+			ConsoleModule.info("Configuration fallback [" + path + ":\"" + result + "\"]");
 			LTItemMail.getInstance().configuration.set(path, result);
 			try {
 				LTItemMail.getInstance().configuration.save(file);
@@ -114,31 +120,43 @@ public final class ConfigurationModule {
 		PLUGIN_DEBUG("plugin.debug", false),
 		DATABASE_TYPE("database.type", "flatfile"),
 		DATABASE_CONVERT("database.convert", false),
-		DATABASE_FLATFILE_FILE("database.flatfile.file", "mailboxes.db"),
+		DATABASE_SQLITE_FILE("database.sqlite.file", "mailboxes.db"),
 		DATABASE_MYSQL_HOST("database.mysql.host", "127.0.0.1:3306"),
 		DATABASE_MYSQL_USER("database.mysql.user", "root"),
 		DATABASE_MYSQL_PASSWORD("database.mysql.password", ""),
 		DATABASE_MYSQL_NAME("database.mysql.database", "ltitemmail"),
+		DATABASE_MYSQL_FLAGS("database.mysql.flags", "?verifyServerCertificate=false&useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf-8"),
+		DATABASE_MYSQL_MAX_POOL_SIZE("database.mysql.max_pool_size", 5),
+		DATABASE_MYSQL_MAX_LIFETIME("database.mysql.max_lifetime", 180000),
+		DATABASE_MYSQL_CONNECTION_TIMEOUT("database.mysql.connection_timeout", 5000),
 		PLUGIN_HOOK_ECONOMY_ENABLE("hook.economy.enable", false),
 		PLUGIN_HOOK_ECONOMY_TYPE("hook.economy.type", "Vault"),
-		PLUGIN_HOOK_DYNMAP("hook.dynmap", false),
-		PLUGIN_HOOK_BLUEMAP("hook.bluemap", false),
+		PLUGIN_HOOK_DYNMAP("hook.dynmap", true),
+		PLUGIN_HOOK_BLUEMAP("hook.bluemap", true),
 		PLUGIN_HOOK_DECENTHOLOGRAMS("hook.decentholograms", true),
-		PLUGIN_HOOK_GRIEFPREVENTION("hook.griefprevention", false),
-		PLUGIN_HOOK_REDPROTECT("hook.redprotect", false),
-		PLUGIN_HOOK_TOWNYADVANCED("hook.towny", false),
-		PLUGIN_HOOK_WORLDGUARD("hook.worldguard", false),
-		PLUGIN_HOOK_ULTIMATEADVANCEMENTAPI("hook.ultimateadvancementapi", false),
-		PLUGIN_HOOK_HEADDATABASE("hook.headdatabase", false),
+		PLUGIN_HOOK_GRIEFPREVENTION("hook.griefprevention", true),
+		PLUGIN_HOOK_REDPROTECT("hook.redprotect", true),
+		PLUGIN_HOOK_TOWNYADVANCED_ENABLE("hook.towny.enable", true),
+		PLUGIN_HOOK_TOWNYADVANCED_TAXES_ENABLE("hook.towny.taxes-per-mailbox.enable", true),
+		PLUGIN_HOOK_TOWNYADVANCED_TAXES_COST("hook.towny.taxes-per-mailbox.cost", 15),
+		PLUGIN_HOOK_WORLDGUARD("hook.worldguard", true),
+		PLUGIN_HOOK_ULTIMATEADVANCEMENTAPI("hook.ultimateadvancementapi", true),
+		PLUGIN_HOOK_HEADDATABASE("hook.headdatabase", true),
+		PLUGIN_HOOK_SKULLS("hook.skulls", true),
+		PLUGIN_HOOK_CITIZENS("hook.citizens", true),
 		MAILBOX_DISPLAY("mail.display", "CHAT"),
 		MAILBOX_TEXTURES("mail.textures", false),
 		MAILBOX_TYPE_COST("mail.cost.per-item", false),
 		MAILBOX_COST("mail.cost.value", 30.0),
 		MAILBOX_NAME("mail.name", "&3&lMailbox&r&4"),
+		AUTORUN_MAIL_NEW_ONCLOSE("autorun.mail.new.on-close", new ArrayList<String>()),
+		AUTORUN_MAIL_PENDING_WHENACCEPTED("autorun.mail.pending.when-accepted", new ArrayList<String>()),
+		AUTORUN_MAIL_PENDING_WHENDENIED("autorun.mail.pending.when-denied", Arrays.asList("PLAYER:/itemmail list")),
+		AUTORUN_MAIL_CLAIMED_ONCLOSE("autorun.mail.claimed.on-close", Arrays.asList("PLAYER:/itemmail list")),
 		PLUGIN_UPDATE_CHECK("update.check", true),
 		PLUGIN_UPDATE_PERIODIC_NOTIFICATION("update.periodic-notification", true),
 		PLUGIN_UPDATE_AUTOMATIC("update.automatic", true),
-		BOARDS_CONSOLE_ONLY("boards.console-only", false);
+		BOARDS_CONSOLE_ONLY("boards.console-only", true);
 		private final String path;
 		private final Object result;
 		Type(final String path, final Object result){

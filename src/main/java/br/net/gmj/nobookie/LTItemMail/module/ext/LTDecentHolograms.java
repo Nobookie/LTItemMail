@@ -11,10 +11,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
@@ -22,10 +21,8 @@ import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 
 public final class LTDecentHolograms implements LTExtension {
-	private final Plugin plugin;
 	private final List<Material> items;
-	public LTDecentHolograms(final Plugin plugin) {
-		this.plugin = plugin;
+	public LTDecentHolograms() {
 		items = new ArrayList<>();
 		for(final Material material : Material.values()) {
 			final String name = material.toString();
@@ -34,9 +31,7 @@ public final class LTDecentHolograms implements LTExtension {
 		Collections.shuffle(items);
 	}
 	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
-	}
+	public final void unload() {}
 	public final void cleanup() {
 		Bukkit.getScheduler().runTaskLater(LTItemMail.getInstance(), new Runnable() {
 			@Override

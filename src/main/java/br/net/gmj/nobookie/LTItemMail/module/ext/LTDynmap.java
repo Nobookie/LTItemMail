@@ -2,7 +2,6 @@ package br.net.gmj.nobookie.LTItemMail.module.ext;
 
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.Plugin;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.markers.Marker;
@@ -11,21 +10,15 @@ import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 
 public final class LTDynmap extends DynmapCommonAPIListener implements LTExtension {
-	private final Plugin plugin;
 	private MarkerAPI api = null;
-	public LTDynmap(final Plugin plugin){
-		this.plugin = plugin;
+	public LTDynmap(){
 		DynmapCommonAPIListener.register(this);
-	}
-	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
 	}
 	@Override
 	public final void apiEnabled(final DynmapCommonAPI api) {
@@ -34,6 +27,7 @@ public final class LTDynmap extends DynmapCommonAPIListener implements LTExtensi
 			for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
 		}
 	}
+	@Override
 	public final void unload() {
 		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
 		DynmapCommonAPIListener.unregister(this);

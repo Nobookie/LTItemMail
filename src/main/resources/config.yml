@@ -1,7 +1,7 @@
 #Do not touch it!
-config-version: 15
+config-version: 22
 version-number: ${project.version}
-build-number: ${v}
+build-number: ${buildNumber}
 plugin:
   #Enable or disable LTItemMail. Default: true
   #
@@ -35,15 +35,15 @@ plugin:
   #Somente para fins de depuração. Padrão: false
   debug: false
 database:
-  #'flatfile' or 'mysql'
+  #'sqlite' or 'mysql'
   #
-  #'flatfile' ou 'mysql'
-  type: 'flatfile'
+  #'sqlite' ou 'mysql'
+  type: 'sqlite'
   #Imports data from the old storage type to the new one.
   #
   #Importa os dados do tipo de armazenamento anterior para o novo.
   convert: false
-  flatfile:
+  sqlite:
     #Do not change it unless you have manually changed the name of the database file.
     #
     #Não mude a menos que tenha mudado manualmente o nome do arquivo banco de dados.
@@ -60,6 +60,10 @@ database:
     user: 'root'
     password: ''
     database: 'ltitemmail'
+    flags: '?verifyServerCertificate=false&useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf-8'
+    max_pool_size: 5
+    max_lifetime: 180000
+    connection_timeout: 5000
 hook:
   #Set 'true' if you wish to use economy plugins (set the mail price).
   #
@@ -73,11 +77,11 @@ hook:
   #Set 'true' if you wish to show mailbox blocks on the map.
   #
   #Defina 'true' se desejar mostrar blocos de caixa de corrêio no mapa.
-  dynmap: false
+  dynmap: true
   #Set 'true' if you wish to show mailbox blocks on the map.
   #
   #Defina 'true' se desejar mostrar blocos de caixa de corrêio no mapa.
-  bluemap: false
+  bluemap: true
   #Set 'true' if you wish to show holograms above mailbox blocks.
   #
   #Defina 'true' se desejar mostrar hologramas acima do blocos de caixa de corrêio.
@@ -85,18 +89,28 @@ hook:
   #My plugin has an in-built protection for mailbox blocks, but you can use some extra protection with the plugins listed below:
   #
   #Meu plugin tem uma proteção imbutida para blocos de caixa de corrêio, mas você pode usar uma proteção extra com os plugins abaixo:
-  griefprevention: false
-  redprotect: false
-  towny: false
-  worldguard: false
+  griefprevention: true
+  redprotect: true
+  towny:
+    enable: true
+    taxes-per-mailbox:
+      enable: true
+      cost: 15
+  worldguard: true
   #Useful for TOAST notifications (refer to "mail.display" below).
   #
   #Útil para notificações TOAST (consulte "mail.display" abaixo).
-  ultimateadvancementapi: false
+  ultimateadvancementapi: true
   #You can replace mail buttons with custom heads from HeadDatabase.
   #
   #Você pode substituir botões do corrêio com cabeças customizadas do HeadDatabase.
-  headdatabase: false
+  headdatabase: true
+  #You can replace mail buttons with custom heads from Skulls.
+  #
+  #Você pode substituir botões do corrêio com cabeças customizadas do Skulls.
+  skulls: true
+  #
+  citizens: true
 mail:
   #When a new mail arrives, how do you want the message to appear? Valid: CHAT, TITLE, TOAST. Default: CHAT
   #
@@ -119,6 +133,17 @@ mail:
   #
   #Nome do inventário de corrêio. Padrão: Mail
   name: '&3&lMailbox&r&4'
+autorun:
+  mail:
+    new:
+      on-close: []
+    pending:
+      when-accepted: []
+      when-denied:
+        - 'PLAYER:/itemmail list'
+    claimed:
+      on-close:
+        - 'PLAYER:/itemmail list'
 #Should administrators be warned about new updates? Default: true
 #
 #Os administratores devem ser notificados sobre novas atualizações? Padrão: true
@@ -127,4 +152,4 @@ update:
   periodic-notification: true
   automatic: true
 boards:
-  console-only: false
+  console-only: true

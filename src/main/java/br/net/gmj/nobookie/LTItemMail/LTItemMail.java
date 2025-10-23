@@ -2,17 +2,19 @@ package br.net.gmj.nobookie.LTItemMail;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 import br.net.gmj.nobookie.LTItemMail.listener.MailboxVirtualListener;
 import br.net.gmj.nobookie.LTItemMail.listener.PlayerListener;
@@ -22,102 +24,94 @@ import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
+import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.ModelsModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.RegistrationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ext.LTExtension;
 import br.net.gmj.nobookie.LTItemMail.task.UpdateTask;
 import br.net.gmj.nobookie.LTItemMail.task.VersionControlTask;
 import br.net.gmj.nobookie.LTItemMail.util.BStats;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
-/**
- * 
- * Main class of the plugin. This is typically of no use to developers.
- * 
- * @author Nobookie
- * 
- */
 public final class LTItemMail extends JavaPlugin {
 	private static LTItemMail instance;
+	public LTItemMail() {
+		instance = this;
+	}
 	public FileConfiguration configuration;
 	public FileConfiguration language;
 	public FileConfiguration models;
+	public HikariDataSource dataSource = null;
 	public Connection connection = null;
-	public List<Integer> boardsForPlayers = new ArrayList<>();
-	public Map<String, List<Integer>> boardsPlayers = new HashMap<>();
+	public final ArrayList<Integer> boardsForPlayers = new ArrayList<>();
+	public final HashMap<String, List<Integer>> boardsPlayers = new HashMap<>();
+	public final ArrayList<JavaPlugin> apiHandlers = new ArrayList<>();
 	private Long startup;
 	@Override
 	public final void onLoad() {
 		startup = Calendar.getInstance().getTimeInMillis();
+		loadConfig();
+		ConsoleModule.hello();
 	}
 	@Override
 	public final void onEnable() {
-		instance = this;
-		final BStats metrics = new BStats(this, 3647);
-		loadConfig();
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_ENABLE)) {
-			if(isDevBuild()) {
-				ConsoleModule.warning("You are running a development build! Be aware that bugs may occur.");
-				final File dev = new File(getDataFolder(), ".dev");
-				ConfigurationModule.devMode = (dev.exists() && dev.isFile());
-			}
-			metrics.addCustomChart(new BStats.SimplePie("builds", () -> {
-		        return String.valueOf((Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
-		    }));
-			metrics.addCustomChart(new BStats.SimplePie("language", () -> {
-		        return ((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase();
-		    }));
-			ConsoleModule.hello();
-			loadLang();
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-				getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeModule());
-			}
-			loadModels();
-			loadDatabase();
-			ExtensionModule.getInstance().load();
-			for(final ExtensionModule.Function function : ExtensionModule.getInstance().reg().keySet()) {
-				final LTExtension extension = (LTExtension) ExtensionModule.getInstance().reg().get(function);
-				metrics.addCustomChart(new BStats.SimplePie("extensions", () -> {
-			        return extension.getBasePlugin().getDescription().getName();
-			    }));
-			}
-			PermissionModule.load();
-			registerListeners();
-			runTasks();
-			RegistrationModule.setupItems();
-			RegistrationModule.setupBlocks();
-			new CommandModule();
-			MailboxModule.ready();
-			new FetchUtil.Stats().reg();
-			final Long done = Calendar.getInstance().getTimeInMillis() - startup;
-			String took = done + "ms";
-			if(done >= 1000.0) took = (done / 1000.0) + "s";
-			ConsoleModule.raw(ChatColor.GREEN + "Plugin took " + took + " to load.");
-		} else {
-			new BukkitRunnable() {
-				@Override
-				public final void run() {
-					ConsoleModule.severe("Plugin disabled in config.yml.");
-					Bukkit.getPluginManager().disablePlugin(instance);
-				}
-			}.runTaskTimer(this, 10, 10);
+		if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_ENABLE)) {
+			ConsoleModule.severe("😢 Plugin disabled in config.yml.");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
 		}
+		if(isDevBuild()) {
+			ConsoleModule.warning("⚠️ You are running a development build! Be aware that bugs may occur.");
+			final File dev = new File(getDataFolder(), ".dev");
+			ConfigurationModule.devMode = (dev.exists() && dev.isFile());
+		}
+		final BStats metrics = new BStats(this, 3647);
+		metrics.addCustomChart(new BStats.SimplePie("builds", () -> {
+	        return String.valueOf((Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
+	    }));
+		metrics.addCustomChart(new BStats.SimplePie("language", () -> {
+	        return ((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase();
+	    }));
+		loadLang();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
+			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+			Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeModule());
+		}
+		loadModels();
+		loadDatabase();
+		ExtensionModule.getInstance().load();
+		for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) metrics.addCustomChart(new BStats.SimplePie("extensions", () -> {
+	        return plugin.plugin().getDescription().getName();
+	    }));
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) if(EconomyModule.getInstance() != null && EconomyModule.getInstance().getEconomy() != null) metrics.addCustomChart(new BStats.SimplePie("economy", () -> {
+	        return EconomyModule.getInstance().getEconomy().plugin().getName();
+	    }));
+		PermissionModule.load();
+		registerListeners();
+		runTasks();
+		RegistrationModule.setupItems();
+		RegistrationModule.setupBlock();
+		new CommandModule();
+		MailboxModule.ready();
+		new FetchUtil.Stats();
+		final Long done = Calendar.getInstance().getTimeInMillis() - startup;
+		String took = done + "ms" + ChatColor.GREEN;
+		if(done >= 1000.0) took = (done / 1000.0) + "s" + ChatColor.GREEN;
+		ConsoleModule.raw(ChatColor.GREEN + "👍🏼 Plugin took " + ChatColor.WHITE + took + " to load.");
 	}
 	@Override
 	public final void onDisable() {
 		Bukkit.getScheduler().cancelTasks(this);
+		PermissionModule.unload();
 		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
-		getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
-		getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
+		if(Bukkit.getMessenger().isOutgoingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
+		if(Bukkit.getMessenger().isIncomingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
 	}
 	public final void reload() {
-		PermissionModule.unload();
 		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
 		loadConfig();
@@ -125,7 +119,6 @@ public final class LTItemMail extends JavaPlugin {
 		loadModels();
 		loadDatabase();
 		ExtensionModule.reload().load();
-		PermissionModule.load();
 	}
 	private final void loadConfig() {
 		ConfigurationModule.check();
@@ -145,9 +138,15 @@ public final class LTItemMail extends JavaPlugin {
 		}
 	}
 	private final void loadDatabase() {
-		connection = DatabaseModule.connect();
-		DatabaseModule.checkForUpdates();
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_CONVERT)) DatabaseModule.convert();
+		dataSource = DatabaseModule.connect();
+		if(dataSource != null) try {
+			connection = dataSource.getConnection();
+			DatabaseModule.checkForUpdates();
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.DATABASE_CONVERT)) DatabaseModule.convert();
+		} catch(final SQLException e) {
+			ConsoleModule.debug(getClass(), "Could not retrieve SQL connection.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
 	}
 	private final void registerListeners() {
 		new PlayerListener();
@@ -159,12 +158,12 @@ public final class LTItemMail extends JavaPlugin {
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.RESOURCE_PACK_DOWNLOAD)) new BukkitRunnable() {
 			@Override
 			public final void run() {
-				FetchUtil.FileManager.download(DataModule.getResourceArtifactURL(), "LTItemMail-ResourcePack.zip", false);
+				FetchUtil.FileManager.download(DataModule.RESOURCE_ARTIFACT, "LTItemMail-ResourcePack.zip", false);
 			}
-		}.runTask(this);
+		}.runTaskAsynchronously(this);
 	}
 	public final Boolean isDevBuild() {
-		return (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) > DataModule.getLatestStable();
+		return (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) > DataModule.STABLE;
 	}
 	public final ClassLoader getLTClassLoader() {
 		return getClassLoader();

@@ -1,6 +1,8 @@
 package br.net.gmj.nobookie.LTItemMail.module;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,11 +22,12 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
 
 public final class MailboxModule {
@@ -62,7 +65,7 @@ public final class MailboxModule {
 				log = log + "was refunded $" + mailboxCost;
 				break;
 			case RECOVERED:
-				log = log + "recovered lost items of Mailbox#" + mailboxID;
+				log = log + "recovered Mailbox#" + mailboxID;
 				break;
 			case DELETED:
 				log = log + "deleted Mailbox#" + mailboxID;
@@ -91,13 +94,13 @@ public final class MailboxModule {
 				log = log + "sent to " + to.getName() + ": Mailbox#" + mailboxID + " / Contents: " + contentString;
 				break;
 			case PLACED:
-				log = log + "placed a mailbox at X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
+				log = log + "placed a mailbox at World: " + mailboxBlock.getWorld().getName() + ", X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
 				break;
 			case BROKE:
-				log = log + "broke a mailbox at X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
+				log = log + "broke a mailbox at World: " + mailboxBlock.getWorld().getName() + ", X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
 				break;
 			case ADMIN_BROKE:
-				log = log + "broke the mailbox of " + to.getName() + " at X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
+				log = log + "broke the mailbox of " + to.getName() + " at World: " + mailboxBlock.getWorld().getName() + ", X: " + mailboxBlock.getBlockX() + ", Y: " + mailboxBlock.getBlockY() + ", Z: " + mailboxBlock.getBlockZ();
 				break;
 		}
 		write(log);
@@ -134,8 +137,8 @@ public final class MailboxModule {
 					bukkitReceiver.sendTitle(ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + ChatColor.GREEN, sender.getName() + ChatColor.AQUA + " (#" + mailboxID + ")", 20 * 1, 20 * 5, 20 * 1);
 					break;
 				case TOAST:
-					if(ExtensionModule.getInstance().isInstalled(ExtensionModule.Name.ULTIMATEADVANCEMENTAPI) && ExtensionModule.getInstance().isRegistered(ExtensionModule.Function.ULTIMATEADVANCEMENTAPI)) {
-						final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.Function.ULTIMATEADVANCEMENTAPI);
+					if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) {
+						final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
 						ultimateAdvancementAPI.show(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + ChatColor.AQUA + " (#" + mailboxID + ")");
 						if(!label.isEmpty()) Bukkit.getScheduler().runTaskLater(LTItemMail.getInstance(), new Runnable() {
 							@Override
@@ -147,22 +150,32 @@ public final class MailboxModule {
 					break;
 			}
 		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-			final ByteArrayDataOutput bungee = ByteStreams.newDataOutput();
-			if(pSender != null) {
-				bungee.writeUTF("Forward");
-				bungee.writeUTF("ALL");
-				bungee.writeUTF("LTItemMail_MailboxReceived");
-				final ByteArrayDataOutput function = ByteStreams.newDataOutput();
-				final String data = pSender.getName() + ";" + receiver.getName() + ";" + mailboxID;
-				function.writeUTF(data);
-				bungee.writeShort(function.toByteArray().length);
-				bungee.write(function.toByteArray());
-			} else {
-				bungee.writeUTF("Message");
-				bungee.writeUTF(receiver.getName());
-				bungee.writeUTF((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + ChatColor.GREEN + "" + sender.getName());
+			try {
+				final Player first = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+				if(first != null) {
+					final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+					out.writeUTF("Forward");
+					out.writeUTF("ONLINE");
+					final ByteArrayOutputStream msgbytesout = new ByteArrayOutputStream();
+					final DataOutputStream msgout = new DataOutputStream(msgbytesout);
+					if(pSender != null) {
+						out.writeUTF("LTIM_MBR");
+						msgout.writeUTF(pSender.getName());
+						msgout.writeUTF(receiver.getName());
+						msgout.writeShort(mailboxID);
+					} else {
+						out.writeUTF("LTIM_SM");
+						msgout.writeUTF(receiver.getName());
+						msgout.writeUTF((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + ChatColor.GREEN + "" + sender.getName());
+					}
+					out.writeShort(msgbytesout.toByteArray().length);
+					out.write(msgbytesout.toByteArray());
+					first.sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", out.toByteArray());
+				} else sender.sendMessage("É necessário ter um jogador online no servidor para poder enviar mensagens no canal BungeeCord.");
+			} catch(final IOException e) {
+				ConsoleModule.debug(MailboxModule.class, "Unable to send message to BungeeCord channel.");
+				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
-			Bukkit.getServer().sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", bungee.toByteArray());
 		}
 		return mailboxID;
 	}

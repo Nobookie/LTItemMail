@@ -7,27 +7,54 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URLConnection;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.io.CloseMode;
+import org.apache.hc.core5.net.URIBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
+import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
+import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule.Type;
 import javadl.Downloader;
 import javadl.handler.CompleteDownloadHandler;
 import javadl.model.Download;
@@ -36,24 +63,36 @@ import javadl.utils.SizeUtil;
 public final class FetchUtil {
 	private FetchUtil() {}
 	public static final class URL {
-		private static final URLConnection connect(final String url) {
-			URLConnection connection = null;
+		@SuppressWarnings("deprecation")
+		private static final Store request(final String method, final ClassicHttpRequest request, final Map<String, Object> params) {
+			CloseableHttpClient client = null;
 			try {
-				connection = URI.create(url).toURL().openConnection();
-				connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
-				connection.setUseCaches(false);
-				connection.setConnectTimeout(5000);
-				connection.setReadTimeout(5000);
-				connection.connect();
-				return connection;
-			} catch (final IOException e) {
+				client = HttpClientBuilder.create().setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create().setDefaultConnectionConfig(ConnectionConfig.custom().setConnectTimeout(10, TimeUnit.SECONDS).setSocketTimeout(10, TimeUnit.SECONDS).setTimeToLive(Integer.MAX_VALUE, TimeUnit.SECONDS).build()).build()).setUserAgent("Mozilla/5.0 (Windows; U; Windows NT 10.2; x64; en-US) AppleWebKit/601.49 (KHTML, like Gecko) Chrome/55.0.2790.220 Safari/602.0 Edge/16.15104").build();
+				if(params != null) {
+					final List<NameValuePair> parameters = new ArrayList<>();
+					for(final String key : params.keySet()) parameters.add(new BasicNameValuePair(key, params.get(key).toString()));
+					switch(method) {
+						case "GET":
+							final URIBuilder builder = new URIBuilder(request.getUri());
+							builder.addParameters(parameters);
+							request.setUri(builder.build());
+							break;
+						case "POST":
+							request.setEntity(new UrlEncodedFormEntity(parameters));
+							break;
+					}
+				}
+				return new Store(client, client.execute(request));
+			} catch (final IOException | URISyntaxException e) {
+				client.close(CloseMode.IMMEDIATE);
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			return null;
 		}
-		public static final String get(final String url) {
-			try {
-				final InputStreamReader input = new InputStreamReader(connect(url).getInputStream(), Charset.forName("UTF-8"));
+		private static final String builder(final Store store) {
+			String value = null;
+			if(store.getResponse().getEntity() != null) try {
+				final InputStreamReader input = new InputStreamReader(store.getResponse().getEntity().getContent(), Charset.forName("UTF-8"));
 				final BufferedReader reader = new BufferedReader(input);
 				final StringBuilder builder = new StringBuilder();
 				String string;
@@ -61,13 +100,39 @@ public final class FetchUtil {
 					builder.append(string);
 					builder.append(System.lineSeparator());
 				}
+				value = builder.toString();
 				reader.close();
 				input.close();
-				return builder.toString();
-			} catch(final IOException | NullPointerException e) {
+				store.getResponse().close(CloseMode.GRACEFUL);
+				store.getClient().close(CloseMode.GRACEFUL);
+			} catch(final IOException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
+			return value;
+		}
+		public static final String get(final String url, final Map<String, Object> params) {
+			final Store store = request("GET", new HttpGet(url), params);
+			if(store != null) return builder(store);
 			return null;
+		}
+		public static final String post(final String url, final Map<String, Object> params) {
+			final Store store = request("POST", new HttpPost(url), params);
+			if(store != null) return builder(store);
+			return null;
+		}
+		private static final class Store {
+			private final CloseableHttpClient client;
+			private final CloseableHttpResponse response;
+			private Store(final CloseableHttpClient client, final CloseableHttpResponse response) {
+				this.client = client;
+				this.response = response;
+			}
+			public final CloseableHttpClient getClient() {
+				return client;
+			}
+			public final CloseableHttpResponse getResponse() {
+				return response;
+			}
 		}
 	}
 	public static final class FileManager {
@@ -75,42 +140,62 @@ public final class FetchUtil {
 			download(url, LTItemMail.getInstance().getDataFolder(), name, silent);
 		}
 		public static final void download(final String url, final File path, final String name, final Boolean silent) {
-			final File current = new File(path, name);
-			if(current.exists() && current.isFile()) current.delete();
-			final Downloader downloader = new Downloader();
-			downloader.setDownloadHandler(new CompleteDownloadHandler(downloader) {
-				@Override
-				public final void onDownloadStart(final Download download) {
-					super.onDownloadStart(download);
-					if(!silent) {
-						ConsoleModule.info(LanguageModule.I.g(LanguageModule.I.i.R_S) + " [" + name + "]!");
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_S) + " [" + name + "]!");
+				try {
+					if(!path.exists()) Files.createDirectories(Paths.get(path.getAbsolutePath()));
+					final File current = new File(path, name);
+					if(current.exists() && current.isFile()) current.delete();
+					final Downloader downloader = new Downloader();
+					downloader.setDownloadHandler(new CompleteDownloadHandler(downloader) {
+						@Override
+						public final void onDownloadStart(final Download download) {
+							super.onDownloadStart(download);
+							if(!silent) ConsoleModule.info("▶ Download started [" + name + "].");
+							ConsoleModule.debug(FetchUtil.FileManager.class, "Download started [" + name + "]: " + url);
+						}
+						@Override
+						public final void onDownloadSpeedProgress(final Download download, final int current, final int max, final int progress, final int speed) {
+							if(!silent) ConsoleModule.info("⏳ Downloading resource [" + name + "]: " + progress + "%");
+							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) {
+								double currentSize = current;
+								double maxSize = max;
+								String suffix = "B";
+								if(current >= 1000) currentSize = SizeUtil.toKBFB(current);
+								if(current >= 1000000) currentSize = SizeUtil.toMBFB(current);
+								if(current >= 1000000000) currentSize = SizeUtil.toGBFB(current);
+								if(max >= 1000) {
+									maxSize = SizeUtil.toKBFB(max);
+									suffix = "KB";
+								}
+								if(max >= 1000000) {
+									maxSize = SizeUtil.toMBFB(max);
+									suffix = "MB";
+								}
+								if(max >= 1000000000) {
+									maxSize = SizeUtil.toGBFB(max);
+									suffix = "GB";
+								}
+								ConsoleModule.debug(FetchUtil.FileManager.class, "Downloading resource [" + name + "]: " + progress + "% (Size: " + String.format("%.2f", currentSize) + "/" + String.format("%.2f", maxSize) + " " + suffix + ", Speed: " + String.format("%.2f", SizeUtil.toMBFB(speed)) + " MB/s)");
+							}
+						}
+						@Override
+						public final void onDownloadFinish(final Download download) {
+							super.onDownloadFinish(download);
+							if(!silent) ConsoleModule.info("✔️ Download completed [" + name + "].");
+							ConsoleModule.debug(FetchUtil.FileManager.class, "Download completed [" + name + "]: " + current.getAbsolutePath());
+						}
+						@Override
+						public final void onDownloadError(final Download download, final Exception e) {
+							super.onDownloadError(download, e);
+							current.delete();
+							if(!silent) ConsoleModule.warning("❌ Download failed [" + name + "].");
+							ConsoleModule.debug(FetchUtil.FileManager.class, "Download failed [" + name + "].");
+							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+						}
+					});
+					downloader.downloadFileToLocation(url, current.getAbsolutePath());
+				} catch (final IOException e) {
+					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 				}
-				@Override
-				public final void onDownloadSpeedProgress(final Download download, final int downloadedSize, final int maxSize, final int downloadPercent, final int bytesPerSec) {
-					if(!silent) {
-						ConsoleModule.info(LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_D) + " [" + name + "]: " + downloadedSize + "/" + maxSize + " MB (" + downloadPercent + "%, " + SizeUtil.toMBFB(bytesPerSec) + " MB/s)");
-				}
-				@Override
-				public final void onDownloadFinish(final Download download) {
-					super.onDownloadFinish(download);
-					if(!silent) {
-						ConsoleModule.info(LanguageModule.I.g(LanguageModule.I.i.R_C) + " [" + name + "]!");
-					} else ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_C) + " [" + name + "]!");
-				}
-				@Override
-				public final void onDownloadError(final Download download, final Exception e) {
-					super.onDownloadError(download, e);
-					if(!silent) {
-						ConsoleModule.warning(LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
-					} else {
-						ConsoleModule.debug(FetchUtil.FileManager.class, LanguageModule.I.g(LanguageModule.I.i.R_F) + " [" + name + "]!");
-						if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-					}
-				}
-			});
-			downloader.downloadFileToLocation(url, current.getAbsolutePath());
 		}
 		public static final File get(final String name) {
 			final File file = new File(LTItemMail.getInstance().getDataFolder(), name);
@@ -170,6 +255,28 @@ public final class FetchUtil {
 			}
 			return 0;
 		}
+		public static final void changelog(final CommandSender sender) {
+			sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "Changelog:");
+			final Map<String, Object> params = new HashMap<>();
+			params.put("pretty", true);
+			params.put("tree", "changeSet[items[comment,commitId]]");
+			final String result = FetchUtil.URL.get(DataModule.getLogURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params).replaceAll(System.lineSeparator(), "");
+			if(result != null) {
+				try {
+					final List<JsonElement> rawCommits = JsonParser.parseString(result).getAsJsonObject().get("changeSet").getAsJsonObject().get("items").getAsJsonArray().asList();
+					if(rawCommits.size() > 0) {
+						for(final JsonElement commits : rawCommits) {
+							final JsonObject commit = commits.getAsJsonObject();
+							sender.sendMessage(ChatColor.GOLD + "+ " + commit.get("comment").getAsString());
+							sender.sendMessage(ChatColor.DARK_GREEN + "    " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_DETAILS) + ChatColor.GREEN + "https://github.com/leothawne/LTItemMail/commit/" + commit.get("commitId").getAsString());
+						}
+					} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_NOTFOUND));
+				} catch(final JsonSyntaxException e) {
+					ConsoleModule.debug(FetchUtil.Build.class, "Unable to retrieve changelog. Is the update server down?");
+					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+				}
+			} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.DARK_RED + "Update server is down! Please, try again later.");
+		}
 	}
 	public static final class Version {
 		public static final String get() {
@@ -186,12 +293,11 @@ public final class FetchUtil {
 		}
 	}
 	public static final class Stats {
-		private BukkitTask task = null;
-		public final void reg() {
-			if(task == null) task = new BukkitRunnable() {
+		public Stats() {
+			new BukkitRunnable() {
 				@Override
 				public final void run() {
-					final String result = URL.get("https://api.my-ip.io/v2/ip.yml");
+					final String result = URL.get("https://api.my-ip.io/v2/ip.yml", null);
 					if(result != null) try {
 						final YamlConfiguration set = new YamlConfiguration();
 						set.loadFromString(result);
@@ -199,12 +305,17 @@ public final class FetchUtil {
 							final Properties properties = new Properties();
 							properties.load(new FileInputStream(new File(Bukkit.getWorldContainer().getAbsolutePath(), "server.properties")));
 							String n = "";
-							if(properties.containsKey("server-name")) n = properties.getProperty("server-name").replaceAll(" ", "%20");
-							URL.get("https://stats.gmj.net.br/LTItemMail/?n=" + n + "&i=" + set.getString("result.ip") + "&p=" + Bukkit.getPort());
+							if(properties.containsKey("server-name")) n = properties.getProperty("server-name");
+							final Map<String, Object> params = new HashMap<>();
+							params.put("n", n);
+							params.put("i", set.getString("result.ip"));
+							params.put("p", Bukkit.getPort());
+							params.put("c", set.getString("result.country.code"));
+							URL.post(DataModule.STATS + "/" + LTItemMail.getInstance().getDescription().getName() + "/submit.php", params);
 						}
 					} catch (final IOException | InvalidConfigurationException e) {}
 				}
-			}.runTaskTimer(LTItemMail.getInstance(), 1, 20 * 60 * 60 * 24);
+			}.runTaskTimerAsynchronously(LTItemMail.getInstance(), 1, 20 * 60 * 15);
 		}
 	}
 }

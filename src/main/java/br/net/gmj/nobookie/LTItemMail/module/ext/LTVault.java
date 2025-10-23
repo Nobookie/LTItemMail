@@ -2,19 +2,15 @@ package br.net.gmj.nobookie.LTItemMail.module.ext;
 
 import org.bukkit.plugin.Plugin;
 
-public final class LTVaultPermission implements LTExtension {
-	private final Plugin plugin;
+public final class LTVault implements LTExtension {
 	private final Plugin permissionPlugin;
 	private final net.milkbowl.vault.permission.Permission api;
-	public LTVaultPermission(final Plugin plugin, final Plugin permissionPlugin, final net.milkbowl.vault.permission.Permission api) {
-		this.plugin = plugin;
+	public LTVault(final Plugin permissionPlugin, final net.milkbowl.vault.permission.Permission api) {
 		this.permissionPlugin = permissionPlugin;
 		this.api = api;
 	}
 	@Override
-	public final Plugin getBasePlugin() {
-		return plugin;
-	}
+	public final void unload() {}
 	public final Plugin getPermissionPlugin() {
 		return permissionPlugin;
 	}

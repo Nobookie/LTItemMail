@@ -1,5 +1,9 @@
 package br.net.gmj.nobookie.LTItemMail.command;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,12 +19,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.Iterables;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
-import br.net.gmj.nobookie.LTItemMail.block.MailboxBlock;
-import br.net.gmj.nobookie.LTItemMail.entity.LTPlayer;
+import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
+import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
+import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
@@ -30,16 +40,16 @@ import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
-import br.net.gmj.nobookie.LTItemMail.module.ext.LTExtension;
+import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
 @LTCommandInfo(
 	name = "itemmailadmin",
-	description = "For administration purposes.",
-	aliases = "ltitemmail:itemmailadmin,imad,imadmin",
+	description = "Lists admin commands.",
+	aliases = "imad,imadmin",
 	permission = "ltitemmail.admin",
-	usage = "/<command> [help|update|list|recover|reload|info|ban|unban|banlist|blocks]"
+	usage = "/<command> [help|update|list|recover|reload|info|ban|unban|banlist|blocks|dump|changelog]"
 )
 public final class ItemMailAdminCommand extends LTCommandExecutor {
 	@Override
@@ -50,7 +60,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 			Bukkit.dispatchCommand(sender, "ltitemmail:itemmailadmin help");
 		} else if(args[0].equalsIgnoreCase("help")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) {
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ LT Item Mail " + ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + " #" + ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) + " ]");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "[ " + LTItemMail.getInstance().getDescription().getName() + " " + ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + " #" + ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER) + " ]");
 				sender.sendMessage(ChatColor.GREEN + "/itemmailadmin help " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_ITEMMAILADMIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UPDATE)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin update " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_MAIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_LIST)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin list <player> " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_LIST));
@@ -61,6 +71,10 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BANLIST)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin banlist " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_BANLIST_MAIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_INFO)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin info <player> " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_PLAYER_INFO_MAIN));
 				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin blocks <player> " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_BLOCKS));
+				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin dump " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_DUMP));
+				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin changelog " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_CHANGELOG_MAIN));
+				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_GIVE)) sender.sendMessage(ChatColor.GREEN + "/itemmailadmin give " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_MAIN));
+				if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_WIPE)) sender.sendMessage(ChatColor.GREEN + "/itemmailwipe " + ChatColor.AQUA + "- " + LanguageModule.get(LanguageModule.Type.COMMAND_WIPE_WIPE));
 			}
 		} else if(args[0].equalsIgnoreCase("update")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UPDATE)) {
@@ -72,20 +86,20 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 						@Override
 						public final void run() {
 							final Integer localBuild = (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER);
-							final String http = FetchUtil.URL.get(DataModule.getUpdateURL()).replaceAll(System.lineSeparator(), "");
-							if(http != null) {
-								final Integer remoteBuild = Integer.parseInt(http);
+							final String response = FetchUtil.URL.get(DataModule.UPDATE, null).replaceAll(System.lineSeparator(), "");
+							if(response != null) {
+								final Integer remoteBuild = Integer.parseInt(response);
 								if(remoteBuild > localBuild) {
 									final Integer outOfDate = remoteBuild - localBuild;
 									sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_FOUND)).replaceAll("%build%", "" + ChatColor.RED + outOfDate + ChatColor.YELLOW) + ChatColor.GREEN + " https://jenkins.gmj.net.br/job/LTItemMail/" + remoteBuild + "/");
 									if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_UPDATE_AUTOMATIC)) {
-										FetchUtil.FileManager.download(DataModule.getArtifactURL(), Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar", false);
+										if(!new File(Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar").exists()) FetchUtil.FileManager.download(DataModule.ARTIFACT, Bukkit.getUpdateFolderFile(), LTItemMail.getInstance().getDescription().getName() + ".jar", false);
 										sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_AUTOMATIC)));
 									}
 								} else if(!s) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_UPDATE_NONEW));
 							} else if(!s) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.DARK_RED + "Update server is down! Please, try again later.");
 						}
-					}.runTask(LTItemMail.getInstance());
+					}.runTaskAsynchronously(LTItemMail.getInstance());
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
 		} else if(args[0].equalsIgnoreCase("list")) {
@@ -234,11 +248,59 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 		} else if(args[0].equalsIgnoreCase("dump")) {
 			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) {
 				if(args.length == 1) {
-					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + LTItemMail.getInstance().getDescription().getName() + " version " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER));
-					for(final ExtensionModule.Function function : ExtensionModule.getInstance().reg().keySet()) {
-						final LTExtension extension = (LTExtension) ExtensionModule.getInstance().reg().get(function);
-						sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + extension.getBasePlugin().getDescription().getName() + " version " + ChatColor.GREEN + extension.getBasePlugin().getDescription().getVersion());
-					}
+					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.GREEN + Bukkit.getServer().getName() + " " + ChatColor.RESET + "server version " + ChatColor.GREEN + Bukkit.getServer().getVersion());
+					sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RESET + LTItemMail.getInstance().getDescription().getName() + " version " + ChatColor.GREEN + (String) ConfigurationModule.get(ConfigurationModule.Type.VERSION_NUMBER) + ChatColor.RESET + " build " + ChatColor.GREEN + (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
+					for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.LIGHT_PURPLE + "Extension: " + ChatColor.RESET + plugin.plugin().getDescription().getName() + " version " + ChatColor.GREEN + plugin.plugin().getDescription().getVersion());
+					for(final JavaPlugin plugin : LTItemMail.getInstance().apiHandlers) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.LIGHT_PURPLE + "Using internal API: " + ChatColor.RESET + plugin.getDescription().getName() + " version " + ChatColor.GREEN + plugin.getDescription().getVersion());
+					Bukkit.dispatchCommand(sender, "ltitemmail:itemmailadmin update");
+				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
+			}
+		} else if(args[0].equalsIgnoreCase("changelog")) {
+			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) {
+				if(args.length == 1) {
+					new BukkitRunnable() {
+						@Override
+						public final void run() {
+							FetchUtil.Build.changelog(sender);
+						}
+					}.runTaskAsynchronously(LTItemMail.getInstance());
+				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
+			}
+		} else if(args[0].equalsIgnoreCase("give")) {
+			if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_GIVE)) {
+				if(args.length == 2) {
+					final LTPlayer ltPlayer = LTPlayer.fromName(args[1]);
+					if(ltPlayer != null) {
+						final Player player = ltPlayer.getBukkitPlayer().getPlayer();
+						if(player != null) {
+							BukkitUtil.PlayerInventory.addItem(player, new MailboxItem().getItem(null));
+							if(BukkitUtil.PlayerInventory.hasSpace(player.getInventory())) {
+								sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_ADDED));
+							} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_DROPPED));
+						} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
+							if(BungeeModule.getOnlinePlayers().contains(ltPlayer.getName())) {
+								try {
+									final Player first = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+									if(first != null) {
+										final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+										out.writeUTF("Forward");
+										out.writeUTF("ONLINE");
+										out.writeUTF("LTIM_GMB");
+										final ByteArrayOutputStream msgbytesout = new ByteArrayOutputStream();
+										final DataOutputStream msgout = new DataOutputStream(msgbytesout);
+										msgout.writeUTF(sender.getName());
+										msgout.writeUTF(ltPlayer.getName());
+										out.writeShort(msgbytesout.toByteArray().length);
+										out.write(msgbytesout.toByteArray());
+										first.sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", out.toByteArray());
+									} else sender.sendMessage("É necessário ter um jogador online no servidor para poder enviar mensagens no canal BungeeCord.");
+								} catch(final IOException e) {
+									ConsoleModule.debug(getClass(), "Unable to send message to BungeeCord channel.");
+									if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+								}
+							} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_OFFLINE));
+						} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_OFFLINE));
+					} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_NEVERPLAYEDERROR));
 				} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
 			}
 		} else if(hasPermission = PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_MAIN)) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.COMMAND_INVALID)).replaceAll("%command%", ChatColor.GREEN + "/itemmailadmin" + ChatColor.YELLOW));
@@ -260,9 +322,11 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BANLIST)) commands.add("banlist");
 			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS)) commands.add("blocks");
 			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_DUMP)) commands.add("dump");
+			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_CHANGELOG)) commands.add("changelog");
+			if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_GIVE)) commands.add("give");
 			return TabUtil.partial(args[0], commands);
 		}
-		if(args.length == 2) if((PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_LIST) && args[0].equals("list")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BAN) && args[0].equals("ban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UNBAN) && args[0].equals("unban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_INFO) && args[0].equals("info")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS) && args[0].equals("blocks"))) {
+		if(args.length == 2) if((PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_LIST) && args[0].equals("list")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BAN) && args[0].equals("ban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UNBAN) && args[0].equals("unban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_INFO) && args[0].equals("info")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS) && args[0].equals("blocks")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_GIVE) && args[0].equals("give"))) {
 			final LinkedList<String> response = new LinkedList<>();
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
 				for(final String bungeePlayer : BungeeModule.getOnlinePlayers()) response.add(bungeePlayer);

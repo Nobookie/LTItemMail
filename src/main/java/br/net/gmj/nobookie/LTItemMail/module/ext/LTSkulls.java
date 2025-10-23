@@ -11,13 +11,15 @@ import org.bukkit.inventory.ItemStack;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
+import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
-import me.arcaniax.hdb.api.HeadDatabaseAPI;
+import ca.tweetzy.skulls.Skulls;
+import ca.tweetzy.skulls.api.SkullsAPI;
 
-public final class LTHeadDatabase implements LTExtension {
-	private final HeadDatabaseAPI api;
-	public LTHeadDatabase() {
-		api = new HeadDatabaseAPI();
+public final class LTSkulls implements LTExtension {
+	private final SkullsAPI api;
+	public LTSkulls() {
+		api = Skulls.getAPI();
 		check();
 		load();
 	}
@@ -25,32 +27,32 @@ public final class LTHeadDatabase implements LTExtension {
 	public final void unload() {}
 	private File file;
 	private final void check() {
-		file = FetchUtil.FileManager.get("headdatabase.yml");
+		file = FetchUtil.FileManager.get("skulls.yml");
 		if(file == null) {
-			ConsoleModule.warning("headdatabase.yml not found!");
-			ConsoleModule.warning("Generating a new one and all default head IDs will be added.");
-			FetchUtil.FileManager.create("headdatabase.yml");
+			ConsoleModule.warning("skulls.yml not found!");
+			ConsoleModule.warning("Generating a new one and all default skull IDs will be added.");
+			FetchUtil.FileManager.create("skulls.yml");
 		}
 	}
 	private FileConfiguration heads = null;
 	private final void load() {
-		file = FetchUtil.FileManager.get("headdatabase.yml");
+		file = FetchUtil.FileManager.get("skulls.yml");
 		if(file != null) {
 			final FileConfiguration configuration = new YamlConfiguration();
 			try {
 				configuration.load(file);
 				heads = configuration;
-				ConsoleModule.info("HeadDatabase IDs loaded.");
+				ConsoleModule.info("Skulls IDs loaded.");
 				try {
-					if(configuration.getInt("head-version") < DataModule.Version.HEADDATABASE_YML.value()) {
-						ConsoleModule.warning("HeadDatabase IDs outdated!");
+					if(configuration.getInt("skull-version") < DataModule.Version.SKULLS_YML.value()) {
+						ConsoleModule.warning("Skulls IDs outdated!");
 						ConsoleModule.warning("New IDs will be added.");
-						configuration.set("head-version", DataModule.Version.HEADDATABASE_YML.value());
+						configuration.set("skull-version", DataModule.Version.SKULLS_YML.value());
 						configuration.save(file);
 						addMissing();
 					}
 				} catch(final IllegalArgumentException e) {
-					configuration.set("head-version", 0);
+					configuration.set("skull-version", 0);
 					configuration.save(file);
 				}
 			} catch (final IOException | InvalidConfigurationException e) {
@@ -64,7 +66,7 @@ public final class LTHeadDatabase implements LTExtension {
 		if(heads.isSet(path)) {
 			id = heads.getInt(path);
 		} else {
-			ConsoleModule.info("HeadDatabase IDs fallback: [" + path + ":" + id + "]");
+			ConsoleModule.info("Skulls IDs fallback: [" + path + ":" + id + "]");
 			heads.set(path, id);
 			try {
 				heads.save(file);
@@ -79,15 +81,15 @@ public final class LTHeadDatabase implements LTExtension {
 	}
 	private final ItemStack get(final Integer id) {
 		try {
-			return api.getItemHead(String.valueOf(id));
+			return BukkitUtil.DataContainer.Skulls.setID(api.getSkullItem(id), id);
 		} catch(final NullPointerException e) {
-			ConsoleModule.debug(getClass(), "Unable to retrieve head from HeadDatabase server [" + id + "].");
+			ConsoleModule.debug(getClass(), "Unable to retrieve skull from Skulls server [" + id + "].");
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 		}
 		return null;
 	}
 	public final Integer getId(final ItemStack head) {
-		return Integer.parseInt(api.getItemID(head));
+		return BukkitUtil.DataContainer.Skulls.getID(head);
 	}
 	public enum Type {
 		MAILBOX_BUTTON_COST("mailbox.button.cost", 60568),
