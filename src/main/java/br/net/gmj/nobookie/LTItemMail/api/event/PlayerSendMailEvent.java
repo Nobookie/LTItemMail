@@ -159,7 +159,7 @@ public final class PlayerSendMailEvent extends Event implements Cancellable {
 	 * @param reason The cancel reason
 	 * 
 	 */
-	public final void setCancelReason(final String reason) {
+	public final void setCancelReason(@Nullable final String reason) {
 		cancelReason = reason;
 	}
 }
