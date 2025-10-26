@@ -85,7 +85,7 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 		for(double x = chunk.getMinX(); x < chunk.getMaxX(); x++) for(double z = chunk.getMinZ(); z < chunk.getMaxZ(); z++) for(double y = chunk.getMinY(); y < chunk.getMaxY(); y++) {
 			final Block block = new Location(event.getWorldCoord().getBukkitWorld(), x, y, z).getBlock();
 			if(block != null && block.getType().toString().endsWith("_SHULKER_BOX") && DatabaseModule.Block.isMailboxBlock(block.getLocation())) {
-				Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.TOWNYADVANCED, event));
+				Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.TOWNYADVANCED, event));
 				block.setType(Material.AIR);
 			}
 		}
@@ -97,7 +97,7 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 			for(double x = chunk.getMinX(); x < chunk.getMaxX(); x++) for(double z = chunk.getMinZ(); z < chunk.getMaxZ(); z++) for(double y = chunk.getMinY(); y < chunk.getMaxY(); y++) {
 				final Block block = new Location(townBlock.getWorldCoord().getBukkitWorld(), x, y, z).getBlock();
 				if(block != null && block.getType().toString().endsWith("_SHULKER_BOX") && DatabaseModule.Block.isMailboxBlock(block.getLocation())) {
-					Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.TOWNYADVANCED, event));
+					Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.TOWNYADVANCED, event));
 					block.setType(Material.AIR);
 				}
 			}
@@ -110,7 +110,7 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 			for(double x = chunk.getMinX(); x < chunk.getMaxX(); x++) for(double z = chunk.getMinZ(); z < chunk.getMaxZ(); z++) for(double y = chunk.getMinY(); y < chunk.getMaxY(); y++) {
 				final Block block = new Location(townBlock.getWorldCoord().getBukkitWorld(), x, y, z).getBlock();
 				if(block != null && block.getType().toString().endsWith("_SHULKER_BOX") && DatabaseModule.Block.isMailboxBlock(block.getLocation())) {
-					Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.TOWNYADVANCED, event));
+					Bukkit.getPluginManager().callEvent(new BreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation())), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.ON_UNCLAIM, false, BreakMailboxBlockEvent.ClaimProvider.TOWNYADVANCED, event));
 					block.setType(Material.AIR);
 				}
 			}
@@ -122,7 +122,7 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 			for(final OfflinePlayer player : Bukkit.getOfflinePlayers()) {
 				Integer tax = 0;
 				for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks(player.getUniqueId())) {
-					if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) continue;
+					if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID))) continue;
 					try {
 						boolean remove = false;
 						final TownBlock townBlock = api.getTownBlock(block.getLocation());

@@ -34,7 +34,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import br.net.gmj.nobookie.LTItemMail.listener.MailboxVirtualListener;
 import br.net.gmj.nobookie.LTItemMail.listener.PlayerListener;
-import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.CommandModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
@@ -45,6 +44,7 @@ import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.ModelsModule;
+import br.net.gmj.nobookie.LTItemMail.module.MultiServerModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.RegistrationModule;
 import br.net.gmj.nobookie.LTItemMail.task.UpdateTask;
@@ -92,10 +92,7 @@ public final class LTItemMail extends JavaPlugin {
 	        return ((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase();
 	    }));
 		loadLang();
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-			Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeModule());
-		}
+		MultiServerModule.load();
 		loadModels();
 		loadDatabase();
 		ExtensionModule.getInstance().load();
@@ -122,10 +119,9 @@ public final class LTItemMail extends JavaPlugin {
 	public final void onDisable() {
 		Bukkit.getScheduler().cancelTasks(this);
 		PermissionModule.unload();
+		MultiServerModule.unload();
 		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
-		if(Bukkit.getMessenger().isOutgoingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
-		if(Bukkit.getMessenger().isIncomingChannelRegistered(this, "BungeeCord")) Bukkit.getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
 	}
 	public final void reload() {
 		ExtensionModule.getInstance().unload();

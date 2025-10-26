@@ -113,7 +113,7 @@ public final class MailboxBlockListener implements Listener {
 					final Block blockBelow = new Location(block.getLocation().getWorld(), block.getLocation().getBlockX(), (block.getLocation().getBlockY() - 1), block.getLocation().getBlockZ()).getBlock();
 					if(blockBelow.getType().toString().endsWith("_FENCE") || blockBelow.getType().toString().endsWith("_WALL")) {
 						if(!DatabaseModule.Block.isMailboxBlock(block.getLocation())) {
-							final PlayerPlaceMailboxBlockEvent placeEvent = new PlayerPlaceMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), PlayerPlaceMailboxBlockEvent.Reason.BY_PLAYER, LTPlayer.fromUUID(player.getUniqueId()));
+							final PlayerPlaceMailboxBlockEvent placeEvent = new PlayerPlaceMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), PlayerPlaceMailboxBlockEvent.Reason.BY_PLAYER, LTPlayer.fromUUID(player.getUniqueId()));
 							Bukkit.getPluginManager().callEvent(placeEvent);
 							if(!placeEvent.isCancelled()) {
 								if(DatabaseModule.Block.placeMailbox(player.getUniqueId(), block.getLocation())) {
@@ -145,7 +145,7 @@ public final class MailboxBlockListener implements Listener {
 			if(canBuildBreak(player, block.getLocation()) && canBreak(player, block.getLocation())) {
 				if(PermissionModule.hasPermission(player, PermissionModule.Type.BLOCK_PLAYER_BREAK)) {
 					if(DatabaseModule.Block.isMailboxOwner(player.getUniqueId(), block.getLocation())) {
-						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_OWNER, LTPlayer.fromUUID(player.getUniqueId()));
+						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), LTPlayer.fromUUID(player.getUniqueId()), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_OWNER, LTPlayer.fromUUID(player.getUniqueId()));
 						Bukkit.getPluginManager().callEvent(breakEvent);
 						if(!breakEvent.isCancelled()) {
 							if(DatabaseModule.Block.breakMailbox(block.getLocation())) {
@@ -159,7 +159,7 @@ public final class MailboxBlockListener implements Listener {
 						} else event.setCancelled(true);
 					} else if(PermissionModule.hasPermission(player, PermissionModule.Type.BLOCK_ADMIN_BREAK)){
 						final LTPlayer owner = LTPlayer.fromUUID(DatabaseModule.Block.getMailboxOwner(block.getLocation()));
-						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), owner, (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_ADMIN, LTPlayer.fromUUID(player.getUniqueId()));
+						final PlayerBreakMailboxBlockEvent breakEvent = new PlayerBreakMailboxBlockEvent(new MailboxBlock(DatabaseModule.Block.getMailboxID(block.getLocation()), owner, (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), block.getLocation().getWorld(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()), BreakMailboxBlockEvent.Reason.BY_PLAYER_ADMIN, LTPlayer.fromUUID(player.getUniqueId()));
 						Bukkit.getPluginManager().callEvent(breakEvent);
 						if(!breakEvent.isCancelled()) {
 							if(DatabaseModule.Block.breakMailbox(block.getLocation())) {

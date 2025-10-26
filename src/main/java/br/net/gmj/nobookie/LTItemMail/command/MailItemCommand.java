@@ -28,13 +28,13 @@ import org.bukkit.entity.Player;
 
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
-import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
-import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
-import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
+import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
+import br.net.gmj.nobookie.LTItemMail.module.MultiServerModule;
+import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.util.TabUtil;
 
@@ -84,8 +84,8 @@ public final class MailItemCommand extends LTCommandExecutor {
 		if(args.length == 1) if(PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_PLAYER_SEND)) {
 			if(sender instanceof Player) player = (Player) sender;
 			final LinkedList<String> response = new LinkedList<>();
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-				for(final String bungeePlayer : BungeeModule.getOnlinePlayers()) {
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) {
+				for(final String bungeePlayer : MultiServerModule.getHandle().getOnlinePlayers()) {
 					if(bungeePlayer.equals(player.getName())) continue;
 					response.add(bungeePlayer);
 				}

@@ -55,6 +55,10 @@ public final class ConfigurationModule {
 						configuration.set(Type.DATABASE_SQLITE_FILE.path(), configuration.getString("database.flatfile.file"));
 					}
 					if(configuration.getInt("config-version") < 21 && configuration.isBoolean("hook.towny")) configuration.set(Type.PLUGIN_HOOK_TOWNYADVANCED_ENABLE.path(), configuration.getBoolean("hook.towny"));
+					if(configuration.getInt("config-version") < 23) {
+						if(configuration.isBoolean("plugin.bungee-mode")) configuration.set(Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE.path(), configuration.getBoolean("plugin.bungee-mode"));
+						if(configuration.isString("plugin.bungee-server-id")) configuration.set(Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID.path(), configuration.getString("plugin.bungee-server-id"));
+					}
 					update = true;
 					ConsoleModule.warning("Configuration outdated!");
 					ConsoleModule.warning("New settings will be added.");
@@ -130,8 +134,13 @@ public final class ConfigurationModule {
 		PLUGIN_ENABLE("plugin.enable", true),
 		PLUGIN_LANGUAGE("plugin.language", "english"),
 		PLUGIN_TAG("plugin.tag", "&6[LTIM]"),
-		BUNGEE_MODE("plugin.bungee-mode", false),
-		BUNGEE_SERVER_ID("plugin.bungee-server-id", "server1"),
+		PLUGIN_MULTI_SERVER_SUPPORT_ENABLE("plugin.multi-server-support.enable", false),
+		PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID("plugin.multi-server-support.server-id", "server1"),
+		PLUGIN_MULTI_SERVER_SUPPORT_MODE("plugin.multi-server-support.mode", "bungee"),
+		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_HOST("plugin.multi-server-support.redis.host", "127.0.0.1"),
+		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PORT("plugin.multi-server-support.redis.port", 6379),
+		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PASSWORD("plugin.multi-server-support.redis.password", new String()),
+		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_DATABASE("plugin.multi-server-support.redis.database", 0),
 		RESOURCE_PACK_DOWNLOAD("plugin.resource-pack-download", false),
 		PLUGIN_DEBUG("plugin.debug", false),
 		DATABASE_TYPE("database.type", "flatfile"),

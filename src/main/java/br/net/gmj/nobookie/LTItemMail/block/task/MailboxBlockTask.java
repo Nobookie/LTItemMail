@@ -30,7 +30,7 @@ public final class MailboxBlockTask implements Runnable {
 	private final LTDynmap dynmap = (LTDynmap) ExtensionModule.getInstance().get(ExtensionModule.EXT.DYNMAP);
 	public final void run() {
 		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) {
-			if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) continue;
+			if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID))) continue;
 			if(!block.getBukkitBlock().getType().toString().endsWith("_SHULKER_BOX")) {
 				block.remove(true);
 				if(blueMap != null) blueMap.deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation(), false);

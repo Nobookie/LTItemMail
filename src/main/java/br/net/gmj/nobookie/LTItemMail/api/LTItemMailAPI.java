@@ -16,9 +16,6 @@
  */
 package br.net.gmj.nobookie.LTItemMail.api;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,21 +32,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.common.collect.Iterables;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.api.event.ServerSendMailEvent;
-import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
+import br.net.gmj.nobookie.LTItemMail.module.MultiServerModule;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
 
 /**
@@ -125,27 +118,7 @@ public final class LTItemMailAPI {
 					}
 					break;
 			}
-		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-			try {
-				final Player first = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-				if(first != null) {
-					final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-					out.writeUTF("Forward");
-					out.writeUTF("ONLINE");
-					out.writeUTF("LTIM_SM");
-					final ByteArrayOutputStream msgbytesout = new ByteArrayOutputStream();
-					final DataOutputStream msgout = new DataOutputStream(msgbytesout);
-					msgout.writeUTF(player.getName());
-					msgout.writeUTF((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL));
-					out.writeShort(msgbytesout.toByteArray().length);
-					out.write(msgbytesout.toByteArray());
-					first.sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", out.toByteArray());
-				} else ConsoleModule.warning("É necessário ter um jogador online no servidor para poder enviar mensagens no canal BungeeCord.");
-			} catch(final IOException e) {
-				ConsoleModule.debug(LTItemMailAPI.class, "Unable to send message to BungeeCord channel.");
-				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-			}
-		}
+		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) MultiServerModule.getHandle().send("LTIM_SM", player.getName(), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL));
 	}
 	/**
 	 * 
@@ -159,7 +132,7 @@ public final class LTItemMailAPI {
 	@Nonnull
 	public final List<MailboxBlock> getMailboxBlockList(){
 		final List<MailboxBlock> blocks = new ArrayList<>();
-		for(final MailboxBlock mailbox : DatabaseModule.Block.getMailboxBlocks()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID))) blocks.add(mailbox);
+		for(final MailboxBlock mailbox : DatabaseModule.Block.getMailboxBlocks()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID))) blocks.add(mailbox);
 		return blocks;
 	}
 	/**
@@ -178,7 +151,7 @@ public final class LTItemMailAPI {
 	public final List<MailboxBlock> getMailboxBlockList(@Nonnull final LTPlayer owner) throws NullPointerException {
 		Objects.requireNonNull(owner);
 		final List<MailboxBlock> blocks = new ArrayList<>();
-		for(final MailboxBlock mailbox : DatabaseModule.Block.getMailboxBlocks()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID)) && mailbox.getOwner().getUniqueId().equals(owner.getUniqueId())) blocks.add(mailbox);
+		for(final MailboxBlock mailbox : DatabaseModule.Block.getMailboxBlocks()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID)) && mailbox.getOwner().getUniqueId().equals(owner.getUniqueId())) blocks.add(mailbox);
 		return blocks;
 	}
 	/**
@@ -235,7 +208,7 @@ public final class LTItemMailAPI {
 	@Nullable
 	public final MailboxBlock getMailboxBlock(@Nonnull final Location location) throws NullPointerException {
 		Objects.requireNonNull(location);
-		if(DatabaseModule.Block.isMailboxBlock(location)) for(final MailboxBlock mailbox : getMailboxBlockList()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID)) && mailbox.getLocation().equals(location)) return mailbox;
+		if(DatabaseModule.Block.isMailboxBlock(location)) for(final MailboxBlock mailbox : getMailboxBlockList()) if(mailbox.getServer().equals(ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID)) && mailbox.getLocation().equals(location)) return mailbox;
 		return null;
 	}
 	/**
@@ -268,7 +241,7 @@ public final class LTItemMailAPI {
 	 */
 	@Nullable
 	public final List<String> getBungeeOnlinePlayers(){
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) return BungeeModule.getOnlinePlayers();
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) return MultiServerModule.getHandle().getOnlinePlayers();
 		return null;
 	}
 	/**
@@ -282,7 +255,7 @@ public final class LTItemMailAPI {
 	 */
 	@Nullable
 	public final List<LTPlayer> getBungeeOnlineLTPlayers(){
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) {
 			final List<LTPlayer> players = new ArrayList<>();
 			for(final String name : getBungeeOnlinePlayers()) players.add(LTPlayer.fromName(name));
 			return players;

@@ -318,7 +318,7 @@ public final class DatabaseModule {
 						break;
 					case 4:
 						sql.add("ALTER TABLE mailbox_block ADD mailbox_server TEXT NOT NULL;");
-						sql.add("UPDATE mailbox_block SET mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID) + "';");
+						sql.add("UPDATE mailbox_block SET mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "';");
 						sql.add("UPDATE config SET version = '5';");
 						break;
 				}
@@ -368,7 +368,7 @@ public final class DatabaseModule {
 						break;
 					case 4:
 						sql.add("ALTER TABLE mailbox_block ADD COLUMN mailbox_server VARCHAR(45) NOT NULL AFTER owner_uuid;");
-						sql.add("UPDATE mailbox_block SET mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID) + "';");
+						sql.add("UPDATE mailbox_block SET mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "';");
 						sql.add("UPDATE config SET version = '5';");
 						break;
 				}
@@ -573,7 +573,7 @@ public final class DatabaseModule {
 		public static final boolean isMailboxBlock(final Location block) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT * FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
+				final ResultSet results = statement.executeQuery("SELECT * FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
 				return results.next();
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -583,7 +583,7 @@ public final class DatabaseModule {
 		public static final boolean isMailboxOwner(final UUID owner, final Location block) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT owner_uuid FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
+				final ResultSet results = statement.executeQuery("SELECT owner_uuid FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
 				if(results.next()) if(UUID.fromString(results.getString("owner_uuid")).equals(owner)) return true;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -593,7 +593,7 @@ public final class DatabaseModule {
 		public static final UUID getMailboxOwner(final Location block) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT owner_uuid FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
+				final ResultSet results = statement.executeQuery("SELECT owner_uuid FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
 				if(results.next()) return UUID.fromString(results.getString("owner_uuid"));
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -603,7 +603,7 @@ public final class DatabaseModule {
 		public static final Integer getMailboxID(final Location block) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT id FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
+				final ResultSet results = statement.executeQuery("SELECT id FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
 				if(results.next()) return results.getInt("id");
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -636,7 +636,7 @@ public final class DatabaseModule {
 			try {
 				final PreparedStatement statement = LTItemMail.getInstance().connection.prepareStatement("INSERT INTO mailbox_block(owner_uuid, mailbox_server, mailbox_world, mailbox_x, mailbox_y, mailbox_z) VALUES(?, ?, ?, ?, ?, ?);");
 				statement.setString(1, owner.toString());
-				statement.setString(2, (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID));
+				statement.setString(2, (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID));
 				statement.setString(3, block.getWorld().getName());
 				statement.setInt(4, block.getBlockX());
 				statement.setInt(5, block.getBlockY());
@@ -651,7 +651,7 @@ public final class DatabaseModule {
 		public static final boolean breakMailbox(final Location block) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				statement.executeUpdate("DELETE FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
+				statement.executeUpdate("DELETE FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
 				return true;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();

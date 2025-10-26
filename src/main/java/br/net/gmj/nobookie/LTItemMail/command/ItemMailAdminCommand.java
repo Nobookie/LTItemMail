@@ -16,10 +16,7 @@
  */
 package br.net.gmj.nobookie.LTItemMail.command;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,16 +35,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.common.collect.Iterables;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
-import br.net.gmj.nobookie.LTItemMail.module.BungeeModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
@@ -55,6 +47,7 @@ import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
+import br.net.gmj.nobookie.LTItemMail.module.MultiServerModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.util.BukkitUtil;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
@@ -252,7 +245,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 							Integer number = 1;
 							for(final MailboxBlock block : mailboxes) {
 								String server = "";
-								if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) server = "Server=" + ChatColor.GREEN + block.getServer() + ChatColor.YELLOW + ", ";
+								if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) server = "Server=" + ChatColor.GREEN + block.getServer() + ChatColor.YELLOW + ", ";
 								final Location loc = block.getLocation();
 								sender.sendMessage(ChatColor.YELLOW + "    - #" + ChatColor.GREEN + String.valueOf(number) + ChatColor.YELLOW + " : " + server + LanguageModule.get(LanguageModule.Type.BLOCK_LIST_WORLD) + "=" + ChatColor.GREEN + loc.getWorld().getName() + ChatColor.YELLOW + ", X=" + ChatColor.GREEN + String.valueOf(loc.getBlockX()) + ChatColor.YELLOW + ", Y=" + ChatColor.GREEN + String.valueOf(loc.getBlockY()) + ChatColor.YELLOW + ", Z=" + ChatColor.GREEN + String.valueOf(loc.getBlockZ()));
 								number++;
@@ -293,27 +286,9 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 							if(BukkitUtil.PlayerInventory.hasSpace(player.getInventory())) {
 								sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_ADDED));
 							} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_DROPPED));
-						} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-							if(BungeeModule.getOnlinePlayers().contains(ltPlayer.getName())) {
-								try {
-									final Player first = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-									if(first != null) {
-										final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-										out.writeUTF("Forward");
-										out.writeUTF("ONLINE");
-										out.writeUTF("LTIM_GMB");
-										final ByteArrayOutputStream msgbytesout = new ByteArrayOutputStream();
-										final DataOutputStream msgout = new DataOutputStream(msgbytesout);
-										msgout.writeUTF(sender.getName());
-										msgout.writeUTF(ltPlayer.getName());
-										out.writeShort(msgbytesout.toByteArray().length);
-										out.write(msgbytesout.toByteArray());
-										first.sendPluginMessage(LTItemMail.getInstance(), "BungeeCord", out.toByteArray());
-									} else sender.sendMessage("É necessário ter um jogador online no servidor para poder enviar mensagens no canal BungeeCord.");
-								} catch(final IOException e) {
-									ConsoleModule.debug(getClass(), "Unable to send message to BungeeCord channel.");
-									if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-								}
+						} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) {
+							if(MultiServerModule.getHandle().getOnlinePlayers().contains(ltPlayer.getName())) {
+								MultiServerModule.getHandle().send("LTIM_GMB", sender.getName(), ltPlayer.getName());
 							} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_OFFLINE));
 						} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_OFFLINE));
 					} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_NEVERPLAYEDERROR));
@@ -344,8 +319,8 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 		}
 		if(args.length == 2) if((PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_LIST) && args[0].equals("list")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BAN) && args[0].equals("ban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_UNBAN) && args[0].equals("unban")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_INFO) && args[0].equals("info")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BLOCKS) && args[0].equals("blocks")) || (PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_GIVE) && args[0].equals("give"))) {
 			final LinkedList<String> response = new LinkedList<>();
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.BUNGEE_MODE)) {
-				for(final String bungeePlayer : BungeeModule.getOnlinePlayers()) response.add(bungeePlayer);
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) {
+				for(final String bungeePlayer : MultiServerModule.getHandle().getOnlinePlayers()) response.add(bungeePlayer);
 				for(final Player p: Bukkit.getOnlinePlayers()) if(!response.contains(p.getName())) response.add(p.getName());
 			} else for(final Player onlinePlayer : Bukkit.getOnlinePlayers()) response.add(onlinePlayer.getName());
 			return TabUtil.partial(args[1], response);

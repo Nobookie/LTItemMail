@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 22
+config-version: 23
 version-number: ${project.version}
 build-number: ${buildNumber}
 plugin:
@@ -16,16 +16,26 @@ plugin:
   #
   #Aqui você pode customizar a tag do plugin que aparece no chat. Padrão: [LTIM]
   tag: '&6[LTIM]'
-  #Choose if you want to use LTItemMail in your Bungee network.
+  #Choose if you want to use LTItemMail in your server network.
   #
-  #Escolha se quer usar o LTItemMail na sua rede Bungee.
-  bungee-mode: false
-  #Each server must have an unique identifier. Otherwise physical mailboxes will break.
-  #If you change this value, you and your players will have to replace every existing mailbox block, no matter if bungee mode is enabled or not.
-  #
-  #Cada servidor deve ter um identificador único. Senão caixas de corrêio físicas irão quebrar.
-  #Se você alterar esse valor, você e seus jogadores terão que substituir todos os blocos de caixa de correio existentes, não importa se o modo bungee está ativado ou não.
-  bungee-server-id: 'server1'
+  #Escolha se quer usar o LTItemMail na sua rede de servidores.
+  multi-server-support:
+    enable: false
+    #Each server must have an unique identifier. Otherwise physical mailboxes will break.
+    #If you change this value, you and your players will have to replace every existing mailbox block, no matter if bungee mode is enabled or not.
+    #
+    #Cada servidor deve ter um identificador único. Senão caixas de corrêio físicas irão quebrar.
+    #Se você alterar esse valor, você e seus jogadores terão que substituir todos os blocos de caixa de correio existentes, não importa se o modo bungee está ativado ou não.
+    server-id: 'server1'
+    #Escolha entre 'bungee'(depende do canal BungeeCord da sua proxy) ou 'redis'.
+    #
+    #Choose between 'bungee' (it relies on the BungeeCord channel of your proxy) or 'redis'.
+    mode: 'bungee'
+    redis:
+      host: '127.0.0.1'
+      port: 6379
+      password: ''
+      database: 0
   #Choose whether download the resource pack on every startup (it will update the current downloaded zip file as well). Default: false
   #
   #Escolha se quer baixar o pacote de recursos em cada inicialização (isso também irá atualizar o arquivo zip baixado atualmente). Padrão: false
