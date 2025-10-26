@@ -139,6 +139,7 @@ public final class ConfigurationModule {
 		PLUGIN_MULTI_SERVER_SUPPORT_MODE("plugin.multi-server-support.mode", "bungee"),
 		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_HOST("plugin.multi-server-support.redis.host", "127.0.0.1"),
 		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PORT("plugin.multi-server-support.redis.port", 6379),
+		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_USER("plugin.multi-server-support.redis.user", "default"),
 		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PASSWORD("plugin.multi-server-support.redis.password", new String()),
 		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_DATABASE("plugin.multi-server-support.redis.database", 0),
 		RESOURCE_PACK_DOWNLOAD("plugin.resource-pack-download", false),

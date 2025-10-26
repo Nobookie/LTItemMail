@@ -443,5 +443,11 @@
 	            </exclusion>
 	        </exclusions>
 	    </dependency>
+	    <dependency>
+		    <groupId>redis.clients</groupId>
+		    <artifactId>jedis</artifactId>
+		    <version>7.0.0</version>
+		    <scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>

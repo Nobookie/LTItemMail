@@ -34,6 +34,7 @@ plugin:
     redis:
       host: '127.0.0.1'
       port: 6379
+      user: 'default'
       password: ''
       database: 0
   #Choose whether download the resource pack on every startup (it will update the current downloaded zip file as well). Default: false

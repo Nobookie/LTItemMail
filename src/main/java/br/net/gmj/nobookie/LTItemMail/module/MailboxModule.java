@@ -161,8 +161,8 @@ public final class MailboxModule {
 			}
 		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) {
 			if(pSender != null) {
-				MultiServerModule.getHandle().send("LTIM_MBR", pSender.getName(), receiver.getName(), String.valueOf(mailboxID));
-			} else MultiServerModule.getHandle().send("LTIM_SM", receiver.getName(), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + ChatColor.GREEN + "" + sender.getName());
+				MultiServerModule.getHandle().send("LTIM_MBR", (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), pSender.getName(), receiver.getName(), String.valueOf(mailboxID));
+			} else MultiServerModule.getHandle().send("LTIM_SM", (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), receiver.getName(), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + ChatColor.GREEN + "" + sender.getName());
 		}
 		return mailboxID;
 	}
