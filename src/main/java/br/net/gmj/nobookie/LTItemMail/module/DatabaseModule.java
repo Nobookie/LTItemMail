@@ -72,6 +72,7 @@ public final class DatabaseModule {
 				data.close();
 			}
 			ConsoleModule.severe("Could not load SQLite database.");
+			ConsoleModule.severe("Check your SQLite parameters in config.yml and restart your Minecraft server.");
 			return null;
 		}
 	}
@@ -119,7 +120,7 @@ public final class DatabaseModule {
 				data.close();
 			} catch(final PoolInitializationException e) {
 				ConsoleModule.severe("Could not open MySQL connection.");
-				ConsoleModule.severe("Check the MySQL login information in config.yml and restart your Minecraft server.");
+				ConsoleModule.severe("Check your MySQL parameters in config.yml and restart your Minecraft server.");
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 				Bukkit.getPluginManager().disablePlugin(LTItemMail.getInstance());
 			}
