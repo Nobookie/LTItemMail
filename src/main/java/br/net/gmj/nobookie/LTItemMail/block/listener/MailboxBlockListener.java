@@ -43,8 +43,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-
 import br.net.gmj.nobookie.LTItemMail.api.block.MailboxBlock;
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.api.event.BreakMailboxBlockEvent;
@@ -54,13 +52,12 @@ import br.net.gmj.nobookie.LTItemMail.inventory.MailboxInventory;
 import br.net.gmj.nobookie.LTItemMail.item.Item;
 import br.net.gmj.nobookie.LTItemMail.item.MailboxItem;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
-import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
+import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
-import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule.EXT;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTBlueMap;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTCitizens;
 import br.net.gmj.nobookie.LTItemMail.module.ext.LTDecentHolograms;
@@ -292,34 +289,19 @@ public final class MailboxBlockListener implements Listener {
 	private final boolean canBuild(final Player player, final Location location) {
 		Boolean canBuild = true;
 		if(canBuild && worldGuard != null) canBuild = worldGuard.canBuild(player, location);
-		if(canBuild && townyAdvanced != null) try {
-			canBuild = townyAdvanced.canBuild(player, location);
-		} catch (final NotRegisteredException e) {
-			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+		if(canBuild && townyAdvanced != null) canBuild = townyAdvanced.canBuild(player, location);
 		return canBuild;
 	}
 	private final boolean canBreak(final Player player, final Location location) {
 		Boolean canBreak = true;
 		if(canBreak && worldGuard != null) canBreak = worldGuard.canBreak(player, location);
-		if(canBreak && townyAdvanced != null) try {
-			canBreak = townyAdvanced.canBreak(player, location);
-		} catch (final NotRegisteredException e) {
-			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+		if(canBreak && townyAdvanced != null) canBreak = townyAdvanced.canBreak(player, location);
 		return canBreak;
 	}
 	private final boolean canInteract(final Player player, final Location location) {
 		Boolean canInteract = true;
 		if(canInteract && worldGuard != null) canInteract = worldGuard.canInteract(player, location);
-		if(canInteract && townyAdvanced != null) try {
-			canInteract = townyAdvanced.canInteract(player, location);
-		} catch (final NotRegisteredException e) {
-			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
-			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-		}
+		if(canInteract && townyAdvanced != null) canInteract = townyAdvanced.canInteract(player, location);
 		if(canInteract && griefPrevention != null) canInteract = griefPrevention.canInteract(player, location);
 		if(canInteract && redProtect != null) canInteract = redProtect.canInteract(player, location);
 		return canInteract;

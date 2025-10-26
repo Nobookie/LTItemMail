@@ -58,25 +58,40 @@ public final class LTTownyAdvanced implements LTExtension, Listener {
 	public final void unload() {
 		HandlerList.unregisterAll(this);
 	}
-	public final boolean canBuild(final Player player, final Location location) throws NotRegisteredException {
-		final TownBlock block = api.getTownBlock(location);
+	public final boolean canBuild(final Player player, final Location location) {
 		Boolean result = true;
-		if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.BUILD);
-		ConsoleModule.debug(getClass(), "#canBuild: " + player.getName() + " " + result);
+		try {
+			final TownBlock block = api.getTownBlock(location);
+			if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.BUILD);
+			ConsoleModule.debug(getClass(), "#canBuild: " + player.getName() + " " + result);
+		} catch (final NotRegisteredException e) {
+			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
 		return result;
 	}
-	public final boolean canBreak(final Player player, final Location location) throws NotRegisteredException {
-		final TownBlock block = api.getTownBlock(location);
+	public final boolean canBreak(final Player player, final Location location) {
 		Boolean result = true;
-		if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.DESTROY);
-		ConsoleModule.debug(getClass(), "#canBreak: " + player.getName() + " " + result);
+		try {
+			final TownBlock block = api.getTownBlock(location);
+			if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.DESTROY);
+			ConsoleModule.debug(getClass(), "#canBreak: " + player.getName() + " " + result);
+		} catch (final NotRegisteredException e) {
+			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
 		return result;
 	}
-	public final boolean canInteract(final Player player, final Location location) throws NotRegisteredException {
-		final TownBlock block = api.getTownBlock(location);
+	public final boolean canInteract(final Player player, final Location location) {
 		Boolean result = true;
-		if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.ITEM_USE);
-		ConsoleModule.debug(getClass(), "#canInteract: " + player.getName() + " " + result);
+		try {
+			final TownBlock block = api.getTownBlock(location);
+			if(block != null && !block.getTown().getMayor().getName().equals(player.getName())) result = PlayerCacheUtil.getCachePermission(player, location, location.getBlock().getType(), TownyPermission.ActionType.ITEM_USE);
+			ConsoleModule.debug(getClass(), "#canInteract: " + player.getName() + " " + result);
+		} catch (final NotRegisteredException e) {
+			ConsoleModule.debug(getClass(), "Unable to check for plot permissions.");
+			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+		}
 		return result;
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
