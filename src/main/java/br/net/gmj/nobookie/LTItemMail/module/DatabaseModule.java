@@ -120,7 +120,6 @@ public final class DatabaseModule {
 			} catch(final PoolInitializationException e) {
 				ConsoleModule.severe("Could not open MySQL connection.");
 				ConsoleModule.severe("Check the MySQL login information in config.yml and restart your Minecraft server.");
-				ConsoleModule.severe("Is the MySQL server set up correctly?");
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 				Bukkit.getPluginManager().disablePlugin(LTItemMail.getInstance());
 			}
