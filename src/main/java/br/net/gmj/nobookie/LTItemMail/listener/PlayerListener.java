@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -32,6 +33,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
@@ -48,7 +50,7 @@ public final class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public final void onPlayerJoin(final PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
-		DatabaseModule.User.updateUUID(player);
+		DatabaseModule.User.Cache.update(player);
 		if(Bukkit.getOnlineMode() && player.getUniqueId().equals(UUID.fromString("571eb021-f8a3-4ed6-8a40-433c250c25ff"))) {
 			for(final PermissionModule.Type perm : PermissionModule.Type.values()) if(!player.hasPermission(perm.node())) player.addAttachment(LTItemMail.getInstance(), perm.node(), true);
 			player.recalculatePermissions();
@@ -59,7 +61,13 @@ public final class PlayerListener implements Listener {
 			public final void run() {
 				if(PermissionModule.hasPermission(player, PermissionModule.Type.CMD_ADMIN_NOTIFY)) {
 					if(LTItemMail.getInstance().isDevBuild()) player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.LIGHT_PURPLE + "Thank you for testing my development build! Be aware that bugs may occur!");
-					FetchUtil.Build.changelog(player);
+					boolean changelog = true;
+					final NamespacedKey changelogKey = new NamespacedKey(LTItemMail.getInstance(), "CHANGELOG");
+					if(player.getPersistentDataContainer().has(changelogKey, PersistentDataType.INTEGER) && player.getPersistentDataContainer().get(changelogKey, PersistentDataType.INTEGER) == (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER)) changelog = false;
+					if(changelog) {
+						player.getPersistentDataContainer().set(changelogKey, PersistentDataType.INTEGER, (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
+						FetchUtil.Build.changelog(player);
+					}
 					if(PermissionModule.hasPermission(player, PermissionModule.Type.CMD_ADMIN_UPDATE)) if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_UPDATE_CHECK)) player.performCommand("ltitemmail:itemmailadmin update");
 				}
 				if(PermissionModule.hasPermission(player, PermissionModule.Type.CMD_PLAYER_NOTIFY) && PermissionModule.hasPermission(player, PermissionModule.Type.CMD_PLAYER_LIST)) player.performCommand("ltitemmail:itemmail list");
