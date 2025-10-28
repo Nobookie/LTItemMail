@@ -54,9 +54,6 @@ import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
 public final class LTItemMail extends JavaPlugin {
 	private static LTItemMail instance;
-	public LTItemMail() {
-		instance = this;
-	}
 	public FileConfiguration configuration;
 	public FileConfiguration language;
 	public FileConfiguration models;
@@ -68,6 +65,7 @@ public final class LTItemMail extends JavaPlugin {
 	private Long startup;
 	@Override
 	public final void onLoad() {
+		instance = this;
 		startup = Calendar.getInstance().getTimeInMillis();
 		loadConfig();
 		ConsoleModule.welcome();
