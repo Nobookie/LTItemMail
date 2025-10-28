@@ -86,6 +86,7 @@ public final class CommandModule {
 	    }
 		@Override
 	    public final boolean execute(final CommandSender sender, final String commandLabel, final String[] args) {
+			if(!Bukkit.getPluginManager().getPlugin(LTItemMail.getInstance().getDescription().getName()).isEnabled()) return false;
 	        return executor.onCommand(sender, this, commandLabel, args);
 	    }
 	    @Override
@@ -94,6 +95,7 @@ public final class CommandModule {
 	    }
 	    @Override
 	    public final List<String> tabComplete(final CommandSender sender, final String alias, final String[] args, final Location location) {
+	    	if(!Bukkit.getPluginManager().getPlugin(LTItemMail.getInstance().getDescription().getName()).isEnabled()) return null;
 	        return executor.onTabComplete(sender, this, alias, args);
 	    }
 	    public final void setExecutor(final LTCommandExecutor executor) {
