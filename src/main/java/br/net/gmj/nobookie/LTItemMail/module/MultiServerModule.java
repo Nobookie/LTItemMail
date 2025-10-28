@@ -204,6 +204,7 @@ public class MultiServerModule {
 		}
 	}
 	private static class Redis implements MultiServerInstance {
+		private boolean shutdown = false;
 		private Jedis mainJedis = null;
 		private Jedis secJedis = null;
 		private List<String> players = new ArrayList<>();
@@ -219,7 +220,7 @@ public class MultiServerModule {
 				public final void run() {
 					try {
 						if(mainJedis != null && mainJedis.isConnected() && mainJedis.isBroken()) mainJedis = null;
-						if(mainJedis == null) {
+						if(!shutdown && mainJedis == null) {
 							mainJedis = new Jedis((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_HOST), (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PORT));
 							mainJedis.auth((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_USER), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PASSWORD));
 							mainJedis.select((Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_DATABASE));
@@ -232,7 +233,7 @@ public class MultiServerModule {
 					}
 					try {
 						if(secJedis != null && secJedis.isConnected() && secJedis.isBroken()) secJedis = null;
-						if(secJedis == null) {
+						if(!shutdown && secJedis == null) {
 							secJedis = new Jedis((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_HOST), (Integer) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PORT));
 							secJedis.auth((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_USER), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PASSWORD));
 							secJedis.subscribe(new JedisPubSub() {
@@ -240,7 +241,7 @@ public class MultiServerModule {
 								public final void onMessage(final String channel, final String message) {
 									final String[] params = message.split("␟");
 									final String server = params[0];
-									if(server.equals((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID))) return;
+									if(server.equals((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID)) && !channel.equals("shutdown")) return;
 									if(channel.equals("LTIM_MBR")) {
 										final LTPlayer sender = LTPlayer.fromName(params[1]);
 										final LTPlayer receiver = LTPlayer.fromName(params[2]);
@@ -281,7 +282,7 @@ public class MultiServerModule {
 												data = (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_ADDED);
 											} else data = (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_DROPPED);
 										} else data = (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.COMMAND_ADMIN_GIVE_OFFLINE);
-										send("LTIM_SM", server, sender, data);
+										send("LTIM_SM", "", sender, data);
 									}
 									if(channel.equals("LTIM_SM")) {
 										final String receiver = params[1];
@@ -290,8 +291,9 @@ public class MultiServerModule {
 											Bukkit.getConsoleSender().sendMessage(alert);
 										} else if(Bukkit.getPlayer(receiver) != null) Bukkit.getPlayer(receiver).sendMessage(alert);
 									}
+									if(channel.equals("shutdown") && server.equals((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID))) unsubscribe();
 								}
-							}, "LTIM_MBR", "LTIM_GMB", "LTIM_SM");
+							}, "LTIM_MBR", "LTIM_GMB", "LTIM_SM", "shutdown");
 						}
 					} catch(final JedisConnectionException e) {
 						ConsoleModule.severe("Could not open Redis [2] connection.");
@@ -323,7 +325,7 @@ public class MultiServerModule {
 									}
 									final Transaction t = mainJedis.multi();
 									t.set("LTIM_OP", players, SetParams.setParams().ex(ttl.intValue()));
-									if(t.exec() == null) ConsoleModule.debug(getClass(), "Redis [1] concurrent transaction error!");
+									if(t.exec() == null) ConsoleModule.debug(getClass(), "Redis [1] concurrent transaction canceled.");
 									t.close();
 								}
 							} else {
@@ -337,7 +339,7 @@ public class MultiServerModule {
 									}
 									final Transaction t = mainJedis.multi();
 									t.set("LTIM_OP", players, SetParams.setParams().ex(10));
-									if(t.exec() == null) ConsoleModule.debug(getClass(), "Redis [1] concurrent transaction error!");
+									if(t.exec() == null) ConsoleModule.debug(getClass(), "Redis [1] concurrent transaction canceled.");
 									t.close();
 								}
 							}
@@ -348,12 +350,13 @@ public class MultiServerModule {
 						}
 					}
 				}
-			}, 1, 1, TimeUnit.SECONDS);
-			
+			}, 0, 1, TimeUnit.SECONDS);
 		}
 		@Override
 		public final void unload() {
+			shutdown = true;
 			if(task != null && !task.isTerminated()) task.shutdownNow();
+			if(secJedis != null && secJedis.isConnected() && !secJedis.isBroken()) send("shutdown", (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID));
 			new Thread() {
 				@Override
 				public final void run() {
