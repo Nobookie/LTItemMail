@@ -104,7 +104,6 @@ public final class DatabaseModule {
 					try {
 						driver = (Driver) Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 					} catch (final ClassNotFoundException e) {
-						// The non deprecated driver was not found, fall back to the deprecated one.
 						driver = (Driver) Class.forName("com.mysql.jdbc.Driver").getDeclaredConstructor().newInstance();
 					}
 					DriverManager.registerDriver(driver);
@@ -205,7 +204,7 @@ public final class DatabaseModule {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			data.close();
-		} else ConsoleModule.warning("Database conversion error: SQLite or MySQL not reachable");
+		} else ConsoleModule.warning("Database conversion error: SQLite/MySQL not reachable!");
 	}
 	public static final void disconnect() {
 		try {
@@ -459,7 +458,7 @@ public final class DatabaseModule {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
 				final ResultSet results = statement.executeQuery("SELECT uuid_to FROM mailbox WHERE id = '" + mailboxID + "';");
-				if(results.next()) if(UUID.fromString(results.getString("uuid_to")).equals(owner)) return true;
+				if(results.next()) if(results.getString("uuid_to").equals(owner.toString())) return true;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
@@ -584,7 +583,7 @@ public final class DatabaseModule {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
 				final ResultSet results = statement.executeQuery("SELECT owner_uuid FROM mailbox_block WHERE mailbox_server = '" + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID) + "' AND mailbox_world = '" + block.getWorld().getName() + "' AND mailbox_x = '" + block.getBlockX() + "' AND mailbox_y = '" + block.getBlockY() + "' AND mailbox_z = '" + block.getBlockZ() + "';");
-				if(results.next()) if(UUID.fromString(results.getString("owner_uuid")).equals(owner)) return true;
+				if(results.next()) if(results.getString("owner_uuid").equals(owner.toString())) return true;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
@@ -676,7 +675,7 @@ public final class DatabaseModule {
 		public static final boolean unban(final UUID user) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				statement.executeUpdate("UPDATE users SET ban = '0', ban_reason = '' WHERE uuid = '" + user + "';");
+				statement.executeUpdate("UPDATE users SET ban = '0', ban_reason = '' WHERE uuid = '" + user.toString() + "';");
 				return true;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -686,7 +685,7 @@ public final class DatabaseModule {
 		public static final boolean setSentCount(final UUID user, final Integer sent) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				statement.executeUpdate("UPDATE users SET sent_count = '" + sent + "' WHERE uuid = '" + user + "';");
+				statement.executeUpdate("UPDATE users SET sent_count = '" + sent + "' WHERE uuid = '" + user.toString() + "';");
 				return true;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -696,7 +695,7 @@ public final class DatabaseModule {
 		public static final boolean setReceivedCount(final UUID user, final Integer received) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				statement.executeUpdate("UPDATE users SET received_count = '" + received + "' WHERE uuid = '" + user + "';");
+				statement.executeUpdate("UPDATE users SET received_count = '" + received + "' WHERE uuid = '" + user.toString() + "';");
 				return true;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -706,7 +705,7 @@ public final class DatabaseModule {
 		public static final boolean isBanned(final UUID user) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT ban FROM users WHERE uuid = '" + user + "';");
+				final ResultSet results = statement.executeQuery("SELECT ban FROM users WHERE uuid = '" + user.toString() + "';");
 				if(results.next()) return results.getInt("ban") == 1;
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -727,7 +726,7 @@ public final class DatabaseModule {
 		public static final String getBanReason(final UUID user) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT ban_reason FROM users WHERE uuid = '" + user + "';");
+				final ResultSet results = statement.executeQuery("SELECT ban_reason FROM users WHERE uuid = '" + user.toString() + "';");
 				if(results.next()) return results.getString("ban_reason");
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -754,7 +753,7 @@ public final class DatabaseModule {
 		public static final boolean isRegistered(final UUID user) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT name FROM users WHERE uuid = '" + user + "';");
+				final ResultSet results = statement.executeQuery("SELECT name FROM users WHERE uuid = '" + user.toString() + "';");
 				return results.next();
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -764,7 +763,7 @@ public final class DatabaseModule {
 		public static final int getSentCount(final UUID user) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT sent_count FROM users WHERE uuid = '" + user + "';");
+				final ResultSet results = statement.executeQuery("SELECT sent_count FROM users WHERE uuid = '" + user.toString() + "';");
 				if(results.next()) return results.getInt("sent_count");
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -774,7 +773,7 @@ public final class DatabaseModule {
 		public static final int getReceivedCount(final UUID user) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT received_count FROM users WHERE uuid = '" + user + "';");
+				final ResultSet results = statement.executeQuery("SELECT received_count FROM users WHERE uuid = '" + user.toString() + "';");
 				if(results.next()) return results.getInt("received_count");
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
@@ -784,26 +783,26 @@ public final class DatabaseModule {
 		public static final String getRegistryDate(final UUID user) {
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				final ResultSet results = statement.executeQuery("SELECT registered_date FROM users WHERE uuid = '" + user + "';");
+				final ResultSet results = statement.executeQuery("SELECT registered_date FROM users WHERE uuid = '" + user.toString() + "';");
 				if(results.next()) return results.getString("registered_date");
 			} catch (final SQLException | NullPointerException e) {
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 			}
 			return null;
 		}
-		public static final void updateUUID(final Player player) {
-			try {
-				final Statement statement = LTItemMail.getInstance().connection.createStatement();
-				statement.executeUpdate("UPDATE users SET uuid = '" + player.getUniqueId().toString() + "' WHERE name = '" + player.getName() + "';");
-			} catch (final SQLException | NullPointerException e) {
-				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
-			}
-		}
 		public static final class Cache {
+			public static final void update(final Player player) {
+				if(!getName(player.getUniqueId()).equals(player.getName())) try {
+					final Statement statement = LTItemMail.getInstance().connection.createStatement();
+					statement.executeUpdate("UPDATE users SET name = '" + player.getName() + "' WHERE uuid = '" + player.getUniqueId().toString() + "';");
+				} catch (final SQLException | NullPointerException e) {
+					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
+				}
+			}
 			public static final String getName(final UUID uuid) {
 				try {
 					final Statement statement = LTItemMail.getInstance().connection.createStatement();
-					final ResultSet results = statement.executeQuery("SELECT name FROM users WHERE uuid = '" + uuid + "';");
+					final ResultSet results = statement.executeQuery("SELECT name FROM users WHERE uuid = '" + uuid.toString() + "';");
 					if(results.next()) return results.getString("name");
 				} catch (final SQLException | NullPointerException e) {
 					if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
