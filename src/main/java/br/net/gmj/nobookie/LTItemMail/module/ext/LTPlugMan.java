@@ -43,7 +43,7 @@ public final class LTPlugMan implements Listener {
 				 plugMan = Bukkit.getPluginManager().getPlugin("PlugManX");
 			} else if(Bukkit.getPluginManager().isPluginEnabled("PlugMan")) plugMan = Bukkit.getPluginManager().getPlugin("PlugMan");
 			if(plugMan != null) {
-				ConsoleModule.warning("PlugMan detected! Reloading LT Item Mail with PlugMan can cause issues. Safe Guard activated!");
+				ConsoleModule.warning("PlugMan detected. Safe guard activated!");
 				if(!ConfigurationModule.devMode) Bukkit.getPluginManager().registerEvents(this, LTItemMail.getInstance());
 				final FileConfiguration config = plugMan.getConfig();
 				final List<String> ignored = config.getStringList("ignored-plugins");
