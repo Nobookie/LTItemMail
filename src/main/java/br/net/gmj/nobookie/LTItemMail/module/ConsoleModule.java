@@ -35,7 +35,7 @@ public final class ConsoleModule {
 	private static final ConsoleCommandSender sender() {
 		return Bukkit.getConsoleSender();
 	}
-	public static final void hello() {
+	public static final void welcome() {
 		final Map<String, Object> params = new HashMap<>();
 		params.put("format", "dd/MM/yyyy HH:mm:ss z");
 		String buildDate = FetchUtil.URL.get(DataModule.getDateURL((Integer) ConfigurationModule.get(Type.BUILD_NUMBER)), params);
@@ -47,23 +47,23 @@ public final class ConsoleModule {
 		sender().sendMessage(ChatColor.DARK_AQUA + "|______|_|  |_____|_|  |_|" + ChatColor.WHITE + "  Need support or have any questions? " + ChatColor.DARK_GREEN + DataModule.DISCORD);
 	}
 	public static final void info(final String message) {
-		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + "LTIM " + ChatColor.WHITE + "I] " + message);
+		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.WHITE + "I] " + message);
 	}
 	public static final void warning(final String message) {
-		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + "LTIM " + ChatColor.YELLOW + "W" + ChatColor.WHITE + "] " + ChatColor.YELLOW + message);
+		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "W" + ChatColor.WHITE + "] " + ChatColor.YELLOW + message);
 	}
 	public static final void severe(final String message) {
-		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + "LTIM " + ChatColor.RED + "E" + ChatColor.WHITE + "] " + ChatColor.RED + message);
+		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.RED + "E" + ChatColor.WHITE + "] " + ChatColor.RED + message);
 	}
 	public static final void raw(final String message) {
-		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + "LTIM" + ChatColor.WHITE + "] " + ChatColor.RESET + message);
+		sender().sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_AQUA + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + "" + ChatColor.WHITE + "] " + ChatColor.RESET + message);
 	}
 	public static final void debug(final Class<?> clazz, final String message) {
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) sender().sendMessage(ChatColor.GRAY + "[" + clazz.getName() + "] " + message);
 	}
-	public static final void server(final List<String> warnings) {
-		sender().sendMessage(ChatColor.WHITE + "<!-- " + ChatColor.DARK_AQUA + "LT Item Mail " + ChatColor.RED + "Version Control");
-		for(final String warning : warnings) sender().sendMessage(ChatColor.WHITE + "#   " + BukkitUtil.Text.Color.format(warning));
+	public static final void server(final List<String> alerts) {
+		sender().sendMessage(ChatColor.WHITE + "<!-- " + ChatColor.DARK_AQUA + "LT Item Mail " + ChatColor.RED + "Alerts");
+		for(final String alert : alerts) sender().sendMessage(ChatColor.WHITE + "#   " + BukkitUtil.Text.Color.format(alert));
 		sender().sendMessage(ChatColor.WHITE + "-->");
 	}
 	public static final void board(final CommandSender receiver, final Map<Integer, Map<String, Map<String, List<String>>>> messages) {

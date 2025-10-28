@@ -48,7 +48,7 @@ import br.net.gmj.nobookie.LTItemMail.module.MultiServerModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.RegistrationModule;
 import br.net.gmj.nobookie.LTItemMail.task.UpdateTask;
-import br.net.gmj.nobookie.LTItemMail.task.VersionControlTask;
+import br.net.gmj.nobookie.LTItemMail.task.ManifestTask;
 import br.net.gmj.nobookie.LTItemMail.util.BStats;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
@@ -70,7 +70,7 @@ public final class LTItemMail extends JavaPlugin {
 	public final void onLoad() {
 		startup = Calendar.getInstance().getTimeInMillis();
 		loadConfig();
-		ConsoleModule.hello();
+		ConsoleModule.welcome();
 	}
 	@Override
 	public final void onEnable() {
@@ -122,6 +122,7 @@ public final class LTItemMail extends JavaPlugin {
 		MultiServerModule.unload();
 		ExtensionModule.getInstance().unload();
 		DatabaseModule.disconnect();
+		ConsoleModule.info("Goodbye!");
 	}
 	public final void reload() {
 		ExtensionModule.getInstance().unload();
@@ -166,7 +167,7 @@ public final class LTItemMail extends JavaPlugin {
 	}
 	private final void runTasks() {
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_UPDATE_CHECK)) new UpdateTask();
-		new VersionControlTask();
+		new ManifestTask();
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.RESOURCE_PACK_DOWNLOAD)) new BukkitRunnable() {
 			@Override
 			public final void run() {

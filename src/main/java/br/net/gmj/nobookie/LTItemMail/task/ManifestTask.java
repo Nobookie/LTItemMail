@@ -34,9 +34,9 @@ import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
-public final class VersionControlTask {
+public final class ManifestTask {
 	private BukkitTask task;
-	public VersionControlTask() {
+	public ManifestTask() {
 		new BukkitRunnable() {
 			@Override
 			public final void run() {
@@ -48,8 +48,8 @@ public final class VersionControlTask {
 							final YamlConfiguration info = new YamlConfiguration();
 							info.load(FetchUtil.FileManager.get("manifest.yml"));
 							if(!info.getBoolean("main.enabled")) {
-								final List<String> warnings = info.getStringList("main.warnings");
-								if(warnings.size() > 0) ConsoleModule.server(warnings);
+								final List<String> alerts = info.getStringList("main.alerts");
+								if(alerts.size() > 0) ConsoleModule.server(alerts);
 								Bukkit.getPluginManager().disablePlugin(LTItemMail.getInstance());
 							} else {
 								final List<Integer> boards = new ArrayList<>();
