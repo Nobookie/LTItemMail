@@ -40,13 +40,13 @@ public final class DataModule {
 		return PLUGIN.replace("$version", version);
 	}
 	public enum Version {
-		CONFIG_YML(23),
+		CONFIG_YML(24),
 		ITEM_MODELS_YML(1),
 		HEADDATABASE_YML(1),
 		SKULLS_YML(1),
-		ENGLISH_YML(15),
-		PORTUGUESE_YML(15),
-		VIETNAMESE_YML(15),
+		EN_YML(15),
+		BR_YML(15),
+		VI_YML(15),
 		DATABASE(5);
 		private final Integer value;
 		Version(final Integer value){

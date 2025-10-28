@@ -1,5 +1,5 @@
 #Do not touch it!
-config-version: 23
+config-version: 24
 version-number: ${project.version}
 build-number: ${buildNumber}
 plugin:
@@ -7,11 +7,10 @@ plugin:
   #
   #Habilita ou desabilita o LTItemMail. Padrão: true
   enable: true
-  #Pre-installed languages support: portuguese, english, vietnamese. Default: english
+  #Pre-installed languages support: br, en, vi. Default: en
   #
-  #Suporte de idiomas pré-instalados: portuguese, english, vietnamese. Padrão: english
-  #Para pt-BR, selecione: portuguese
-  language: 'english'
+  #Suporte de idiomas pré-instalados: br, en, vi. Padrão: en
+  language: 'en'
   #Here you can customize the plugin tag that appears in chat. Default: [LTIM]
   #
   #Aqui você pode customizar a tag do plugin que aparece no chat. Padrão: [LTIM]

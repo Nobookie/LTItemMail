@@ -48,7 +48,7 @@ public final class ConfigurationModule {
 			final FileConfiguration configuration = new YamlConfiguration();
 			try {
 				configuration.load(file);
-				ConsoleModule.info("Configuration loaded.");
+				ConsoleModule.info("Configuration file loaded.");
 				if(configuration.getInt("config-version") < DataModule.Version.CONFIG_YML.value()) {
 					if(configuration.getInt("config-version") < 18 && configuration.getString(Type.DATABASE_TYPE.path()).equalsIgnoreCase("flatfile")) {
 						configuration.set(Type.DATABASE_TYPE.path(), "sqlite");
@@ -59,8 +59,22 @@ public final class ConfigurationModule {
 						if(configuration.isBoolean("plugin.bungee-mode")) configuration.set(Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE.path(), configuration.getBoolean("plugin.bungee-mode"));
 						if(configuration.isString("plugin.bungee-server-id")) configuration.set(Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID.path(), configuration.getString("plugin.bungee-server-id"));
 					}
+					if(configuration.getInt("config-version") < 24) {
+						if(configuration.getString(Type.PLUGIN_LANGUAGE.path()).equalsIgnoreCase("english")) {
+							configuration.set(Type.PLUGIN_LANGUAGE.path(), "en");
+							FetchUtil.FileManager.rename("english.yml", "en.yml");
+						}
+						if(configuration.getString(Type.PLUGIN_LANGUAGE.path()).equalsIgnoreCase("portuguese")) {
+							configuration.set(Type.PLUGIN_LANGUAGE.path(), "br");
+							FetchUtil.FileManager.rename("portuguese.yml", "br.yml");
+						}
+						if(configuration.getString(Type.PLUGIN_LANGUAGE.path()).equalsIgnoreCase("vietnamese")) {
+							configuration.set(Type.PLUGIN_LANGUAGE.path(), "vi");
+							FetchUtil.FileManager.rename("vietnamese.yml", "vi.yml");
+						}
+					}
 					update = true;
-					ConsoleModule.warning("Configuration outdated!");
+					ConsoleModule.warning("Configuration file outdated!");
 					ConsoleModule.warning("New settings will be added.");
 					configuration.set("config-version", DataModule.Version.CONFIG_YML.value());
 				}

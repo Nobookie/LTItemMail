@@ -218,6 +218,11 @@ public final class FetchUtil {
 			if(file.exists() && file.isFile()) return file;
 			return null;
 		}
+		public static final boolean rename(final String oldName, final String newName) {
+			final File file = get(oldName);
+			if(file != null) return file.renameTo(new File(LTItemMail.getInstance().getDataFolder(), newName));
+			return false;
+		}
 		public static final void create(final String name) {
 			final File file = new File(LTItemMail.getInstance().getDataFolder(), name);
 			if(!file.exists()) try {

@@ -39,8 +39,8 @@ public final class LanguageModule {
 				LTItemMail.getInstance().saveResource((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml", false);
 				ConsoleModule.info("Done.");
 			} else {
-				if(!((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).equalsIgnoreCase("english")) ConsoleModule.warning("Language " + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + " not found!");
-				ConsoleModule.warning("Generating a new one and all default translations will be added.");
+				ConsoleModule.info("File " + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml not found!");
+				ConsoleModule.info("Generating a new one.");
 				FetchUtil.FileManager.create((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml");
 			}
 		}
@@ -52,13 +52,13 @@ public final class LanguageModule {
 			final FileConfiguration configuration = new YamlConfiguration();
 			try {
 				configuration.load(file);
-				ConsoleModule.info((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml loaded.");
-				if(((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).equalsIgnoreCase("portuguese")) ConsoleModule.br();
+				ConsoleModule.info("File " + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml loaded.");
+				if(((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).equalsIgnoreCase("br")) ConsoleModule.br();
 				try {
 					final Version version = DataModule.Version.valueOf(((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase() + "_YML");
 					if(configuration.getInt("language-version") < version.value()) {
 						update = true;
-						ConsoleModule.warning("Language " + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml outdated!");
+						ConsoleModule.warning("File " + (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE) + ".yml outdated!");
 						ConsoleModule.warning("Missing translations will be added with default value.");
 						if(configuration.getInt("language-version") < 11) ConsoleModule.severe("All \"%\" arguments from the language file were changed! You MUST manually edit the file and replace all \"%\" with the new format. Reference example: https://github.com/leothawne/LTItemMail/blob/dev/src/main/resources/portuguese.yml");
 						configuration.set("language-version", version.value());
