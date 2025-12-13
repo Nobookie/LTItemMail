@@ -40,10 +40,8 @@ import me.clip.placeholderapi.PlaceholderAPI;
 public final class BukkitUtil {
 	private BukkitUtil() {}
 	public static final class Text {
-		public static final class Color {
-			public static final String format(final String text) {
-				return ChatColor.translateAlternateColorCodes('&', text);
-			}
+		public static final String parse(final String text) {
+			return ChatColor.translateAlternateColorCodes('&', text);
 		}
 	}
 	public static final class Inventory {
