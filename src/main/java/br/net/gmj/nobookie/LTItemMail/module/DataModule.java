@@ -44,9 +44,9 @@ public final class DataModule {
 		ITEM_MODELS_YML(1),
 		HEADDATABASE_YML(1),
 		SKULLS_YML(1),
-		EN_YML(15),
-		BR_YML(15),
-		VI_YML(15),
+		EN_YML(16),
+		BR_YML(16),
+		VI_YML(16),
 		DATABASE(5);
 		private final Integer value;
 		Version(final Integer value){
