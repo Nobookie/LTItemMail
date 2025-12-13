@@ -1,5 +1,5 @@
 #Não toque nisso!
-language-version: 15
+language-version: 16
 player:
   permissionerror: 'Você não tem permissão para fazer isso.'
   missingerror: 'Você deve especificar o nome do jogador.'
@@ -13,16 +13,16 @@ mailbox:
   closed: 'Caixa fechada.'
   sent: 'Enviando corrêio para %player%...'
   from: 'Novo corrêio de'
-  special: 'Corrêio especial!!!'
+  custom: 'Entrega Customizada'
   aborted: 'Envio cancelado.'
-  nonew: 'Não há novos corrêios.'
-  new: 'Novo corrêio encontrado! Digite /itemmail open <id>'
-  iderror: 'ID do corrêio deve ser um número inteiro.'
+  nonew: 'Não há novas entregas.'
+  new: 'Nova entrega encontrada! Digite /itemmail open <id>'
+  iderror: 'ID da caixa deve ser um número inteiro.'
   deleted: 'Deletado'
   empty: 'Vazio'
-  nolost: 'Não há itens perdidos neste corrêio.'
-  emptylist: 'Não há corrêios deletados do jogador'
-  blocked: 'Algo impediu este corrêio. Entrega cancelada.'
+  nolost: 'Não há itens perdidos nesta caixa.'
+  emptylist: 'Não há caixas deletadas do jogador'
+  blocked: 'Algo impediu esta entrega.'
   label: '&6&lEtiqueta:'
   cost: '&a&lCusto:'
   costerror: 'Plugin de economia não encontrado.'
@@ -34,7 +34,7 @@ transaction:
   error: 'Transação mal sucedida!'
   nomoney: 'Você não tem $%money% para pagar ao corrêio.'
   paid: 'Você pagou $%money% ao corrêio.'
-  notinstalled: 'Economia não foi detectada!'
+  notinstalled: 'Um plugin de economia não foi detectado!'
   costs: 'Preço:'
 block:
   breakerror: 'Você não tem permissão para quebrar esta caixa de corrêio.'
@@ -51,16 +51,16 @@ block:
     server: 'Servidor'
   adminlist:
     placed: 'Caixas de Corrêio de'
-  notfound: 'Nenhum bloco caixa de corrêio encontrado.'
+  notfound: 'Nenhuma caixa de corrêio encontrada.'
 command:
   invalid: 'Comando inválido. Digite %command% para ver a lista de comandos.'
   player:
     itemmail: 'Lista de comandos para jogadores.'
     version: 'Mostra a versão atual do plugin.'
     list: 'Lista de todos os corrêios recebidos.'
-    open: 'Abre um corrêio.'
-    delete: 'Deleta um corrêio.'
-    mailitem: 'Inicia um novo corrêio pra colocar itens dentro e enviar para outro jogador.'
+    open: 'Abre uma caixa.'
+    delete: 'Deleta uma caixa.'
+    mailitem: 'Inicia um novo pedido de entrega e abre uma caixa para colocar itens dentro.'
     costs: 'Mostra o preço de envio.'
     info:
       info: 'Mostra informações relevantes sobre o jogador.'
@@ -70,10 +70,10 @@ command:
         nop: 'Não'
         yep: 'Sim'
         reason: 'Motivo do banimento:'
-      sent: 'Corrêios enviados:'
-      received: 'Corrêios recebidos:'
+      sent: 'Entregas enviadas:'
+      received: 'Entregas recebidas:'
     blocks: 'Mostra uma lista das suas caixas de corrêio colocadas.'
-    color: 'Altera a cor do bloco caixa de corrêio na sua mão principal.'
+    color: 'Altera a cor da caixa de corrêio na sua mão principal.'
   admin:
     itemmailadmin: 'Lista de comandos para admins.'
     update:
@@ -81,8 +81,8 @@ command:
       found: 'Nova atualização encontrada! Você está %build% build(s) desatualizado. Baixe agora:'
       nonew: 'Não há novas atualizações.'
       automatic: 'A nova atualização será automaticamente baixada e instalada. Reinicie o servidor assim que possível para finalizar o processo de atualização!'
-    list: 'Lista de todos os corrêios deletados de um jogador.'
-    recover: 'Recupera items perdidos de corrêios deletados (se houver algum).'
+    list: 'Lista de todas as caixas deletadas de um jogador.'
+    recover: 'Recupera items perdidos de caixas deletadas (se houver algum).'
     reload: 'Recarrega as configurações do plugin e idioma/tradução.'
     ban:
       ban: 'Bane um jogador específico.'
@@ -105,8 +105,8 @@ command:
     give:
       give: 'Dá uma caixa de corrêio para o jogador especificado.'
       offline: 'O jogador está offline.'
-      added: 'O bloco Caixa de Corrêio foi adicionado ao inventário do jogador.'
-      dropped: 'Não havia espaço disponível no inventário do jogador e o bloco Caixa de Corrêio foi jogado no chão.'
+      added: 'Uma caixa de corrêio foi adicionada ao inventário do jogador.'
+      dropped: 'Não havia espaço disponível no inventário do jogador e uma caixa de corrêio foi jogada no chão.'
   wipe:
     wipe: 'Limpa todos os dados do banco de dados.'
     warning: 'Todos os dados do banco de dados serão apagados e não será possível recuperar. Tem certeza que deseja continuar? Para concordar e continuar, digite'
