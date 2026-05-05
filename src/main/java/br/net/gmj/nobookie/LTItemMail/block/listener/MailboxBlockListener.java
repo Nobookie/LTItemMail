@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,9 +162,9 @@ public final class MailboxBlockListener implements Listener {
 							if(DatabaseModule.Block.breakMailbox(block.getLocation())) {
 								event.setDropItems(false);
 								block.getWorld().dropItem(block.getLocation(), newMailbox);
-								if(dynmap != null) dynmap.deleteMarker(owner.getBukkitPlayer(), block.getLocation());
-								if(blueMap != null) blueMap.deleteMarker(owner.getBukkitPlayer(), block.getLocation(), false);
-								if(decentHolograms != null) decentHolograms.deleteHolo(owner.getBukkitPlayer(), block.getLocation());
+								if(dynmap != null) dynmap.deleteMarker(owner.toBukkit(), block.getLocation());
+								if(blueMap != null) blueMap.deleteMarker(owner.toBukkit(), block.getLocation(), false);
+								if(decentHolograms != null) decentHolograms.deleteHolo(owner.toBukkit(), block.getLocation());
 								MailboxModule.log(LTPlayer.fromUUID(player.getUniqueId()), owner, MailboxModule.Action.ADMIN_BROKE, null, null, null, block.getLocation());
 								player.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + LanguageModule.get(LanguageModule.Type.BLOCK_ADMINBROKE) + " " + owner.getName());
 							} else event.setCancelled(true);
@@ -240,8 +240,14 @@ public final class MailboxBlockListener implements Listener {
 		}
 		if(cancel) {
 			event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 1, 1);
+			Particle particle;
+			try {
+			    particle = Particle.valueOf("EXPLOSION_LARGE");
+			} catch (final IllegalArgumentException e) {
+			    particle = Particle.EXPLOSION;
+			}
 			for(final Block block : blocks) {
-				block.getLocation().getWorld().spawnParticle(Particle.EXPLOSION_HUGE, block.getLocation(), 1);
+				block.getLocation().getWorld().spawnParticle(particle, block.getLocation(), 1);
 				block.breakNaturally();
 			}
 		}
@@ -269,8 +275,14 @@ public final class MailboxBlockListener implements Listener {
 		}
 		if(cancel) {
 			event.getLocation().getWorld().playSound(event.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 1, 1);
+			Particle particle;
+			try {
+			    particle = Particle.valueOf("EXPLOSION_LARGE");
+			} catch (final IllegalArgumentException e) {
+			    particle = Particle.EXPLOSION;
+			}
 			for(final Block block : blocks) {
-				block.getLocation().getWorld().spawnParticle(Particle.EXPLOSION_HUGE, block.getLocation(), 1);
+				block.getLocation().getWorld().spawnParticle(particle, block.getLocation(), 1);
 				block.breakNaturally();
 			}
 		}
