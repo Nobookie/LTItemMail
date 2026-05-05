@@ -29,7 +29,7 @@ plugin:
     #Escolha entre 'bungee'(depende do canal BungeeCord da sua proxy) ou 'redis'.
     #
     #Choose between 'bungee' (it relies on the BungeeCord channel of your proxy) or 'redis'.
-    mode: 'bungee'
+    mode: 'redis'
     redis:
       host: '127.0.0.1'
       port: 6379
