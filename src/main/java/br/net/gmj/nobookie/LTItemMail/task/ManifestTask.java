@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ public final class ManifestTask {
 							if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 						} catch(final IllegalArgumentException e) {}
 					}
-				}.runTaskTimerAsynchronously(LTItemMail.getInstance(), 20, 20);
+				}.runTaskTimerAsynchronously(LTItemMail.getInstance(), 1, 20 * 5);
 			}
 		}.runTaskAsynchronously(LTItemMail.getInstance());
 	}
