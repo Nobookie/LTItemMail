@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -521,7 +522,7 @@ public final class DatabaseModule {
 			Integer deleted = 0;
 			if(status.equals(Status.DENIED)) deleted = 1;
 			if(status.equals(Status.ALL)) sts = "";
-			final HashMap<Integer, String> mailboxes = new HashMap<>();
+			final HashMap<Integer, String> mailboxes = new LinkedHashMap<>();
 			try {
 				final Statement statement = LTItemMail.getInstance().connection.createStatement();
 				final ResultSet results = statement.executeQuery("SELECT * FROM mailbox WHERE uuid_to = '" + owner.toString() + "' AND deleted = '" + deleted + "'" + sts + " ORDER BY id ASC;");
