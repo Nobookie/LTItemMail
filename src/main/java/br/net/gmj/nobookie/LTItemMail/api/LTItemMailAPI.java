@@ -55,6 +55,15 @@ import br.net.gmj.nobookie.LTItemMail.module.ext.LTUltimateAdvancementAPI;
 public final class LTItemMailAPI {
 	private LTItemMailAPI() {}
 	private static LTItemMailAPI instance = null;
+	/**
+	 * 
+	 * Instantiate the {@link LTItemMailAPI} class.
+	 * 
+	 * @param plugin The plugin that will interact with the API.
+	 * 
+	 * @return {@link LTItemMailAPI}.
+	 * 
+	 */
 	public static final LTItemMailAPI get(@Nonnull final JavaPlugin plugin) {
 		Objects.requireNonNull(plugin);
 		if(instance == null) instance = new LTItemMailAPI();
@@ -66,23 +75,21 @@ public final class LTItemMailAPI {
 	}
 	/**
 	 * 
-	 * Method used to send items anonymously
-	 * to any player on the server. The mail
-	 * will be assigned as a "Special Mail".
-	 * The sender will be assigned as CONSOLE.
+	 * Method used to send items (as CONSOLE).
+	 * The delivery will be assigned as a "Custom Delivery".
 	 * 
 	 * @param player The player who will receive (See {@link LTPlayer}).
-	 * @param items A list of items that the player will receive.
-	 * @param label The label you want to put on the mailbox.
+	 * @param items A list of items to be delivered.
+	 * @param label The label you want to put on the box.
 	 * 
 	 */
 	@Nonnull
-	public final void sendSpecialMail(@Nonnull final LTPlayer player, @Nonnull final LinkedList<ItemStack> items, @Nonnull final String label) throws NullPointerException {
+	public final void deliverCustomMail(@Nonnull final LTPlayer player, @Nonnull final LinkedList<ItemStack> items, @Nonnull final String label) throws NullPointerException {
 		Objects.requireNonNull(player);
 		Objects.requireNonNull(items);
 		Objects.requireNonNull(label);
-		final Player bukkitPlayer = player.getBukkitPlayer().getPlayer();
-		DatabaseModule.Virtual.saveMailbox(null, player.getBukkitPlayer().getUniqueId(), items, label);
+		final Player bukkitPlayer = player.toBukkit().getPlayer();
+		DatabaseModule.Virtual.saveMailbox(null, player.toBukkit().getUniqueId(), items, label);
 		Bukkit.getPluginManager().callEvent(new ServerSendMailEvent(player, items, label));
 		if(bukkitPlayer != null) {
 			MailboxModule.Display display;
@@ -97,28 +104,28 @@ public final class LTItemMailAPI {
 			}
 			switch(display) {
 				case CHAT:
-					bukkitPlayer.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL));
+					bukkitPlayer.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_CUSTOM));
 					break;
 				case TITLE:
-					bukkitPlayer.sendTitle(ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL), "", 20 * 1, 20 * 5, 20 * 1);
+					bukkitPlayer.sendTitle(ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_CUSTOM), "", 20 * 1, 20 * 5, 20 * 1);
 					break;
 				case TOAST:
 					if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) {
 						final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
-						ultimateAdvancementAPI.show(player, LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL));
+						ultimateAdvancementAPI.sendMessage(player, LanguageModule.get(LanguageModule.Type.MAILBOX_CUSTOM));
 						if(!label.isEmpty()) {
 							final String l = label;
 							new BukkitRunnable() {
 								@Override
 								public final void run() {
-									ultimateAdvancementAPI.show(player, l);
+									ultimateAdvancementAPI.sendMessage(player, l);
 								}
 							}.runTaskLater(LTItemMail.getInstance(), 20 * 3);
 						}
 					}
 					break;
 			}
-		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) MultiServerModule.getHandle().send("LTIM_SM", (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), player.getName(), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_SPECIAL));
+		} else if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) MultiServerModule.getHandle().send("LTIM_SM", (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID), player.getName(), (String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_CUSTOM));
 	}
 	/**
 	 * 
@@ -233,31 +240,31 @@ public final class LTItemMailAPI {
 	/**
 	 * 
 	 * Gets a list of online
-	 * players on the Bungee
-	 * network.
+	 * players on the
+	 * multi-servers network.
 	 * 
-	 * @return A list of player names (can be sensitive case) or null if bungee mode is disabled.
+	 * @return A list of player names (can be sensitive case) or null if multi-server mode is disabled.
 	 * 
 	 */
 	@Nullable
-	public final List<String> getBungeeOnlinePlayers(){
+	public final List<String> getNetworkPlayers(){
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) return MultiServerModule.getHandle().getOnlinePlayers();
 		return null;
 	}
 	/**
 	 * 
 	 * Gets a list of online
-	 * players on the Bungee
-	 * network.
+	 * players on the
+	 * multi-servers network.
 	 * 
-	 * @return A list of LTPlayer objects representing the players that are online or null if bungee mode is disabled. If you are not sure that all players ever joined (at least once) a server where LTItemMail is installed, it's recommend to use {@link LTItemMailAPI#getBungeeOnlinePlayers()} instead.
+	 * @return  A list of LTPlayer objects representing the players that are online or null if multi-server mode is disabled. If you are not sure that all players ever joined (at least once) a server where LTItemMail is installed, it's recommend to use {@link LTItemMailAPI#getNetworkPlayers()} instead.
 	 * 
 	 */
 	@Nullable
-	public final List<LTPlayer> getBungeeOnlineLTPlayers(){
+	public final List<LTPlayer> getNetworkLTPlayers(){
 		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_ENABLE)) {
 			final List<LTPlayer> players = new ArrayList<>();
-			for(final String name : getBungeeOnlinePlayers()) players.add(LTPlayer.fromName(name));
+			for(final String name : getNetworkPlayers()) players.add(LTPlayer.fromName(name));
 			return players;
 		}
 		return null;

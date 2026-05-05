@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,8 +88,8 @@ public class MultiServerModule {
 					final LTPlayer sender = LTPlayer.fromName(msgin.readUTF());
 					final LTPlayer receiver = LTPlayer.fromName(msgin.readUTF());
 					final Integer mailbox = Integer.parseInt(msgin.readUTF());
-					if(receiver != null && receiver.getBukkitPlayer().getPlayer() != null) {
-						final Player bukkitReceiver = receiver.getBukkitPlayer().getPlayer();
+					if(receiver != null && receiver.toBukkit().getPlayer() != null) {
+						final Player bukkitReceiver = receiver.toBukkit().getPlayer();
 						MailboxModule.log(receiver, null, Action.RECEIVED, mailbox.intValue(), null, null, null);
 						MailboxModule.Display display;
 						try {
@@ -109,7 +109,7 @@ public class MultiServerModule {
 								bukkitReceiver.sendTitle(ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) +  " " + ChatColor.GREEN, sender.getName() + " (#" + mailbox + ")", 20 * 1, 20 * 5, 20 * 1);
 								break;
 							case TOAST:
-								if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) ((LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)).show(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + " (#" + mailbox + ")");
+								if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) ((LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)).sendMessage(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + " (#" + mailbox + ")");
 								break;
 						}
 					}
@@ -120,7 +120,7 @@ public class MultiServerModule {
 					in.readFully(msgbytesin);
 					final DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytesin));
 					final String sender = msgin.readUTF();
-					final Player receiver = LTPlayer.fromName(msgin.readUTF()).getBukkitPlayer().getPlayer();
+					final Player receiver = LTPlayer.fromName(msgin.readUTF()).toBukkit().getPlayer();
 					String data;
 					if(receiver != null) {
 						BukkitUtil.PlayerInventory.addItem(receiver, new MailboxItem().getItem(null));
@@ -246,8 +246,8 @@ public class MultiServerModule {
 										final LTPlayer sender = LTPlayer.fromName(params[1]);
 										final LTPlayer receiver = LTPlayer.fromName(params[2]);
 										final Integer mailbox = Integer.parseInt(params[3]);
-										if(receiver != null && receiver.getBukkitPlayer().getPlayer() != null) {
-											final Player bukkitReceiver = receiver.getBukkitPlayer().getPlayer();
+										if(receiver != null && receiver.toBukkit().getPlayer() != null) {
+											final Player bukkitReceiver = receiver.toBukkit().getPlayer();
 											MailboxModule.log(receiver, null, Action.RECEIVED, mailbox.intValue(), null, null, null);
 											MailboxModule.Display display;
 											try {
@@ -267,14 +267,14 @@ public class MultiServerModule {
 													bukkitReceiver.sendTitle(ChatColor.AQUA + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) +  " " + ChatColor.GREEN, sender.getName() + " (#" + mailbox + ")", 20 * 1, 20 * 5, 20 * 1);
 													break;
 												case TOAST:
-													if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) ((LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)).show(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + " (#" + mailbox + ")");
+													if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) ((LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)).sendMessage(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + " (#" + mailbox + ")");
 													break;
 											}
 										}
 									}
 									if(channel.equals("LTIM_GMB")) {
 										final String sender = params[1];
-										final Player receiver = LTPlayer.fromName(params[2]).getBukkitPlayer().getPlayer();
+										final Player receiver = LTPlayer.fromName(params[2]).toBukkit().getPlayer();
 										String data;
 										if(receiver != null) {
 											BukkitUtil.PlayerInventory.addItem(receiver, new MailboxItem().getItem(null));

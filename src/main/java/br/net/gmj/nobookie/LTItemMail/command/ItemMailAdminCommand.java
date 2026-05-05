@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,8 +96,9 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 						@Override
 						public final void run() {
 							final Integer localBuild = (Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER);
-							final String response = FetchUtil.URL.get(DataModule.UPDATE, null).replaceAll(System.lineSeparator(), "");
+							String response = FetchUtil.URL.get(DataModule.UPDATE, null);
 							if(response != null) {
+								response = response.replaceAll(System.lineSeparator(), "");
 								final Integer remoteBuild = Integer.parseInt(response);
 								if(remoteBuild > localBuild) {
 									final Integer outOfDate = remoteBuild - localBuild;
@@ -281,7 +282,7 @@ public final class ItemMailAdminCommand extends LTCommandExecutor {
 				if(args.length == 2) {
 					final LTPlayer ltPlayer = LTPlayer.fromName(args[1]);
 					if(ltPlayer != null) {
-						final Player player = ltPlayer.getBukkitPlayer().getPlayer();
+						final Player player = ltPlayer.toBukkit().getPlayer();
 						if(player != null) {
 							BukkitUtil.PlayerInventory.addItem(player, new MailboxItem().getItem(null));
 							if(BukkitUtil.PlayerInventory.hasSpace(player.getInventory())) {

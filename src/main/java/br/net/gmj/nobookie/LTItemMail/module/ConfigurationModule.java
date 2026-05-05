@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,7 +124,7 @@ public final class ConfigurationModule {
 			if(type.equals(Type.PLUGIN_DEBUG) && devMode) {
 				result = true;
 			} else result = LTItemMail.getInstance().configuration.get(path);
-			if(type.equals(Type.PLUGIN_TAG) || type.equals(Type.MAILBOX_NAME) || type.equals(Type.MAILBOX_NAME)) result = BukkitUtil.Text.Color.format((String) result);
+			if(type.equals(Type.PLUGIN_TAG) || type.equals(Type.MAILBOX_NAME) || type.equals(Type.MAILBOX_NAME)) result = BukkitUtil.Text.parse((String) result);
 		} else {
 			ConsoleModule.info("Configuration fallback [" + path + ":\"" + result + "\"]");
 			LTItemMail.getInstance().configuration.set(path, result);
@@ -150,7 +150,7 @@ public final class ConfigurationModule {
 		PLUGIN_TAG("plugin.tag", "&6[LTIM]"),
 		PLUGIN_MULTI_SERVER_SUPPORT_ENABLE("plugin.multi-server-support.enable", false),
 		PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID("plugin.multi-server-support.server-id", "server1"),
-		PLUGIN_MULTI_SERVER_SUPPORT_MODE("plugin.multi-server-support.mode", "bungee"),
+		PLUGIN_MULTI_SERVER_SUPPORT_MODE("plugin.multi-server-support.mode", "redis"),
 		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_HOST("plugin.multi-server-support.redis.host", "127.0.0.1"),
 		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_PORT("plugin.multi-server-support.redis.port", 6379),
 		PLUGIN_MULTI_SERVER_SUPPORT_REDIS_USER("plugin.multi-server-support.redis.user", "default"),

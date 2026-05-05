@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,12 +55,12 @@ public final class LTBlueMap implements LTExtension {
 				}
 				map.getMarkerSets().put("ltitemmail_markers", set);
 			}
-			for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
+			for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createMarker(block.getOwner().toBukkit(), block.getLocation());
 		});
 	}
 	@Override
 	public final void unload() {
-		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation(), true);
+		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteMarker(block.getOwner().toBukkit(), block.getLocation(), true);
 	}
 	public final void createMarker(final OfflinePlayer player, final Location location) {
 		if(api != null) {

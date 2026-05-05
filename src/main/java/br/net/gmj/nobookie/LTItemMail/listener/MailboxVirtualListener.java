@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,28 +92,28 @@ public final class MailboxVirtualListener implements Listener {
 					newcost = (Double) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_COST) * count;
 				} else newcost = (Double) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_COST);
 				if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) {
-					if(EconomyModule.getInstance().has(sender.getBukkitPlayer().getPlayer(), newcost)) {
+					if(EconomyModule.getInstance().has(sender.toBukkit().getPlayer(), newcost)) {
 						if(EconomyModule.getInstance().withdraw(player, newcost)) {
 							MailboxModule.log(sender, null, MailboxModule.Action.PAID, null, newcost, null, null);
 							final PlayerSendMailEvent sendEvent = new PlayerSendMailEvent(sender, receiver, items, true, newcost, label);
 							Bukkit.getPluginManager().callEvent(sendEvent);
 							if(!sendEvent.isCancelled()) {
-								sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.TRANSACTION_PAID)).replaceAll("%money%", "" + ChatColor.GREEN + newcost + ChatColor.YELLOW));
-								MailboxModule.send(sender.getBukkitPlayer().getPlayer(), receiver, items, label);
+								sender.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.TRANSACTION_PAID)).replaceAll("%money%", "" + ChatColor.GREEN + newcost + ChatColor.YELLOW));
+								MailboxModule.send(sender.toBukkit().getPlayer(), receiver, items, label);
 							} else {
-								EconomyModule.getInstance().deposit(sender.getBukkitPlayer().getPlayer(), newcost);
+								EconomyModule.getInstance().deposit(sender.toBukkit().getPlayer(), newcost);
 								MailboxModule.log(sender, null, MailboxModule.Action.REFUNDED, null, newcost, null, null);
-								sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_BLOCKED));
+								sender.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_BLOCKED));
 								MailboxModule.log(sender, null, MailboxModule.Action.CANCELED, null, null, null, null);
 								MailboxModule.send(Bukkit.getConsoleSender(), LTPlayer.fromUUID(sender.getUniqueId()), items, sendEvent.getCancelReason());
 							}
 						} else {
-							sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.TRANSACTION_ERROR));
+							sender.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.TRANSACTION_ERROR));
 							MailboxModule.log(sender, null, MailboxModule.Action.CANCELED, null, null, null, null);
 							MailboxModule.send(Bukkit.getConsoleSender(), LTPlayer.fromUUID(sender.getUniqueId()), items, label);
 						}
 					} else {
-						sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.TRANSACTION_NOMONEY)).replaceAll("%money%", "" + ChatColor.GREEN + newcost + ChatColor.YELLOW));
+						sender.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + ((String) LanguageModule.get(LanguageModule.Type.TRANSACTION_NOMONEY)).replaceAll("%money%", "" + ChatColor.GREEN + newcost + ChatColor.YELLOW));
 						MailboxModule.log(sender, null, MailboxModule.Action.CANCELED, null, null, null, null);
 						MailboxModule.send(Bukkit.getConsoleSender(), LTPlayer.fromUUID(sender.getUniqueId()), items, label);
 					}
@@ -121,14 +121,14 @@ public final class MailboxVirtualListener implements Listener {
 					final PlayerSendMailEvent sendEvent = new PlayerSendMailEvent(sender, receiver, items, false, 0.0, label);
 					Bukkit.getPluginManager().callEvent(sendEvent);
 					if(!sendEvent.isCancelled()) {
-						MailboxModule.send(sender.getBukkitPlayer().getPlayer(), receiver, items, label);
+						MailboxModule.send(sender.toBukkit().getPlayer(), receiver, items, label);
 					} else {
-						sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_BLOCKED));
+						sender.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_BLOCKED));
 						MailboxModule.log(sender, null, MailboxModule.Action.CANCELED, null, null, null, null);
 						MailboxModule.send(Bukkit.getConsoleSender(), LTPlayer.fromUUID(sender.getUniqueId()), items, sendEvent.getCancelReason());
 					}
 				}
-			} else sender.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_ABORTED));
+			} else sender.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.MAILBOX_ABORTED));
 			if(citizens != null) citizens.dismiss(player.getName());
 			BukkitUtil.AutoRun.execute(getClass(), ConfigurationModule.Type.AUTORUN_MAIL_NEW_ONCLOSE, player);
 		}
@@ -187,7 +187,7 @@ public final class MailboxVirtualListener implements Listener {
 			Boolean primeCost = false;
 			if(headDB != null) {
 				if(selected.getItemMeta() instanceof SkullMeta) if(headDB.getId(selected).equals(LTHeadDatabase.Type.MAILBOX_BUTTON_COST.id())) primeCost = true;
-			} if(skulls != null) {
+			} else if(skulls != null) {
 				if(selected.getItemMeta() instanceof SkullMeta) if(skulls.getId(selected).equals(LTSkulls.Type.MAILBOX_BUTTON_COST.id())) primeCost = true;
 			} else if(selected.getType().equals(Material.EMERALD)) primeCost = true;
 			if(primeCost) {
@@ -237,6 +237,7 @@ public final class MailboxVirtualListener implements Listener {
 						DatabaseModule.Virtual.setStatus(backMailboxID, DatabaseModule.Virtual.Status.ACCEPTED);
 					}
 					DatabaseModule.Virtual.setMailboxDeleted(mailboxID);
+					event.getInventory().clear();
 					inventoryView.close();
 				}
 				if(primeAccept) {

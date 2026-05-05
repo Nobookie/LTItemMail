@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ public final class LTPlayer {
 	 * 
 	 */
 	@Nonnull
-	public final OfflinePlayer getBukkitPlayer() {
+	public final OfflinePlayer toBukkit() {
 		return player;
 	}
 	/**
@@ -235,7 +235,8 @@ public final class LTPlayer {
 	 */
 	@Nullable
 	public final String getRegistryDate() {
-		return DatabaseModule.User.getRegistryDate(uuid);
+		if(isRegistered()) return DatabaseModule.User.getRegistryDate(uuid);
+		return null;
 	}
 	/**
 	 * 
@@ -251,7 +252,7 @@ public final class LTPlayer {
 		Objects.requireNonNull(message);
 		if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) {
 			final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
-			ultimateAdvancementAPI.show(this, message);
+			ultimateAdvancementAPI.sendMessage(this, message);
 			return true;
 		}
 		return false;
@@ -265,7 +266,7 @@ public final class LTPlayer {
 	 */
 	@Nonnull
 	public final Boolean isOnline() {
-		return getBukkitPlayer().getPlayer() != null;
+		return toBukkit().getPlayer() != null;
 	}
 	/**
 	 * 
@@ -279,15 +280,15 @@ public final class LTPlayer {
 	@Nonnull
 	public final Boolean sendMessage(@Nonnull final String message) throws NullPointerException {
 		Objects.requireNonNull(message);
-		if(getBukkitPlayer().getPlayer() != null) {
-			getBukkitPlayer().getPlayer().sendMessage(message);
+		if(isOnline()) {
+			toBukkit().getPlayer().sendMessage(message);
 			return true;
 		}
 		return false;
 	}
 	/**
 	 * 
-	 * Works with Spigot and forks only.
+	 * Only applicable when Spigot API is present on your current server implementation.
 	 * 
 	 * @return {@link Spigot} object or null.
 	 * 
@@ -298,7 +299,7 @@ public final class LTPlayer {
 			Class.forName("org.spigotmc.CustomTimingsHandler.class");
 			return new Spigot(this);
 		} catch (final ClassNotFoundException e) {
-			ConsoleModule.debug(getClass(), "Server is not a Spigot implementation. Aborted.");
+			ConsoleModule.debug(getClass(), "Spigot API not found.");
 			if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_DEBUG)) e.printStackTrace();
 		}
 		return null;
@@ -329,8 +330,8 @@ public final class LTPlayer {
 		public final Boolean sendMessage(@Nonnull final ChatMessageType type, @Nonnull final BaseComponent[] component) throws NullPointerException {
 			Objects.requireNonNull(type);
 			Objects.requireNonNull(component);
-			if(player.getBukkitPlayer().getPlayer() != null) {
-				player.getBukkitPlayer().getPlayer().spigot().sendMessage(type, component);
+			if(player.isOnline()) {
+				player.toBukkit().getPlayer().spigot().sendMessage(type, component);
 				return true;
 			}
 			return false;

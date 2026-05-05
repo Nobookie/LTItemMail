@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ public final class ConsoleModule {
 	}
 	public static final void server(final List<String> alerts) {
 		sender().sendMessage(ChatColor.WHITE + "<!-- " + ChatColor.DARK_AQUA + "LT Item Mail " + ChatColor.RED + "Alerts");
-		for(final String alert : alerts) sender().sendMessage(ChatColor.WHITE + "#   " + BukkitUtil.Text.Color.format(alert));
+		for(final String alert : alerts) sender().sendMessage(ChatColor.WHITE + "#   " + BukkitUtil.Text.parse(alert));
 		sender().sendMessage(ChatColor.WHITE + "-->");
 	}
 	public static final void board(final CommandSender receiver, final Map<Integer, Map<String, Map<String, List<String>>>> messages) {
@@ -79,7 +79,7 @@ public final class ConsoleModule {
 				final Map<String, List<String>> contents2 = contents1.get(title);
 				for(final String datetime : contents2.keySet()) {
 					receiver.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + title + " (" + datetime + ")");
-					for(final String message : contents2.get(datetime)) receiver.sendMessage(ChatColor.WHITE + "#   " + BukkitUtil.Text.Color.format(message));
+					for(final String message : contents2.get(datetime)) receiver.sendMessage(ChatColor.WHITE + "#   " + BukkitUtil.Text.parse(message));
 				}
 				receiver.sendMessage("");
 				receiver.sendMessage("");

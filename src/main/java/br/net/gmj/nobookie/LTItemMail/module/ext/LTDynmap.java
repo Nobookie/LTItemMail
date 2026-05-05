@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,12 +40,12 @@ public final class LTDynmap extends DynmapCommonAPIListener implements LTExtensi
 	public final void apiEnabled(final DynmapCommonAPI api) {
 		if(api != null) {
 			this.api = api.getMarkerAPI();
-			for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
+			for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createMarker(block.getOwner().toBukkit(), block.getLocation());
 		}
 	}
 	@Override
 	public final void unload() {
-		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
+		for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteMarker(block.getOwner().toBukkit(), block.getLocation());
 		DynmapCommonAPIListener.unregister(this);
 	}
 	public final void createMarker(final OfflinePlayer player, final Location location) {

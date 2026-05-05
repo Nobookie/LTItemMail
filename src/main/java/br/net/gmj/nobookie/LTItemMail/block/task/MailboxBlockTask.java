@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@ public final class MailboxBlockTask implements Runnable {
 			if(!block.getServer().equals((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_MULTI_SERVER_SUPPORT_SERVER_ID))) continue;
 			if(!block.getBukkitBlock().getType().toString().endsWith("_SHULKER_BOX")) {
 				block.remove(true);
-				if(blueMap != null) blueMap.deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation(), false);
-				if(decentHolograms != null) decentHolograms.deleteHolo(block.getOwner().getBukkitPlayer(), block.getLocation());
-				if(dynmap != null) dynmap.deleteMarker(block.getOwner().getBukkitPlayer(), block.getLocation());
+				if(blueMap != null) blueMap.deleteMarker(block.getOwner().toBukkit(), block.getLocation(), false);
+				if(decentHolograms != null) decentHolograms.deleteHolo(block.getOwner().toBukkit(), block.getLocation());
+				if(dynmap != null) dynmap.deleteMarker(block.getOwner().toBukkit(), block.getLocation());
 			}
 		}
 	}

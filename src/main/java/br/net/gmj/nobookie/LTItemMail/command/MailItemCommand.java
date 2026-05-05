@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,25 +55,25 @@ public final class MailItemCommand extends LTCommandExecutor {
 				if(!player.isRegistered()) DatabaseModule.User.register(player);
 				if(!player.isBanned()) {
 					if(args.length == 0) {
-						player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_MISSINGERROR));
+						player.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_MISSINGERROR));
 					} else if(args.length >= 1) {
 						final LTPlayer playerTo = LTPlayer.fromName(args[0]);
 						if(playerTo != null) {
 							if(playerTo.getUniqueId().equals(player.getUniqueId())) {
 								if(args.length == 2 && args[1].equalsIgnoreCase("--bypass") && PermissionModule.hasPermission(sender, PermissionModule.Type.CMD_ADMIN_BYPASS)) {
-									player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "Ok...");
-									if(citizens != null) citizens.call(player.getBukkitPlayer().getPlayer());
-									player.getBukkitPlayer().getPlayer().openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, playerTo, null, player.getUniqueId(), "", false));
-								} else player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_SELFERROR));
+									player.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "Ok...");
+									if(citizens != null) citizens.call(player.toBukkit().getPlayer());
+									player.toBukkit().getPlayer().openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, playerTo, null, player.getUniqueId(), "", false));
+								} else player.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_SELFERROR));
 							} else {
 								String label = "";
 								if(args.length > 1) for(int i = 1; i < args.length; i++) label = label + args[i] + " ";
-								if(citizens != null) citizens.call(player.getBukkitPlayer().getPlayer());
-								player.getBukkitPlayer().getPlayer().openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, playerTo, null, player.getUniqueId(), label, false));
+								if(citizens != null) citizens.call(player.toBukkit().getPlayer());
+								player.toBukkit().getPlayer().openInventory(MailboxInventory.getInventory(MailboxInventory.Type.OUT, null, playerTo, null, player.getUniqueId(), label, false));
 							}
-						} else player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_NEVERPLAYEDERROR));
-					} else player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
-				} else player.getBukkitPlayer().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_BANNED));
+						} else player.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_NEVERPLAYEDERROR));
+					} else player.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_SYNTAXERROR));
+				} else player.toBukkit().getPlayer().sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_BANNED));
 			} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_ERROR));
 		} else sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + LanguageModule.get(LanguageModule.Type.PLAYER_PERMISSIONERROR));
 		return true;
