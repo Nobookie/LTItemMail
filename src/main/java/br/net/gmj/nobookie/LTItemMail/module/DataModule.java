@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ public final class DataModule {
 	public static final String STATS = "https://stats.nobookie.net.br";
 	public static final String DISCORD = "https://discord.gg/Nvnrv3P";
 	public static final Integer STABLE = 103;
+	public static final Integer BSTATS = 3647;
 	public static final String getDateURL(final Integer build) {
 		return DATE.replace("$build", String.valueOf(build));
 	}
