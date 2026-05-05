@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@ public final class CommandModule {
 		        String permission = cmdInfo.permission();
 		        if(permission.equals("")) permission = "ltitemmail." + cmdInfo.name();
 		        command.setPermission(permission);
-		        command.setPermissionMessage(LanguageModule.get(LanguageModule.Type.PLAYER_PERMISSIONERROR));
 		        try {
 		        	command.setExecutor(clazz.getConstructor().newInstance());
 		        	map.register("ltitemmail", command);
