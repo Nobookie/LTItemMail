@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ public final class LTGriefPrevention implements LTExtension, Listener {
 	public final boolean canInteract(final Player player, final Location location) {
 		final Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, false, null);
 		Boolean result = true;
-		if(claim != null) result = claim.hasExplicitPermission(player, ClaimPermission.Inventory);
+		if(claim != null) result = claim.hasExplicitPermission(player, ClaimPermission.Container);
 		ConsoleModule.debug(getClass(), "#canInteract: " + player.getName() + " " + result);
 		return result;
 	}
