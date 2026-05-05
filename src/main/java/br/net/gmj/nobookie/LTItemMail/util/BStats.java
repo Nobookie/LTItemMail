@@ -77,12 +77,12 @@ public BStats(JavaPlugin plugin, int serviceId) {
       // Inform the server owners about bStats
       config
           .options()
-          .header(
+          .setHeader(Arrays.asList(
               "bStats (https://bStats.org) collects some basic information for plugin authors, like how\n"
                   + "many people use their plugin and their total player count. It's recommended to keep bStats\n"
                   + "enabled, but if you're not comfortable with this, you can turn this setting off. There is no\n"
                   + "performance penalty associated with having metrics enabled, and data sent to bStats is fully\n"
-                  + "anonymous.")
+                  + "anonymous."))
           .copyDefaults(true);
       try {
         config.save(configFile);
