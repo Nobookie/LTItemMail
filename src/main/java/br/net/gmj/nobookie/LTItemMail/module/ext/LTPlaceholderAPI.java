@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,13 @@ package br.net.gmj.nobookie.LTItemMail.module.ext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.inventory.ItemStack;
 
 import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
@@ -29,8 +33,10 @@ import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.pikamug.localelib.LocaleManager;
 
 public final class LTPlaceholderAPI extends PlaceholderExpansion implements LTExtension {
+	private final LocaleManager locale = new LocaleManager();
 	public LTPlaceholderAPI() {
 		register();
 	}
@@ -79,7 +85,6 @@ public final class LTPlaceholderAPI extends PlaceholderExpansion implements LTEx
 						case "accepted":
 						case "denied":
 							if(phSplit.length > 2) try {
-								
 								HashMap<Integer, String> mails = null;
 								switch(phSplit[1]) {
 									case "pending":
@@ -94,6 +99,30 @@ public final class LTPlaceholderAPI extends PlaceholderExpansion implements LTEx
 								}
 								if(phSplit[2].equals("total")) {
 									return String.valueOf(mails.size());
+								} else if(phSplit[2].equals("newest")){
+									final List<Map.Entry<Integer, String>> list = new ArrayList<>(mails.entrySet());
+									final Map.Entry<Integer, String> newest = list.get(list.size() - 1);
+									if(phSplit.length > 3) switch(phSplit[3]) {
+										case "id":
+											return String.valueOf(newest.getKey());
+										case "date":
+											return newest.getValue();
+										case "label":
+											return DatabaseModule.Virtual.getMailboxLabel(newest.getKey());
+										case "from":
+											return LTPlayer.fromUUID(DatabaseModule.Virtual.getMailboxFrom(newest.getKey())).getName();
+										case "contents":
+											final LinkedList<ItemStack> items = DatabaseModule.Virtual.getMailbox(newest.getKey());
+											String itemList = "";
+											for(int i = 0; i < items.size(); i++) {
+												final ItemStack item = items.get(i);
+												if(item != null && !item.getType().equals(Material.AIR)) itemList += locale.toServerLocale(locale.queryItemStack(item));
+												if(i == (items.size() - 1)) {
+													itemList += ".";
+												} else itemList += ", ";
+											}
+											return itemList;
+									}
 								} else {
 									Integer pos = Integer.parseInt(phSplit[2]);
 									if(mails.size() >= pos) {
@@ -108,6 +137,17 @@ public final class LTPlaceholderAPI extends PlaceholderExpansion implements LTEx
 												return DatabaseModule.Virtual.getMailboxLabel(ids.get((pos - 1)));
 											case "from":
 												return LTPlayer.fromUUID(DatabaseModule.Virtual.getMailboxFrom(ids.get((pos - 1)))).getName();
+											case "contents":
+												final LinkedList<ItemStack> items = DatabaseModule.Virtual.getMailbox(ids.get((pos - 1)));
+												String itemList = "";
+												for(int i = 0; i < items.size(); i++) {
+													final ItemStack item = items.get(i);
+													if(item != null && !item.getType().equals(Material.AIR)) itemList += locale.toServerLocale(locale.queryItemStack(item));
+													if(i == (items.size() - 1)) {
+														itemList += ".";
+													} else itemList += ", ";
+												}
+												return itemList;
 										}
 										return "#" + ids.get((pos - 1)) + " (" + mails.get(ids.get((pos - 1))) + ")";
 									}
