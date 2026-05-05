@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,8 +53,8 @@ public final class LTDecentHolograms implements LTExtension {
 			@Override
 			public final void run() {
 				ConsoleModule.debug(getClass(), "#cleanup: performing");
-				for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteHolo(block.getOwner().getBukkitPlayer(), block.getLocation());
-				for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createHolo(block.getOwner().getBukkitPlayer(), block.getLocation());
+				for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) deleteHolo(block.getOwner().toBukkit(), block.getLocation());
+				for(final MailboxBlock block : DatabaseModule.Block.getMailboxBlocks()) createHolo(block.getOwner().toBukkit(), block.getLocation());
 				ConsoleModule.debug(getClass(), "#cleanup: done");
 			}
 		}, 1);
