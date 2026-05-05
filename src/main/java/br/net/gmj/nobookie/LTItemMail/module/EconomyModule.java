@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 package br.net.gmj.nobookie.LTItemMail.module;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ExecutionException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -27,7 +28,9 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.tnemc.core.TNECore;
 import net.tnemc.core.api.TNEAPI;
-import su.nightexpress.coinsengine.api.CoinsEngineAPI;
+import net.tnemc.core.currency.Currency;
+import su.nightexpress.excellenteconomy.api.ExcellentEconomyAPI;
+import su.nightexpress.excellenteconomy.api.currency.ExcellentCurrency;
 
 public final class EconomyModule {
 	private static EconomyModule instance = null;
@@ -58,8 +61,10 @@ public final class EconomyModule {
 				} else return;
 				break;
 			case COINSENGINE:
-				if(CoinsEngineAPI.class != null && coin != null) {
-					for(final su.nightexpress.coinsengine.api.currency.Currency c : CoinsEngineAPI.getCurrencyManager().getCurrencies()) if(c.getName().equalsIgnoreCase(coin)) {
+				final RegisteredServiceProvider<ExcellentEconomyAPI> coinsengine = Bukkit.getServicesManager().getRegistration(ExcellentEconomyAPI.class);
+				if(coinsengine != null && coin != null) {
+					api = coinsengine.getProvider();
+					for(final ExcellentCurrency c : ((ExcellentEconomyAPI) api).getCurrencies()) if(c.getName().equalsIgnoreCase(coin)) {
 						currency = c;
 						break;
 					}
@@ -69,7 +74,7 @@ public final class EconomyModule {
 			case THENEWECONOMY:
 				if(TNECore.api() != null && coin != null) {
 					api = TNECore.api();
-					for(final net.tnemc.core.currency.Currency c : TNECore.api().getCurrencies()) if(c.getIdentifier().equalsIgnoreCase(coin)) {
+					for(final Currency c : TNECore.api().getCurrencies()) if(c.getIdentifier().equalsIgnoreCase(coin)) {
 						currency = c;
 						break;
 					}
@@ -90,9 +95,14 @@ public final class EconomyModule {
 				final EconomyResponse response = ((Economy) api).depositPlayer(player, amount);
 				return response.transactionSuccess();
 			case COINSENGINE:
-				return CoinsEngineAPI.addBalance(player.getUniqueId(), (su.nightexpress.coinsengine.api.currency.Currency) currency, amount);
+				try {
+					return ((ExcellentEconomyAPI) api).depositAsync(player.getUniqueId(), (ExcellentCurrency) currency, amount).get().bool();
+				} catch (final InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+				return false;
 			case THENEWECONOMY:
-				return ((TNEAPI) api).setHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier()).add(BigDecimal.valueOf(amount)));
+				return ((TNEAPI) api).setHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((Currency) currency).getIdentifier()).add(BigDecimal.valueOf(amount)));
 		}
 		return false;
 	}
@@ -105,9 +115,14 @@ public final class EconomyModule {
 				final EconomyResponse response = ((Economy) api).withdrawPlayer(player, amount);
 				return response.transactionSuccess();
 			case COINSENGINE:
-				return CoinsEngineAPI.removeBalance(player.getUniqueId(), (su.nightexpress.coinsengine.api.currency.Currency) currency, amount);
+				try {
+					return ((ExcellentEconomyAPI) api).withdrawAsync(player.getUniqueId(), (ExcellentCurrency) currency, amount).get().bool();
+				} catch (final InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+				return false;
 			case THENEWECONOMY:
-				return ((TNEAPI) api).setHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier()).subtract(BigDecimal.valueOf(amount)));
+				return ((TNEAPI) api).setHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((Currency) currency).getIdentifier(), ((TNEAPI) api).getHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((Currency) currency).getIdentifier()).subtract(BigDecimal.valueOf(amount)));
 		}
 		return false;
 	}
@@ -119,10 +134,15 @@ public final class EconomyModule {
 			case VAULT:
 				return ((Economy) api).has(player, amount);
 			case COINSENGINE:
-				final Double balance = CoinsEngineAPI.getBalance(player.getUniqueId(), (su.nightexpress.coinsengine.api.currency.Currency) currency);
-				return (balance >= amount);
+				try {
+					final Double balance = ((ExcellentEconomyAPI) api).getBalanceAsync(player.getUniqueId(), (ExcellentCurrency) currency).get();
+					return (balance >= amount);
+				} catch (final InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+				return false;
 			case THENEWECONOMY:
-				return ((TNEAPI) api).hasHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((net.tnemc.core.currency.Currency) currency).getIdentifier(), BigDecimal.valueOf(amount));
+				return ((TNEAPI) api).hasHoldings(player.getName(), ((TNEAPI) api).getPlayerAccount(player.getUniqueId()).get().location().get().getWorld(), ((Currency) currency).getIdentifier(), BigDecimal.valueOf(amount));
 		}
 		return false;
 	}
@@ -138,7 +158,7 @@ public final class EconomyModule {
 	}
 	public enum Type {
 		VAULT(ExtensionModule.EXT.VAULT.plugin()),
-		COINSENGINE(Bukkit.getPluginManager().getPlugin("CoinsEngine")),
+		COINSENGINE(Bukkit.getPluginManager().getPlugin("ExcellentEconomy")),
 		THENEWECONOMY(Bukkit.getPluginManager().getPlugin("TheNewEconomy"));
 		private final Plugin plugin;
 		Type(final Plugin plugin){
