@@ -260,9 +260,9 @@ public final class MailboxVirtualListener implements Listener {
 			event.setCancelled(true);
 		} else {
 			Integer sent_count = playerFrom.getMailSentCount();
-			DatabaseModule.User.setSentCount(playerFrom.getUniqueId(), sent_count++);
+			DatabaseModule.User.setSentCount(playerFrom.getUniqueId(), ++sent_count);
 			Integer received_count = playerTo.getMailReceivedCount();
-			DatabaseModule.User.setReceivedCount(playerTo.getUniqueId(), received_count++);
+			DatabaseModule.User.setReceivedCount(playerTo.getUniqueId(), ++received_count);
 		}
 	}
 }
