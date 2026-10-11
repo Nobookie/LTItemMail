@@ -185,12 +185,6 @@ public class BreakMailboxBlockEvent extends Event {
 		 * Called by TownyAdvanced.
 		 * 
 		 */
-		TOWNYADVANCED,
-		/**
-		 * 
-		 * Called by Lands.
-		 * 
-		 */
-		LANDS
+		TOWNYADVANCED
 	}
 }
