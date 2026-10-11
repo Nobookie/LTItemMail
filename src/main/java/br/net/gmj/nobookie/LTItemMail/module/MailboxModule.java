@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,8 +126,8 @@ public final class MailboxModule {
 		final Integer mailboxID = DatabaseModule.Virtual.saveMailbox(uSender, receiver.getUniqueId(), contentsarray, label);
 		log(pSender, receiver, Action.SENT, mailboxID, null, contentsarray, null);
 		if(!(sender instanceof ConsoleCommandSender)) sender.sendMessage((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_TAG) + " " + ChatColor.YELLOW + "" + ((String) LanguageModule.get(LanguageModule.Type.MAILBOX_SENT)).replaceAll("%player%", ChatColor.AQUA + receiver.getName() + ChatColor.YELLOW));
-		if(receiver.getBukkitPlayer().getPlayer() != null) {
-			final Player bukkitReceiver = receiver.getBukkitPlayer().getPlayer();
+		if(receiver.toBukkit().getPlayer() != null) {
+			final Player bukkitReceiver = receiver.toBukkit().getPlayer();
 			log(receiver, null, Action.RECEIVED, mailboxID, null, contentsarray, null);
 			MailboxModule.Display display;
 			try {
@@ -149,11 +149,11 @@ public final class MailboxModule {
 				case TOAST:
 					if(ExtensionModule.getInstance().isRegistered(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI)) {
 						final LTUltimateAdvancementAPI ultimateAdvancementAPI = (LTUltimateAdvancementAPI) ExtensionModule.getInstance().get(ExtensionModule.EXT.ULTIMATEADVANCEMENTAPI);
-						ultimateAdvancementAPI.show(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + ChatColor.AQUA + " (#" + mailboxID + ")");
+						ultimateAdvancementAPI.sendMessage(receiver, LanguageModule.get(LanguageModule.Type.MAILBOX_FROM) + " " + sender.getName() + ChatColor.AQUA + " (#" + mailboxID + ")");
 						if(!label.isEmpty()) Bukkit.getScheduler().runTaskLater(LTItemMail.getInstance(), new Runnable() {
 							@Override
 							public final void run() {
-								ultimateAdvancementAPI.show(receiver, label);
+								ultimateAdvancementAPI.sendMessage(receiver, label);
 							}
 						}, 20 * 3);
 					}
