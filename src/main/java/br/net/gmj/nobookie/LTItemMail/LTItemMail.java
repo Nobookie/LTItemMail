@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,17 +39,16 @@ import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ConsoleModule;
 import br.net.gmj.nobookie.LTItemMail.module.DataModule;
 import br.net.gmj.nobookie.LTItemMail.module.DatabaseModule;
-import br.net.gmj.nobookie.LTItemMail.module.EconomyModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
 import br.net.gmj.nobookie.LTItemMail.module.LanguageModule;
 import br.net.gmj.nobookie.LTItemMail.module.MailboxModule;
+import br.net.gmj.nobookie.LTItemMail.module.MetricsModule;
 import br.net.gmj.nobookie.LTItemMail.module.ModelsModule;
 import br.net.gmj.nobookie.LTItemMail.module.MultiServerModule;
 import br.net.gmj.nobookie.LTItemMail.module.PermissionModule;
 import br.net.gmj.nobookie.LTItemMail.module.RegistrationModule;
-import br.net.gmj.nobookie.LTItemMail.task.UpdateTask;
 import br.net.gmj.nobookie.LTItemMail.task.ManifestTask;
-import br.net.gmj.nobookie.LTItemMail.util.BStats;
+import br.net.gmj.nobookie.LTItemMail.task.UpdateTask;
 import br.net.gmj.nobookie.LTItemMail.util.FetchUtil;
 
 public final class LTItemMail extends JavaPlugin {
@@ -63,12 +62,22 @@ public final class LTItemMail extends JavaPlugin {
 	public final HashMap<String, List<Integer>> boardsPlayers = new HashMap<>();
 	public final ArrayList<JavaPlugin> apiHandlers = new ArrayList<>();
 	private Long startup;
+	private Integer serverVer;
+	private Integer serverRev;
 	@Override
 	public final void onLoad() {
 		instance = this;
 		startup = Calendar.getInstance().getTimeInMillis();
 		loadConfig();
 		ConsoleModule.welcome();
+		if(Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("-")[0].split("\\.")[0]) >= 26) {
+			serverVer = Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("-")[0].split("\\.")[0]);
+			serverRev = Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("-")[0].split("\\.")[1]);
+		} else {
+			serverVer = Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("-")[0].split("\\.")[1]);
+			serverRev = Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("-")[0].split("\\.")[2]);
+		}
+		ConsoleModule.warning("Server version: " + serverVer + "." + serverRev);
 	}
 	@Override
 	public final void onEnable() {
@@ -82,24 +91,12 @@ public final class LTItemMail extends JavaPlugin {
 			final File dev = new File(getDataFolder(), ".dev");
 			ConfigurationModule.devMode = (dev.exists() && dev.isFile());
 		}
-		final BStats metrics = new BStats(this, 3647);
-		metrics.addCustomChart(new BStats.SimplePie("builds", () -> {
-	        return String.valueOf((Integer) ConfigurationModule.get(ConfigurationModule.Type.BUILD_NUMBER));
-	    }));
-		metrics.addCustomChart(new BStats.SimplePie("language", () -> {
-	        return ((String) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_LANGUAGE)).toUpperCase();
-	    }));
 		loadLang();
 		MultiServerModule.load();
 		loadModels();
 		loadDatabase();
 		ExtensionModule.getInstance().load();
-		for(final ExtensionModule.EXT plugin : ExtensionModule.getInstance().REG.keySet()) metrics.addCustomChart(new BStats.SimplePie("extensions", () -> {
-	        return plugin.plugin().getDescription().getName();
-	    }));
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.PLUGIN_HOOK_ECONOMY_ENABLE)) if(EconomyModule.getInstance() != null && EconomyModule.getInstance().getEconomy() != null) metrics.addCustomChart(new BStats.SimplePie("economy", () -> {
-	        return EconomyModule.getInstance().getEconomy().plugin().getName();
-	    }));
+		new MetricsModule();
 		PermissionModule.load();
 		registerListeners();
 		runTasks();
@@ -116,6 +113,7 @@ public final class LTItemMail extends JavaPlugin {
 	@Override
 	public final void onDisable() {
 		Bukkit.getScheduler().cancelTasks(this);
+		MetricsModule.shutdown();
 		PermissionModule.unload();
 		MultiServerModule.unload();
 		ExtensionModule.getInstance().unload();
@@ -178,6 +176,12 @@ public final class LTItemMail extends JavaPlugin {
 	}
 	public final ClassLoader getLTClassLoader() {
 		return getClassLoader();
+	}
+	public final Integer getServerVer() {
+		return serverVer;
+	}
+	public final Integer getServerRev() {
+		return serverRev;
 	}
 	public static final LTItemMail getInstance() {
 		return instance;
