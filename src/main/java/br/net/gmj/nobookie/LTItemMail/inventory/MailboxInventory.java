@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025  Murilo Amaral Nappi
+ * Copyright (C) 2026  Murilo Amaral Nappi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 
+import br.net.gmj.nobookie.LTItemMail.LTItemMail;
 import br.net.gmj.nobookie.LTItemMail.api.entity.LTPlayer;
 import br.net.gmj.nobookie.LTItemMail.module.ConfigurationModule;
 import br.net.gmj.nobookie.LTItemMail.module.ExtensionModule;
@@ -128,8 +130,15 @@ public final class MailboxInventory {
 		inventory.setItem(27, gui);
 		for(int i = 34; i < 36; i++) inventory.setItem(i, limiter);
 	}
+	@SuppressWarnings("deprecation")
 	private static final ItemMeta prepareItem(final ItemMeta meta, final int model, final String name, final List<String> lore) {
-		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_TEXTURES)) if(model != -1) meta.setCustomModelData(model);
+		if((Boolean) ConfigurationModule.get(ConfigurationModule.Type.MAILBOX_TEXTURES) && model != -1) if(LTItemMail.getInstance().getServerVer() <= 21 && LTItemMail.getInstance().getServerRev() <= 4) { 
+			meta.setCustomModelData(model);
+		} else {
+			CustomModelDataComponent data = meta.getCustomModelDataComponent();
+			data.setFloats(List.of(Float.valueOf(model)));
+			meta.setCustomModelDataComponent(data);
+		}
 		if(name != null) {
 			meta.setDisplayName(name);
 		} else meta.setDisplayName(" ");
